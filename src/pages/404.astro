@@ -1,0 +1,52 @@
+---
+import Base from '../layouts/Base.astro';
+import { NAV } from '../data/site';
+---
+
+<Base
+  title="Page not found | DEEJAY T-JR."
+  description="That page does not exist. Here is where to go instead."
+  path="/404"
+  noindex
+>
+  <section class="section notfound">
+    <div class="wrap">
+      <p class="code muted">404</p>
+      <h1>That page moved, or never existed.</h1>
+      <p class="lede">
+        The site was rebuilt in 2026 and a few old links did not survive it. Everything worth
+        reaching is one click away.
+      </p>
+      <div class="actions">
+        <a class="btn" href="/contact">Check availability</a>
+        <a class="btn ghost" href="/">Back to the homepage</a>
+      </div>
+      <nav class="links small" aria-label="Main pages">
+        {NAV.map((n) => <a href={n.href}>{n.label}</a>)}
+        <a href="/watch">Watch</a>
+      </nav>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .notfound { min-height: 62vh; display: flex; align-items: center; }
+  .code {
+    font-family: var(--serif);
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    margin-bottom: 18px;
+  }
+  h1 { margin-bottom: 20px; max-width: 14em; }
+  .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 26px;
+    margin-top: 44px;
+    padding-top: 26px;
+    border-top: 1px solid var(--hairline);
+  }
+  .links a { color: var(--muted); transition: color var(--t-hover) var(--ease-out); }
+  .links a:hover { color: var(--tan); }
+</style>

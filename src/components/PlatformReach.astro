@@ -1,0 +1,91 @@
+---
+import { getAudience, formatPct } from '../lib/audience';
+
+export interface Props {
+  /** Show the "pending" cells too. Off for public summaries, on for the kit. */
+  showPending?: boolean;
+  /** Omit to fit the column count to however many platforms are tracked. */
+  cols?: 3 | 4;
+}
+const { showPending = true, cols: colsProp } = Astro.props;
+
+const a = await getAudience();
+const platforms = showPending ? a.platforms : a.platforms.filter((p) => p.followers !== null);
+
+/* Seven platforms across four columns leaves a hole in the last row, and the
+   grid paints its separator colour behind every cell — so an unfilled cell
+   shows up as a pale slab rather than as nothing. Pad the row out. */
+/* Fit the grid to the platforms rather than padding a fixed four columns with
+   an empty box. Only if the count still leaves a gap do we pad it out. */
+const cols = colsProp ?? (platforms.length % 4 === 0 ? 4 : platforms.length <= 3 ? 3 : 4);
+const fillers = platforms.length ? (cols - (platforms.length % cols)) % cols : 0;
+---
+
+{
+  platforms.length > 0 && (
+    <div class={`hgrid cols-${cols} reach`} data-reveal-group>
+      {platforms.map((p) => (
+        <div class="cell">
+          <a class="plat" href={p.url} rel="me noopener" target="_blank">
+            {p.label}
+          </a>
+          {p.followers !== null ? (
+            <>
+              <b data-count>{p.followers.toLocaleString('en-CA')}</b>
+              <span class="small muted unit">{p.unit}</span>
+              {p.deltaPct !== null && (
+                <span class={`small delta${p.deltaPct >= 0 ? ' up' : ' down'}`}>
+                  {formatPct(p.deltaPct)} since the last count
+                </span>
+              )}
+            </>
+          ) : (
+            <>
+              <b class="pending">—</b>
+              <span class="small pendingnote">Figure pending</span>
+            </>
+          )}
+        </div>
+      ))}
+      {Array.from({ length: fillers }).map(() => (
+        <div class="cell filler" aria-hidden="true" />
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .cell {
+    padding: clamp(20px, 2.4vw, 28px);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .plat {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    width: fit-content;
+    border-bottom: 1px solid transparent;
+    transition: color var(--t-hover) var(--ease-out), border-color var(--t-hover) var(--ease-out);
+  }
+  .plat:hover { color: var(--tan); border-bottom-color: var(--tan); }
+
+  .cell b {
+    font-family: var(--serif);
+    font-size: clamp(26px, 2.8vw, 36px);
+    font-weight: 600;
+    line-height: 1.05;
+    color: var(--tan);
+    margin-top: 6px;
+  }
+  .cell b.pending { color: var(--muted); opacity: 0.5; }
+  .unit { display: block; }
+  .pendingnote { color: var(--muted); font-style: italic; }
+
+  .delta { display: block; margin-top: 6px; font-weight: 500; }
+  .delta.up { color: var(--tan); }
+  .delta.down { color: var(--muted); }
+
+  .filler { padding: 0; }
+</style>

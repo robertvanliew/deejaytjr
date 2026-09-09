@@ -1,0 +1,116 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { SITE } from '../data/site';
+import { graph, personNode, websiteNode } from '../lib/schema';
+
+export interface Props {
+  title: string;
+  description: string;
+  /** Path only, e.g. "/corporate-events". Canonical is built from SITE.url. */
+  path: string;
+  ogImage?: string;
+  noindex?: boolean;
+  /** Extra JSON-LD nodes merged into this page’s @graph. */
+  schema?: object[];
+  /** Adds a subtle top rule under the nav on inner pages. */
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description,
+  path,
+  ogImage = SITE.defaultOgImage,
+  noindex = false,
+  schema = [],
+  bodyClass = '',
+} = Astro.props;
+
+const canonical = `${SITE.url}${path === '/' ? '/' : path}`;
+const ogUrl = new URL(ogImage, SITE.url).href;
+const ld = graph([personNode(), websiteNode(), ...schema]);
+const ga4 = import.meta.env.PUBLIC_GA4_ID;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Display face used by the h1 on every page. Preloaded to kill the FOUT. -->
+    <link
+      rel="preload"
+      href="/fonts/bodoni-moda-latin-opsz-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/geist-latin-wght-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogUrl} />
+
+    <meta name="theme-color" content="#0a1013" />
+    <link rel="icon" href="/logo/seal.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <script is:inline type="application/ld+json" set:html={ld} />
+
+    {
+      ga4 && (
+        <>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`} />
+          <script is:inline define:vars={{ ga4 }}>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              dataLayer.push(arguments);
+            }
+            window.gtag = gtag;
+            gtag('js', new Date());
+            gtag('config', ga4);
+          </script>
+        </>
+      )
+    }
+  </head>
+
+  <body class={bodyClass}>
+    <a class="skip" href="#main">Skip to content</a>
+    <Nav />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import { initMotion } from '../lib/motion';
+      import { protectImages } from '../lib/protectImages';
+      initMotion();
+      protectImages();
+    </script>
+  </body>
+</html>

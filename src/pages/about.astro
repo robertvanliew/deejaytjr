@@ -1,0 +1,266 @@
+---
+import Base from '../layouts/Base.astro';
+import Photo from '../components/Photo.astro';
+import AvailabilityForm from '../components/AvailabilityForm.astro';
+import { AWARDS, YEARS } from '../data/site';
+import { breadcrumbNode } from '../lib/schema';
+---
+
+<Base
+  title="The Story | DEEJAY T-JR., 3x DMC Canadian Champion"
+  description="How DEEJAY T-JR. became the only woman in DMC history to win three consecutive Canadian national championships, finished top nine at the DMC World Finals, and competed at all four majors."
+  path="/about"
+  schema={[
+    breadcrumbNode([
+      { name: 'Home', path: '/' },
+      { name: 'The story', path: '/about' },
+    ]),
+  ]}
+>
+  <section class="section tight pagehead">
+    <div class="wrap">
+      <h1>Three years. Three national titles. <em>One</em> woman had ever done it.</h1>
+      <p class="lede">
+        The record is unusual enough that people assume it is a typo. It is not. Here is how it
+        happened, and why it matters for the room you are trying to fill.
+      </p>
+      <nav class="jump small" aria-label="Sections">
+        <a href="#dmc">The DMC years</a>
+        <a href="#bastids">Bastids BBQ and the Toronto scene</a>
+        <a href="#biography">Full biography</a>
+        <a href="#awards">Awards</a>
+      </nav>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="wrap">
+      <div class="lead">
+        <div class="lead-media">
+          <Photo
+            name="portrait-studio"
+            widths={[400, 620, 900]}
+            sizes="(max-width: 820px) 90vw, 32vw"
+            class="aboutimg"
+          />
+        </div>
+        <div class="prose lead-copy">
+          <p class="opener">
+            She started competing because nobody in the room looked like her.
+          </p>
+          <p>
+            Turntablism in Canada, like turntablism everywhere, was a men’s sport by default rather
+            than by rule. The DMC Canadian championship had run for decades. No woman had won it
+            three years running. In 2022, 2023 and 2024, DEEJAY T-JR. did — and the record still
+            reads as an outlier because it is one.
+          </p>
+          <p>
+            What a championship actually measures is preparation under pressure. Six minutes,
+            judged, with no room to recover from a mistake. It is a harder brief than a ballroom,
+            which is precisely why the ballroom is straightforward when she gets there.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <article class="section panel" id="dmc">
+    <div class="wrap narrow">
+      <h2>The DMC years</h2>
+      <div class="prose">
+        <p>
+          The DMC World DJ Championships have run since 1985 and are the oldest and most demanding
+          competition in turntablism. National champions qualify for the world final; the routines
+          are six minutes long, performed live, and judged on technical execution, originality,
+          musicality and composition.
+        </p>
+        <p>
+          She reached the Canadian final for the first time after years on the Toronto circuit. In
+          2022 she won it. In 2023 she won it again and carried the title to London, where she
+          finished in the top nine at the Technics DMC World Finals — the strongest field the sport
+          assembles. In 2024 she won the Canadian title for a third consecutive year.
+        </p>
+        <p>
+          No woman in the history of the championship had taken three national titles in a row. The
+          same year she was competing at DMC, she reached the technical category finals of the IDA
+          World DJ Championships, which made her the only woman to have competed at all four
+          majors: DMC World, IDA World, the Goldie Awards and Red Bull 3Style.
+        </p>
+        <p class="pending small">
+          Source article to be inserted here in full. Frankpella holds the DMC journey piece;
+          this section carries it with an anchor link once rights are confirmed.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <article class="section" id="bastids">
+    <div class="wrap narrow">
+      <h2>Bastids BBQ and the Toronto scene</h2>
+      <div class="prose">
+        <p>
+          Championships are won alone in a room with two turntables. Careers are built in front of
+          people. Toronto’s scene — the crews, the barbecues, the annual gatherings where the city’s
+          DJs actually play for each other rather than for a promoter — is where she learned to read
+          a crowd rather than a judging sheet.
+        </p>
+        <p>
+          That difference is the whole argument for booking her. A technically flawless DJ who
+          cannot read a room is a liability at a wedding. She spent years doing both.
+        </p>
+        <p class="pending small">
+          Source article to be inserted here in full. Frankpella holds the Bastids BBQ piece;
+          this section carries it once rights are confirmed.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <article class="section panel" id="biography">
+    <div class="wrap narrow">
+      <h2>Full biography</h2>
+      <div class="prose">
+        <p>
+          DEEJAY T-JR. is a Toronto-based turntablist and the most decorated Canadian DJ of her
+          generation. Between 2022 and 2024 she won the DMC Canadian DJ Championship three years
+          running, and in 2023 she represented Canada at the Technics DMC World Finals in London,
+          finishing in the top nine.
+        </p>
+        <p>
+          Her competitive record spans all four of the sport’s majors. Alongside the DMC titles she
+          reached the technical category finals of the IDA World DJ Championships in 2023, competed at the Goldie Awards in 2019, and placed third at Red Bull 3Style Canada in 2018.
+        </p>
+        <p>
+          Competition is the credential; the work is the room. She performs for corporate clients
+          including MLSE, the Government of Ontario and the Fairmont Royal York, for private events
+          where discretion is the brief, and for clubs and festivals across North America, South
+          America, Europe and Africa. Her audience is concentrated in the United States, Brazil,
+          France, the United Kingdom and South Africa — current figures are in the
+          <a href="/media-kit">media kit</a>.
+        </p>
+        <p>
+          She has showcased at NAMM and performed in Pioneer DJ product showcases. Through the GIE
+          DJ Academy she teaches the next set of DJs coming out of Toronto, with particular
+          attention to the ones who, like her, do not see themselves in the booth yet.
+        </p>
+        <p class="pending small">
+          Frankpella to reconcile this against the full biography article before launch, and to
+          confirm the follower figures against current analytics.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <section class="section tight tan" id="awards">
+    <div class="wrap">
+      <h2>Awards and results</h2>
+      <div class="cols">
+        <ol class="awards">
+          {
+          AWARDS.map((a) => (
+            <li>
+              <span class="atitle">{a.title}</span>
+              {a.source && (
+                <a class="asource" href={a.source} rel="noopener" target="_blank">
+                  {a.sourceLabel ?? 'Source'}
+                </a>
+              )}
+            </li>
+          ))
+        }
+        </ol>
+        <ol class="years">
+          {
+            YEARS.map((y) => (
+              <li>
+                <b>{y.year}</b>
+                <span class="small muted">{y.note}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <AvailabilityForm
+    heading="Book her."
+    lede="Send the date and the room. We reply within one business day with availability and a quote."
+  />
+</Base>
+
+<style>
+  .pagehead h1 { margin-bottom: 22px; max-width: 16em; }
+  .jump { display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 30px; }
+  .jump a { color: var(--muted); border-bottom: 1px solid var(--hairline); padding-bottom: 3px; transition: color var(--t-hover) var(--ease-out), border-color var(--t-hover) var(--ease-out); }
+  .jump a:hover { color: var(--tan); border-color: color-mix(in srgb, var(--tan) 35%, transparent); }
+
+  .lead { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: clamp(28px, 4vw, 64px); align-items: start; }
+  .lead-media :global(.aboutimg) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+  .opener {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(22px, 2.3vw, 30px);
+    line-height: 1.28;
+    color: var(--bone);
+    max-width: 20em;
+  }
+
+  .narrow { max-width: 900px; }
+  article h2 { margin-bottom: 28px; }
+  .pending { color: color-mix(in srgb, var(--tan) 35%, transparent); font-style: italic; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 4vw, 56px); }
+  .awards { list-style: none; }
+  .awards li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--hairline);
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--body);
+  }
+  .awards li:first-child { border-top: 1px solid var(--hairline); color: var(--bone); }
+  .awards li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px 24px;
+  }
+  .atitle { flex: 1 1 auto; }
+  /* A result a promoter can click and confirm is worth more than one they have
+     to take on trust. */
+  .asource {
+    font-family: var(--sans);
+    font-size: 12.5px;
+    color: var(--muted);
+    white-space: nowrap;
+    border-bottom: 1px solid transparent;
+    transition: color var(--t-hover) var(--ease-out), border-color var(--t-hover) var(--ease-out);
+  }
+  .asource:hover { color: var(--tan); border-bottom-color: var(--tan); }
+
+
+  .years { list-style: none; }
+  .years li {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 18px;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .years li:first-child { border-top: 1px solid var(--hairline); }
+  .years b { font-family: var(--serif); font-size: 18px; color: var(--tan); }
+
+  @media (max-width: 820px) {
+    .lead { grid-template-columns: 1fr; }
+    .lead-media { max-width: 380px; }
+    .cols { grid-template-columns: 1fr; }
+  }
+</style>

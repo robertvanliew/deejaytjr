@@ -1,0 +1,52 @@
+---
+import { getAudience } from '../lib/audience';
+
+/**
+ * Where her audience actually is, country by country and city by city.
+ *
+ * This is the load-bearing block for international booking: a promoter in
+ * Paris or São Paulo is not buying a follower count, they are buying whether
+ * anyone in their city already knows her name.
+ */
+export interface Props {
+  onPanel?: boolean;
+}
+const { onPanel = false } = Astro.props;
+const a = await getAudience();
+---
+
+{
+  a.countries.length > 0 && (
+    <ul class={`hgrid cols-3 geo${onPanel ? ' on-panel' : ''}`} data-reveal-group>
+      {a.countries.map((c) => (
+        <li class="country spot">
+          <b>{c.name}</b>
+          {c.sharePct !== null && <span class="share small">{c.sharePct}% of audience</span>}
+          {c.cities.length > 0 && (
+            <span class="cities small muted">{c.cities.join(' · ')}</span>
+          )}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .geo { list-style: none; }
+  .country {
+    padding: clamp(20px, 2.4vw, 28px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .country b {
+    font-family: var(--serif);
+    font-size: clamp(21px, 2.1vw, 26px);
+    font-weight: 600;
+    color: var(--bone);
+    transition: color var(--t-hover) var(--ease-out);
+  }
+  .country:hover b { color: var(--tan); }
+  .share { color: var(--tan); font-weight: 500; }
+  .cities { line-height: 1.5; }
+</style>

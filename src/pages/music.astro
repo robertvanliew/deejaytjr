@@ -1,0 +1,188 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import AvailabilityForm from '../components/AvailabilityForm.astro';
+import { MUSIC_PLATFORMS, SITE } from '../data/site';
+import { breadcrumbNode, personRef } from '../lib/schema';
+
+/**
+ * Listening page.
+ *
+ * A deviation from section 3 of the brief, which pushes mixes and merch to the
+ * footer so the site stays pointed at bookings. It earns its place because the
+ * buyers this site is built for increasingly cannot see her play: a promoter in
+ * São Paulo or an agency in Paris decides from a link, and "what does she
+ * actually sound like for an hour" is a fair question that a two-minute clip
+ * does not answer.
+ *
+ * It stays a proof page, not a shop. One CTA, the same as everywhere else.
+ *
+ * Both players are third-party iframes and both are `loading="lazy"`, so they
+ * cost nothing until someone scrolls to them, and neither can autoplay.
+ */
+
+const APPLE_ALBUM_ID = '1895038581';
+const BANDCAMP_TRACK_ID = '414148953';
+
+const albumTitle = "DEEJAY T-JR. at Bastid's BBQ, Toronto, 2025 (DJ Mix)";
+const trackTitle = 'Back To Back Remix — DEEJAY T-JR. Edition';
+
+/* Bandcamp takes player colours as bare hex. Kept in sync with tokens.css. */
+const BC_BG = '0e0d0c';
+const BC_LINK = 'd5c9b1';
+
+const schema = [
+  {
+    '@type': 'MusicAlbum',
+    name: albumTitle,
+    byArtist: personRef(),
+    numTracks: 37,
+    datePublished: '2025-07-26',
+    url: `https://music.apple.com/us/album/${APPLE_ALBUM_ID}`,
+  },
+  breadcrumbNode([
+    { name: 'Home', path: '/' },
+    { name: 'Listen', path: '/music' },
+  ]),
+];
+---
+
+<Base
+  title="Listen | DEEJAY T-JR., 3x DMC Canadian Champion"
+  description="Hear DEEJAY T-JR. play: her full Bastid's BBQ 2025 set, edits and remixes, and every platform her music is on. Three-time DMC Canadian Champion, available worldwide."
+  path="/music"
+  schema={schema}
+>
+  <section class="section tight pagehead">
+    <div class="wrap">
+      <h1>Listen.</h1>
+      <p class="lede">
+        Clips prove the hands. A full set proves the judgement — what she opens with, how long she
+        holds a groove, and where she takes a room that has already been standing for an hour.
+      </p>
+    </div>
+  </section>
+
+  <section class="section tight panel" id="mix">
+    <div class="wrap">
+      <SectionHead
+        title="A full set, start to finish."
+        lede="Her 2025 set at Bastid's BBQ in Toronto — thirty-seven tracks across fifty-three minutes, exactly as it was played."
+      />
+      <div class="player wide">
+        <iframe
+          title={`Apple Music player: ${albumTitle}`}
+          src={`https://embed.music.apple.com/us/album/${APPLE_ALBUM_ID}`}
+          height="450"
+          loading="lazy"
+          allow="autoplay *; encrypted-media *; clipboard-write"
+          sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+        ></iframe>
+      </div>
+      <p class="small muted note">
+        The same night is pictured on the <a class="inline" href="/press">press page</a> and covered
+        in the <a class="inline" href="/watch">video</a>. Also on
+        <a class="inline" href="https://open.spotify.com/artist/1y5sAktWX9goimMIlwDHkk" rel="noopener" target="_blank">Spotify</a>.
+      </p>
+    </div>
+  </section>
+
+  <section class="section tight" id="edits">
+    <div class="wrap">
+      <SectionHead
+        title="Edits and remixes."
+        lede="The reworks she builds for her own sets. Buy them outright on Bandcamp, or hear them in a room."
+      />
+      <div class="player narrow">
+        <iframe
+          title={`Bandcamp player: ${trackTitle}`}
+          src={`https://bandcamp.com/EmbeddedPlayer/track=${BANDCAMP_TRACK_ID}/size=large/bgcol=${BC_BG}/linkcol=${BC_LINK}/tracklist=false/transparent=true/`}
+          height="470"
+          loading="lazy"
+          seamless
+        ></iframe>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight panel" id="platforms">
+    <div class="wrap">
+      <SectionHead
+        title="Everywhere else."
+        lede="Mixes, edits and releases across the platforms she publishes on."
+      />
+      <ul class="hgrid cols-3 platforms on-panel" data-reveal-group>
+        {
+          MUSIC_PLATFORMS.map((m) => (
+            <li>
+              <a href={m.url} rel="noopener" target="_blank">
+                <b>{m.label}</b>
+                <span class="tlink">
+                  Open <span class="arw" aria-hidden="true">→</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="small muted note">
+        For promoters and media: hi-res photography, bios and the technical rider are on the
+        <a class="inline" href="/press">press page</a>, and reach by platform and country is in the
+        <a class="inline" href="/media-kit">media kit</a>. Licensing enquiries to
+        <a class="inline" href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+      </p>
+    </div>
+  </section>
+
+  <AvailabilityForm
+    tan
+    heading="Heard enough?"
+    lede="Send the date and the room. We reply within one business day with availability and a quote."
+  />
+</Base>
+
+<style>
+  .pagehead h1 { margin-bottom: 20px; }
+
+  /* The players are third-party iframes, so they get the same hairline framing
+     as every other card on the site rather than floating unbounded. */
+  .player { border: 1px solid var(--hairline); background: var(--ink); }
+  .player iframe {
+    display: block;
+    width: 100%;
+    border: 0;
+    /* Apple's widget needs a light-ish ground to render its own dark theme
+       against; leaving it transparent produces a grey seam. */
+    background: transparent;
+  }
+  .player.wide { max-width: 720px; }
+  .player.narrow { max-width: 400px; }
+
+  .note { margin-top: 22px; max-width: 46em; }
+  .inline { color: var(--tan); text-decoration: underline; text-underline-offset: 3px; }
+
+  .platforms { list-style: none; }
+  .platforms a {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    padding: clamp(20px, 2.4vw, 28px);
+    transition: background var(--t-hover) var(--ease-out);
+  }
+  .platforms a:hover { background: var(--panel-hover); }
+  .platforms b {
+    font-family: var(--serif);
+    font-size: 21px;
+    font-weight: 600;
+    color: var(--bone);
+    transition: color var(--t-hover) var(--ease-out);
+  }
+  .platforms a:hover b { color: var(--tan); }
+  .platforms a:hover .tlink { border-color: var(--tan); color: var(--tan-lift); }
+  .platforms a:hover .arw { transform: translateX(3px); }
+
+  @media (max-width: 560px) {
+    .player.narrow { max-width: 100%; }
+  }
+</style>

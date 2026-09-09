@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content';
+
+export interface Props {
+  /** The homepage shows a couple; /press lists them all. */
+  limit?: number;
+}
+const { limit } = Astro.props;
+
+let items = (await getCollection('press')).sort((a, b) => a.data.order - b.data.order);
+if (limit) items = items.slice(0, limit);
+---
+
+<div class="hgrid cols-3" data-reveal-group>
+  {
+    items.map((item) => {
+      const d = item.data;
+      const Tag = d.url ? 'a' : 'div';
+      return (
+        <Tag class="pcard spot" href={d.url ?? undefined} rel={d.url ? 'noopener' : undefined} target={d.url ? '_blank' : undefined}>
+          <span class="small muted outlet">{d.outlet}{d.date ? ` · ${d.date}` : ''}</span>
+          <h3>{d.title}</h3>
+          <p class="small prose">{d.excerpt}</p>
+          {d.url ? (
+            <span class="tlink">Read it <span class="arw" aria-hidden="true">→</span></span>
+          ) : (
+            <span class="small muted pending">Link to be supplied</span>
+          )}
+        </Tag>
+      );
+    })
+  }
+
+  <a class="pcard spot" href="/press">
+    <span class="small muted outlet">Press kit</span>
+    <h3>Photos, bio, stage plot and tech rider for planners, agencies and media</h3>
+    <p class="small prose">
+      Hi-res images with credits, logo pack, three bio lengths and the technical rider. No form, no
+      gate.
+    </p>
+    <span class="tlink">Open the press kit <span class="arw" aria-hidden="true">→</span></span>
+  </a>
+</div>
+
+<style>
+  .pcard {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: clamp(24px, 2.8vw, 36px);
+    min-height: 260px;
+    transition: background var(--t-hover) var(--ease-out);
+  }
+  a.pcard:hover { background: var(--panel-hover); }
+  .pcard h3 { font-size: 22px; line-height: 1.15; }
+  .pcard p { flex-grow: 1; max-width: 34em; }
+  .outlet { display: block; }
+  .pending { font-style: italic; }
+  a.pcard:hover .tlink { border-color: var(--tan); color: var(--tan-lift); }
+  a.pcard:hover .arw { transform: translateX(3px); }
+</style>

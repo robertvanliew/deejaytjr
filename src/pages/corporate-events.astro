@@ -1,0 +1,52 @@
+---
+import Service from '../layouts/Service.astro';
+import { CORPORATE_FAQ } from '../data/faqs';
+---
+
+<Service
+  title="Corporate Event DJ Toronto | DEEJAY T-JR., 3x DMC Canadian Champion"
+  description="Book a world-championship DJ for your conference, gala, holiday party or product launch. DEEJAY T-JR. works to your run of show and has performed for MLSE, the Government of Ontario and the Fairmont Royal York."
+  path="/corporate-events"
+  type="corporate"
+  serviceName="Corporate event DJ"
+  serviceType="Corporate event entertainment"
+  areaServed={['Toronto', 'Ontario', 'Canada', 'United States']}
+  headline="The safe booking that still feels like a <em>headline</em> act."
+  lede="Conferences, galas, holiday parties, product launches and awards nights. She holds the room through dinner and speeches, then turns it into a party on your cue — with three national championship titles behind the booking."
+  heroPhoto="event-room"
+  proof={[
+    { stat: 'MLSE', detail: 'Arena and hospitality events' },
+    { stat: 'Government of Ontario', detail: 'Official government functions' },
+    { stat: 'Fairmont Royal York', detail: 'Ballroom events for up to 800 guests' },
+    { stat: 'One business day', detail: 'Availability and a quote, from a person, not a marketplace' },
+  ]}
+  formatsTitle="Four ways she works a corporate room."
+  formatsLede="Pick one, or combine them. All of it is mapped with your planner before the doors open."
+  formats={[
+    {
+      title: 'Open-format set',
+      body: 'Arrival, dinner and dancing as one continuous booking. Background level where you need it, and the floor filled when the programme says so. Music tuned to your specific crowd, not a generic corporate playlist.',
+    },
+    {
+      title: 'Scratch showcase',
+      body: 'A three to six minute featured performance of the routines that won three national titles. Placed before or after your main programme. This is the part your team films and your CEO mentions afterwards.',
+    },
+    {
+      title: 'DJ plus host',
+      body: 'She DJs and handles the microphone — announcements, award call-ups, transitions. One vendor instead of two, and one fewer handoff for your run of show to go wrong at.',
+    },
+    {
+      title: 'Brand activation',
+      body: 'Product launches and trade show floors. A performance built around your product moment, plus content captured on the day that your marketing team can actually use.',
+    },
+  ]}
+  eventsTitle="Selected corporate work."
+  eventsLede="A sample of the rooms she has played. Client names publish only where we hold written permission."
+  faqTitle="What corporate planners ask."
+  faq={CORPORATE_FAQ}
+  related={[
+    { label: 'Private events', href: '/private-events', note: 'Weddings, milestones and celebrations where discretion matters.' },
+    { label: 'Brand partnerships', href: '/brand-partnerships', note: 'Audience data, activation formats and the media kit.' },
+    { label: 'Press and EPK', href: '/press', note: 'Photos, bios, stage plot and technical rider. No form.' },
+  ]}
+/>

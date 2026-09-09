@@ -1,0 +1,8 @@
+{
+  "quote": "Replace this with the client's own words. Do not paraphrase, do not tidy up their grammar, and do not write it for them.",
+  "name": "Full name",
+  "role": "Job title",
+  "company": "Company name",
+  "permissionOnFile": false,
+  "services": ["corporate"]
+}

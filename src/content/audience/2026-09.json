@@ -1,0 +1,40 @@
+{
+  "date": "2026-09-05",
+  "source": "Read from her public profiles, September 2026",
+  "platforms": [
+    {
+      "key": "instagram",
+      "followers": 78121,
+      "unit": "followers",
+      "source": "manual",
+      "approx": false
+    },
+    {
+      "key": "tiktok",
+      "followers": 36800,
+      "unit": "followers",
+      "source": "manual",
+      "approx": true
+    },
+    {
+      "key": "youtube",
+      "followers": 2180,
+      "unit": "subscribers",
+      "source": "manual",
+      "approx": true
+    },
+    {
+      "key": "twitch",
+      "followers": 3500,
+      "unit": "followers",
+      "source": "manual",
+      "approx": true
+    }
+  ],
+  "highlights": [
+    {
+      "figure": "207,300",
+      "label": "Likes across her TikTok videos"
+    }
+  ]
+}

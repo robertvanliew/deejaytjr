@@ -1,0 +1,204 @@
+---
+import Brand from './Brand.astro';
+import { NAV } from '../data/site';
+
+const here = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<header class="nav">
+  <div class="wrap">
+    <Brand size={30} />
+
+    <nav class="links" aria-label="Primary">
+      {
+        NAV.map((item) => (
+          <a href={item.href} aria-current={here === item.href ? 'page' : undefined}>
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <span class="magnet cta" data-magnetic="0.24">
+      <a class="btn small" href="/contact">Check availability</a>
+    </span>
+
+    <button
+      class="burger"
+      type="button"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+      aria-label="Open menu"
+    >
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <div class="mobile" id="mobile-nav" hidden>
+    <div class="wrap">
+      {
+        NAV.map((item) => (
+          <a href={item.href} aria-current={here === item.href ? 'page' : undefined}>
+            {item.label}
+          </a>
+        ))
+      }
+      <a class="btn" href="/contact">Check availability</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--ink) 72%, transparent);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-bottom: 1px solid transparent;
+    transition:
+      transform var(--t-ui) var(--ease-out),
+      background var(--t-ui) var(--ease-out),
+      border-color var(--t-ui) var(--ease-out);
+  }
+  /* The rule only appears once there is content behind the bar to separate
+     it from — at the top of the page it would be a line under nothing. */
+  .nav[data-scrolled] {
+    background: color-mix(in srgb, var(--ink) 88%, transparent);
+    border-bottom-color: var(--hairline);
+  }
+  /* Tucks away on downward scroll, returns the moment you scroll up. */
+  .nav[data-tucked] { transform: translateY(-100%); }
+  .nav > .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    height: var(--nav-h);
+  }
+
+  .links {
+    display: flex;
+    /* Fluid rather than fixed: with eight items a 34px gap pushes the CTA off
+       the right edge between 900 and 945px, the first stretch where the
+       desktop bar is in play. Tightening the gap there keeps the full nav
+       usable instead of dropping everyone into the burger menu earlier. */
+    gap: clamp(18px, 2.2vw, 34px);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-left: auto;
+  }
+  .links a {
+    position: relative;
+    padding-block: 6px;
+    transition: color var(--t-hover) var(--ease-out);
+  }
+  .links a:hover { color: var(--bone); }
+  .links a[aria-current='page'] { color: var(--bone); }
+  /* Underline grows from the left rather than fading in, so the direction of
+     the gesture matches the reading direction. */
+  .links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--tan);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--t-hover) var(--ease-out);
+  }
+  .links a:hover::after,
+  .links a[aria-current='page']::after { transform: scaleX(1); }
+
+  .cta { flex-shrink: 0; }
+
+  /* Hamburger */
+  .burger {
+    display: none;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+    place-items: center;
+    align-content: center;
+    justify-items: center;
+    gap: 6px;
+  }
+  .burger span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: var(--bone);
+    transition: transform var(--t-ui) var(--ease-out);
+  }
+  .burger[aria-expanded='true'] span:first-child { transform: translateY(3.75px) rotate(45deg); }
+  .burger[aria-expanded='true'] span:last-child { transform: translateY(-3.75px) rotate(-45deg); }
+
+  .mobile { border-top: 1px solid var(--hairline); background: var(--ink); }
+  .mobile .wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-block: 8px 24px;
+  }
+  .mobile a:not(.btn) {
+    padding: 15px 0;
+    border-bottom: 1px solid var(--hairline);
+    font-size: 16px;
+    color: var(--body);
+    transition: color var(--t-hover) var(--ease-out);
+  }
+  .mobile a:not(.btn):active { color: var(--tan); }
+  .mobile a[aria-current='page'] { color: var(--tan); }
+  .mobile .btn { margin-top: 20px; justify-content: center; }
+
+  @media (max-width: 900px) {
+    .links { display: none; }
+    /* CTA stays pinned in the bar, per the brief’s mobile note. */
+    .burger { display: grid; }
+  }
+  @media (max-width: 460px) {
+    .cta { display: none; }
+  }
+</style>
+
+<script>
+  const burger = document.querySelector<HTMLButtonElement>('.nav .burger');
+  const panel = document.querySelector<HTMLElement>('#mobile-nav');
+
+  if (burger && panel) {
+    burger.addEventListener('click', () => {
+      const open = burger.getAttribute('aria-expanded') === 'true';
+      burger.setAttribute('aria-expanded', String(!open));
+      burger.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      panel.hidden = open;
+    });
+
+    // Close on Escape, and return focus to the control that opened it.
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && burger.getAttribute('aria-expanded') === 'true') {
+        burger.setAttribute('aria-expanded', 'false');
+        burger.setAttribute('aria-label', 'Open menu');
+        panel.hidden = true;
+        burger.focus();
+      }
+    });
+
+    // If the viewport grows past the breakpoint while open, reset state so the
+    // desktop nav is never left with a stray open panel.
+    matchMedia('(min-width: 901px)').addEventListener('change', (e) => {
+      if (e.matches) {
+        burger.setAttribute('aria-expanded', 'false');
+        panel.hidden = true;
+      }
+    });
+  }
+</script>

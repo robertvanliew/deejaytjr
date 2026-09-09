@@ -1,0 +1,122 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import CredentialsStrip from '../components/CredentialsStrip.astro';
+import PhotoMarquee from '../components/PhotoMarquee.astro';
+import ClientMarks from '../components/ClientMarks.astro';
+import SectionHead from '../components/SectionHead.astro';
+import BookingLanes from '../components/BookingLanes.astro';
+import Story from '../components/Story.astro';
+import Steps from '../components/Steps.astro';
+import VideoGrid from '../components/VideoGrid.astro';
+import Kpi from '../components/Kpi.astro';
+import PressCards from '../components/PressCards.astro';
+import Faq from '../components/Faq.astro';
+import AvailabilityForm from '../components/AvailabilityForm.astro';
+import { HOME_FAQ } from '../data/faqs';
+import { faqNode } from '../lib/schema';
+
+const audience = [
+  { figure: 'United States', label: 'Houston, Dallas, Austin, New York, Los Angeles and Chicago' },
+  { figure: 'Brazil', label: 'São Paulo and Rio de Janeiro' },
+  { figure: 'France', label: 'Paris and the south' },
+  { figure: 'United Kingdom', label: 'London and Manchester' },
+];
+---
+
+<Base
+  title="DEEJAY T-JR. | 3x DMC Canadian Champion DJ for Corporate, Private and International Events"
+  description="Book DEEJAY T-JR., three-time DMC Canadian DJ Champion and the only woman in DMC history to win three consecutive national titles. Available worldwide for corporate events, private events, clubs, festivals and brand partnerships."
+  path="/"
+  schema={[faqNode(HOME_FAQ)]}
+>
+  <Hero
+    seal={{
+      title: 'Three-time DMC Canadian Champion',
+      detail: '2022, 2023 and 2024. The only woman in DMC history to three-peat.',
+    }}
+    headline="Canada&rsquo;s most decorated DJ.<br>Available for <em>your</em>&nbsp;event."
+    lede="Three consecutive national titles, top nine at the World Finals, and the only woman to have competed at all four majors. She plays corporate rooms, private events, clubs and festivals across North America and internationally."
+    secondary={{ label: 'Watch her play', href: '/watch' }}
+    note="Based in Toronto. Travels worldwide."
+    photos={['hero-decks', 'dmc-2024-booth', 'stage-crowd', 'club-set']}
+  />
+
+  <CredentialsStrip />
+  <PhotoMarquee />
+  <ClientMarks />
+
+  <section class="section tan" id="book">
+    <div class="wrap">
+      <SectionHead
+        title="Any DJ can play the hits.<br>A champion makes it the night people talk about."
+        lede="Four ways she gets booked. Each one is a different room, a different brief and a different set."
+      />
+      <BookingLanes />
+    </div>
+  </section>
+
+  <section class="section panel" id="story">
+    <div class="wrap">
+      <Story />
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <div class="wrap">
+      <SectionHead
+        title="Booking takes three steps."
+        lede="No marketplace, no calendar app, no bidding. You talk to us and you get an answer."
+      />
+      <Steps />
+    </div>
+  </section>
+
+  <section class="section tight" id="watch">
+    <div class="wrap">
+      <SectionHead
+        title="See what a champion brings to a room."
+        lede="Event footage and championship routines. The battles are the credential; the events are the job."
+      />
+      <VideoGrid limit={3} exclude="interview" />
+      <p style="margin-top:36px">
+        <a class="tlink" href="/watch">All video: events, battles and interviews <span class="arw" aria-hidden="true">→</span></a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section panel" id="international">
+    <div class="wrap">
+      <SectionHead
+        title="Bookable <em>worldwide</em>."
+        lede="Her audience is mostly outside Canada. If you are promoting a date in the US, Brazil, France, the UK or South Africa, she already has a crowd there."
+      />
+      <Kpi items={audience} onPanel />
+      <p style="margin-top:36px">
+        <a class="tlink" href="/international">International bookings and travel <span class="arw" aria-hidden="true">→</span></a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section tight" id="press">
+    <div class="wrap">
+      <SectionHead
+        title="On the record."
+        lede="Coverage, results and everything an agency or a planner needs to write you up."
+      />
+      <PressCards limit={2} />
+    </div>
+  </section>
+
+  <section class="section" id="faq">
+    <div class="wrap">
+      <SectionHead
+        title="Questions planners ask first."
+        lede="If yours is not here, ask it in the form below and it will be answered by a person."
+      />
+      <Faq items={HOME_FAQ} />
+    </div>
+  </section>
+
+  <AvailabilityForm tan />
+</Base>

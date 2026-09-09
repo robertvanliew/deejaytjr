@@ -1,0 +1,68 @@
+---
+import { getCollection } from 'astro:content';
+
+export interface Props {
+  service: 'corporate' | 'private' | 'club' | 'brand';
+}
+const { service } = Astro.props;
+
+/**
+ * Only quotes with written permission on file are eligible to render
+ * (section 11, item 4). Everything else is treated as if it does not exist.
+ */
+const quotes = (await getCollection('testimonials')).filter(
+  (t) => t.data.permissionOnFile && t.data.services.includes(service)
+);
+---
+
+{
+  quotes.length > 0 ? (
+    <div class="hgrid cols-2 quotes" data-reveal-group>
+      {quotes.map((t) => (
+        <figure class="quote spot">
+          <blockquote>
+            <p>{t.data.quote}</p>
+          </blockquote>
+          <figcaption class="small muted">
+            <b>{t.data.name}</b>
+            {t.data.role}, {t.data.company}
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  ) : (
+    <div class="slot empty">
+      <span>
+        <b>Testimonials pending</b>
+        Section 11, item 4: three quotes with name, title, company and written permission to
+        publish. Add one JSON file per quote in src/content/testimonials. Nothing renders here
+        until permissionOnFile is true.
+      </span>
+    </div>
+  )
+}
+
+<style>
+  .quote {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    padding: clamp(28px, 3.2vw, 44px);
+  }
+  .quote blockquote p {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(20px, 1.9vw, 25px);
+    line-height: 1.32;
+    color: var(--bone);
+    max-width: 24em;
+  }
+  figcaption b {
+    display: block;
+    color: var(--body);
+    font-weight: 600;
+    font-style: normal;
+  }
+  .empty { min-height: 190px; }
+</style>

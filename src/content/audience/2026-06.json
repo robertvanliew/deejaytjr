@@ -1,0 +1,96 @@
+{
+  "date": "2026-06-01",
+  "source": "Client-supplied platform screenshots, June 2026 (brief section 11, item 9)",
+  "platforms": [
+    {
+      "key": "tiktok",
+      "followers": null
+    },
+    {
+      "key": "instagram",
+      "followers": null
+    },
+    {
+      "key": "youtube",
+      "followers": null,
+      "unit": "subscribers"
+    },
+    {
+      "key": "facebook",
+      "followers": null
+    },
+    {
+      "key": "x",
+      "followers": null
+    },
+    {
+      "key": "soundcloud",
+      "followers": null
+    },
+    {
+      "key": "bandcamp",
+      "followers": null
+    }
+  ],
+  "totalFollowersOverride": 24000,
+  "demographics": {
+    "malePct": 92,
+    "femalePct": 8,
+    "coreAge": "35 to 54"
+  },
+  "countries": [
+    {
+      "name": "United States",
+      "cities": [
+        "Houston",
+        "Dallas",
+        "Austin",
+        "San Antonio",
+        "New York",
+        "Los Angeles",
+        "Chicago"
+      ]
+    },
+    {
+      "name": "Canada",
+      "cities": [
+        "Toronto",
+        "Montreal",
+        "Vancouver",
+        "Calgary"
+      ]
+    },
+    {
+      "name": "Brazil",
+      "cities": [
+        "São Paulo",
+        "Rio de Janeiro"
+      ]
+    },
+    {
+      "name": "United Kingdom",
+      "cities": [
+        "London"
+      ]
+    },
+    {
+      "name": "France",
+      "cities": [
+        "Paris"
+      ]
+    },
+    {
+      "name": "South Africa",
+      "cities": [
+        "Johannesburg",
+        "Cape Town"
+      ]
+    }
+  ],
+  "highlights": [
+    {
+      "figure": "+827%",
+      "label": "TikTok audience growth over a 60-day window"
+    }
+  ]
+}

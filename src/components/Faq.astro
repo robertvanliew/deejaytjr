@@ -1,0 +1,105 @@
+---
+/**
+ * Native details/summary — keyboard accessible for free, works with JS off,
+ * and the content is in the DOM for crawlers. Pair with faqNode() from
+ * lib/schema.ts on every page that uses this (section 9).
+ */
+export interface Props {
+  items: { q: string; a: string }[];
+}
+const { items } = Astro.props;
+---
+
+<div class="faq" data-reveal-group>
+  {
+    items.map((item) => (
+      <details>
+        <summary>
+          <span>{item.q}</span>
+          <span class="sign" aria-hidden="true" />
+        </summary>
+        <div class="answer prose" set:html={item.a} />
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .faq { border-top: 1px solid var(--hairline); max-width: 62em; }
+
+  details {
+    border-bottom: 1px solid var(--hairline);
+    position: relative;
+  }
+  /* A sand rule that draws across the row while it is open. Tells you which
+     question you are reading without moving anything. */
+  details::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 1px;
+    background: var(--tan);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 420ms var(--ease-out);
+  }
+  details[open]::after { transform: scaleX(1); }
+
+  /* Native disclosure animation. Falls back to an instant open where
+     interpolate-size is unsupported, which is correct, not broken. */
+  @supports (interpolate-size: allow-keywords) {
+    details { interpolate-size: allow-keywords; }
+    details::details-content {
+      block-size: 0;
+      overflow: hidden;
+      transition: block-size 380ms var(--ease-out), content-visibility 380ms allow-discrete;
+    }
+    details[open]::details-content { block-size: auto; }
+  }
+
+  summary {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+    padding: 24px 0;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--serif);
+    font-size: clamp(19px, 1.9vw, 23px);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--bone);
+    transition: color var(--t-hover) var(--ease-out);
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary:hover { color: var(--tan); }
+  details[open] summary { color: var(--tan); }
+
+  /* Gold plus that becomes a minus. Two 1px rules, one of which rotates away. */
+  .sign {
+    position: relative;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 6px;
+  }
+  .sign::before,
+  .sign::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto 0;
+    height: 1.5px;
+    background: var(--tan);
+  }
+  .sign::after { transform: rotate(90deg); transition: transform var(--t-hover) var(--ease-out); }
+  details[open] .sign::after { transform: rotate(0deg); }
+
+  .answer {
+    padding-bottom: 26px;
+    max-width: 34em;
+  }
+  .answer :global(p + p) { margin-top: 1em; }
+</style>

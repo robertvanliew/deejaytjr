@@ -1,0 +1,80 @@
+---
+import Legal from '../layouts/Legal.astro';
+import { SITE } from '../data/site';
+
+/*
+  NOT LEGAL ADVICE. Standard website terms for a booking site with no
+  e-commerce and no accounts. Have a lawyer review before launch, particularly
+  the press-asset licence, which is the clause a magazine or promoter will
+  actually rely on.
+*/
+---
+
+<Legal
+  title="Terms of Use | DEEJAY T-JR."
+  description="Terms of use for deejaytjr.com, including how press kit assets may be used."
+  path="/terms"
+  heading="Terms of use"
+  updated="September 2026"
+>
+  <p>
+    These terms cover your use of deejaytjr.com. By using the site you accept them. They are short
+    because the site is simple: there are no accounts, nothing is sold here, and the only thing you
+    can submit is a booking enquiry.
+  </p>
+
+  <h2>Booking enquiries</h2>
+  <p>
+    Submitting the availability form is a request, not a booking. Nothing is confirmed until we have replied and a written performance agreement is signed. Fees quoted by email are
+    valid for the date and terms quoted and may change if the event details change.
+  </p>
+
+  <h2>Press kit assets</h2>
+  <p>
+    Photographs, logos, bios and video linked from the <a href="/press">press page</a> may be used
+    without asking us first, provided the use is editorial or promotional and connected to a
+    confirmed booking, an event she is performing at, or coverage of her work. Please:
+  </p>
+  <ul>
+    <li>Credit the photographer where a credit is listed with the image</li>
+    <li>Use the logo marks as supplied, without recolouring, rotating or distorting them</li>
+    <li>Format her name as DEEJAY T-JR., with the period</li>
+  </ul>
+  <p>
+    Any other use — including merchandise, AI training, resale, or implying an endorsement or
+    partnership that does not exist — requires written permission from us.
+  </p>
+
+  <h2>Everything else on this site</h2>
+  <p>
+    The design, text and code of this site are owned by DEEJAY T-JR. and her representatives. You
+    may link to any page freely. Please do not copy the site’s copy or design for another
+    performer’s site.
+  </p>
+
+  <h2>Accuracy</h2>
+  <p>
+    We keep the credentials, audience figures and availability information on this site current, but
+    it is provided as-is. Figures sourced from social platform analytics are accurate as of the date
+    noted beside them. If something here is out of date and it matters to your decision, ask us and
+    we will confirm it in writing.
+  </p>
+
+  <h2>External links</h2>
+  <p>
+    This site links to and embeds third-party platforms including social networks, YouTube, Apple
+    Music, Spotify and Bandcamp. We do not control those services and are not responsible for their
+    content or their handling of your data.
+  </p>
+
+  <h2>Governing law</h2>
+  <p>
+    These terms are governed by the laws of the Province of Ontario and the federal laws of Canada
+    that apply in it.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    Questions about these terms go to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+  </p>
+</Legal>

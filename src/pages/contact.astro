@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import AvailabilityForm from '../components/AvailabilityForm.astro';
+import CredentialsStrip from '../components/CredentialsStrip.astro';
+import { breadcrumbNode } from '../lib/schema';
+import { SITE } from '../data/site';
+---
+
+<Base
+  title="Check Availability | Book DEEJAY T-JR."
+  description="Check availability and request a quote for DEEJAY T-JR., three-time DMC Canadian Champion. Corporate, private, club, festival and brand bookings worldwide. Reply within one business day."
+  path="/contact"
+  schema={[
+    breadcrumbNode([
+      { name: 'Home', path: '/' },
+      { name: 'Check availability', path: '/contact' },
+    ]),
+  ]}
+>
+  <section class="section tight pagehead">
+    <div class="wrap">
+      <h1>Check her <em>availability</em>.</h1>
+      <p class="lede">
+        One form, one reply, from a person. Send the date and the room and we will come back within one business day with availability and a quote. No marketplace, no bidding, no
+        automated calendar.
+      </p>
+      <p class="small muted direct">
+        Would rather just email? <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      </p>
+    </div>
+  </section>
+
+  <CredentialsStrip />
+
+  <AvailabilityForm
+    heading="Tell us about the date."
+    lede="Only the first three fields are required. Everything else helps her quote accurately the first time."
+  />
+</Base>
+
+<style>
+  .pagehead h1 { margin-bottom: 22px; }
+  .direct { margin-top: 22px; }
+  .direct a { color: var(--tan); text-decoration: underline; text-underline-offset: 3px; }
+</style>

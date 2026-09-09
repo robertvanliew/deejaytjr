@@ -1,0 +1,167 @@
+---
+import Slot from './Slot.astro';
+import type { CollectionEntry } from 'astro:content';
+
+/**
+ * Click-to-load YouTube facade (section 8). Nothing from YouTube loads — no
+ * iframe, no cookie, no 900KB player — until the visitor actually asks for it.
+ * Never autoplays on arrival; `autoplay=1` is only added at click time, which
+ * is a user gesture.
+ *
+ * Where the player opens depends on how much room the tile has. A large lead
+ * tile plays in place; the narrow side tiles are only ~250px wide, where a
+ * 16:9 player is all chrome and no picture, so they carry `data-lightbox` and
+ * expand into the viewport instead (lib/videoLightbox.ts).
+ */
+export interface Props {
+  video: CollectionEntry<'videos'>;
+  large?: boolean;
+}
+const { video, large = false } = Astro.props;
+const v = video.data;
+---
+
+<div class={`tile${large ? ' large' : ''}`}>
+  {
+    v.youtubeId ? (
+      <button
+        class="facade"
+        type="button"
+        data-youtube={v.youtubeId}
+        data-start={v.start ?? undefined}
+        data-title={v.title}
+        data-meta={[v.venue, v.date].filter(Boolean).join(' · ') || undefined}
+        {...(large ? {} : { 'data-lightbox': '' })}
+        aria-label={large ? `Play video: ${v.title}` : `Play video: ${v.title} (opens expanded)`}
+      >
+        <img
+          src={`https://i.ytimg.com/vi/${v.youtubeId}/maxresdefault.jpg`}
+          data-fallback={`https://i.ytimg.com/vi/${v.youtubeId}/hqdefault.jpg`}
+          alt=""
+          width={large ? 1280 : 640}
+          height={large ? 720 : 360}
+          loading="lazy"
+          decoding="async"
+        />
+        <span class="play" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </span>
+      </button>
+    ) : (
+      <Slot
+        name={`Video: ${v.title}`}
+        ratio="16/9"
+        spec="YouTube link (unlisted is fine) or an MP4. Section 11, item 3."
+      />
+    )
+  }
+
+  <div class="meta">
+    <h3>{v.title}</h3>
+    <p class="small muted">{v.description}</p>
+    {v.venue && <span class="small muted venue">{v.venue}{v.date ? ` · ${v.date}` : ''}</span>}
+    {
+      v.credit && (
+        <span class="small muted credit">
+          Video by{' '}
+          {v.creditUrl ? (
+            <a href={v.creditUrl} rel="noopener" target="_blank">
+              {v.credit}
+            </a>
+          ) : (
+            v.credit
+          )}
+        </span>
+      )
+    }
+    {
+      /* A direct route to the video that does not depend on the embed working.
+         Corporate proxies, privacy extensions and referrer-stripping settings
+         all make YouTube's player refuse to load while the video itself is
+         perfectly public — and the people most likely to be behind one of those
+         are exactly the corporate buyers this page is written for. Losing the
+         proof because a network refused an iframe is not an acceptable failure. */
+      v.youtubeId && (
+        <a
+          class="small muted watchlink"
+          href={`https://www.youtube.com/watch?v=${v.youtubeId}${v.start ? `&t=${v.start}` : ''}`}
+          rel="noopener"
+          target="_blank"
+        >
+          Watch on YouTube <span class="arw" aria-hidden="true">&#8599;</span>
+        </a>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .tile { display: flex; flex-direction: column; gap: 16px; }
+
+  .watchlink {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+    color: var(--body);
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: 2px;
+    transition: color var(--t-hover) var(--ease-out), border-color var(--t-hover) var(--ease-out);
+  }
+  .watchlink:hover { color: var(--tan); border-bottom-color: var(--tan); }
+  .watchlink .arw { transition: transform var(--t-hover) var(--ease-out); }
+  .watchlink:hover .arw { transform: translate(2px, -2px); }
+
+  .facade {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    padding: 0;
+    border: 1px solid var(--hairline);
+    background: var(--panel);
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .facade img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(18%) contrast(1.04);
+    transition: filter var(--t-hover) var(--ease-out), transform var(--t-hover) var(--ease-out);
+  }
+  .facade:hover img { filter: grayscale(0%) contrast(1.04); }
+
+  .play {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    border: 1.5px solid var(--tan);
+    background: rgba(0, 0, 0, 0.55);
+    color: var(--tan);
+    display: grid;
+    place-items: center;
+    padding-left: 3px;
+    transition: background var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out);
+  }
+  .facade:hover .play { background: var(--tan); color: var(--ink); }
+
+  .tile :global(iframe) {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--hairline);
+    display: block;
+  }
+
+  .meta h3 { font-size: 21px; margin-bottom: 7px; }
+  .tile.large .meta h3 { font-size: var(--h3); }
+  .meta p { max-width: 34em; }
+  .venue { display: block; margin-top: 8px; }
+  .credit { display: block; margin-top: 4px; font-size: 12.5px; }
+  .credit a { color: var(--tan); text-decoration: underline; text-underline-offset: 2px; }
+</style>

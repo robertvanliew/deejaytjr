@@ -1,0 +1,437 @@
+---
+import { getImage } from 'astro:assets';
+import Slot from './Slot.astro';
+import Photo from './Photo.astro';
+import { PHOTOS, type PhotoKey } from '../data/photos';
+
+export interface Props {
+  /** Seal is the three-peat mark. Omit on pages where it would repeat. */
+  seal?: { title: string; detail: string };
+  headline: string;
+  lede: string;
+  primary?: { label: string; href: string };
+  secondary?: { label: string; href: string };
+  note?: string;
+  /** A real photograph. Falls back to a marked slot when absent. */
+  photo?: PhotoKey;
+  /**
+   * Two or more photographs turn the hero into a slow rotation. The first is
+   * the LCP image and loads eagerly; the rest load at low priority afterwards.
+   * Service pages deliberately pass a single, contextual photo instead — a
+   * corporate planner should not watch the hero cut to a battle shot.
+   */
+  photos?: PhotoKey[];
+  /** Seconds each frame holds. */
+  dwell?: number;
+  photoName?: string;
+  photoSpec?: string;
+  /** Shorter hero for inner pages. */
+  compact?: boolean;
+}
+
+const {
+  seal,
+  headline,
+  lede,
+  primary = { label: 'Check availability', href: '/contact' },
+  secondary,
+  note,
+  photo,
+  photos,
+  dwell = 6.5,
+  photoName = 'Hero photo',
+  photoSpec = 'Landscape, minimum 2400px wide, dark or clean background, subject weighted to the right third.',
+  compact = false,
+} = Astro.props;
+
+const frames = photos?.length ? photos : photo ? [photo] : [];
+
+const HERO_WIDTHS = [720, 1100, 1600, 2200];
+const HERO_SIZES = '(max-width: 820px) 100vw, 62vw';
+
+/**
+ * Frames after the first are built here rather than rendered as <img src>, and
+ * their URLs are parked in data- attributes until the page has loaded.
+ *
+ * Rendered normally they still download immediately — they sit inside the
+ * viewport, so `loading="lazy"` does not defer them — and they compete with the
+ * hero for bandwidth. That pushed LCP from roughly 420ms to 836ms. A rotation
+ * that only starts seconds later has no business slowing down first paint.
+ */
+const laterFrames = await Promise.all(
+  frames.slice(1).map(async (key) => {
+    const built = await getImage({
+      src: PHOTOS[key].src,
+      widths: HERO_WIDTHS,
+      sizes: HERO_SIZES,
+      format: 'webp',
+    });
+    return {
+      src: built.src,
+      srcset: built.srcSet.attribute,
+      width: PHOTOS[key].src.width,
+      height: PHOTOS[key].src.height,
+    };
+  })
+);
+---
+
+<section class={`hero${compact ? ' compact' : ''}`}>
+  <div
+    class="hero-photo"
+    data-dwell={frames.length > 1 ? dwell : undefined}
+    role={frames.length ? 'img' : undefined}
+    aria-label={frames.length ? 'DEEJAY T-JR. performing.' : undefined}
+  >
+    {
+      frames.length ? (
+        <>
+          <Photo
+            name={frames[0]!}
+            class="fill on"
+            priority
+            decorative
+            widths={HERO_WIDTHS}
+            sizes={HERO_SIZES}
+          />
+          {laterFrames.map((f) => (
+            <img
+              class="fill"
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+              width={f.width}
+              height={f.height}
+              sizes={HERO_SIZES}
+              data-src={f.src}
+              data-srcset={f.srcset}
+            />
+          ))}
+        </>
+      ) : (
+        <Slot name={photoName} spec={photoSpec} ratio="4/3" class="fill" />
+      )
+    }
+  </div>
+
+  <div class="wrap">
+    <div class="hero-copy" data-reveal-group>
+      {
+        seal && (
+          <div class="seal">
+            <span class="seal-mark" aria-hidden="true" />
+            <p class="seal-text">
+              <strong>{seal.title}</strong>
+              {seal.detail}
+            </p>
+          </div>
+        )
+      }
+
+      <h1 set:html={headline} />
+      <p class="lede">{lede}</p>
+
+      <div class="hero-actions">
+        <span class="magnet" data-magnetic="0.3">
+          <a class="btn" href={primary.href}>{primary.label}</a>
+        </span>
+        {
+          secondary && (
+            <span class="magnet" data-magnetic="0.2">
+              <a class="btn ghost" href={secondary.href}>
+                {secondary.label}
+              </a>
+            </span>
+          )
+        }
+        {note && <span class="note small muted">{note}</span>}
+      </div>
+    </div>
+  </div>
+
+  <span class="scrollcue small muted" aria-hidden="true">Scroll</span>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    /* One screen exactly, minus the nav above it. Without that subtraction the
+       primary call to action lands below the fold. */
+    min-height: calc(100svh - var(--nav-h));
+    display: flex;
+    align-items: center;
+  }
+  .hero.compact { min-height: calc(78svh - var(--nav-h)); }
+
+  /* A teal wash rising from the bottom left. Gives the ink base depth and ties
+     the hero to her palette without introducing a visible shape. */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(
+      120% 80% at 8% 92%,
+      color-mix(in srgb, var(--surface) 32%, transparent),
+      transparent 62%
+    );
+    pointer-events: none;
+  }
+
+
+  .hero-photo {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: min(62vw, 880px);
+    z-index: 1;
+    /* Wipes open from the right on load, so the image arrives as an image
+       rather than as a box that was always sitting there. */
+    animation: unveil 1100ms cubic-bezier(0.77, 0, 0.175, 1) both;
+  }
+  @keyframes unveil {
+    from { clip-path: inset(0 0 0 100%); }
+    to   { clip-path: inset(0 0 0 0); }
+  }
+  /* Frames stack in one box, so switching between them can never shift layout. */
+  .hero-photo :global(.fill) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 58% 38%;
+    aspect-ratio: auto !important;
+    border: 0;
+    /* Hidden frames are wiped away to the right; the visible one is open.
+       A wipe rather than a crossfade: two photographs dissolving through each
+       other reads as mud, where a moving edge reads as deliberate — and it
+       echoes the same clip-path the hero uses on first load. */
+    clip-path: inset(0 0 0 100%);
+    /* opacity, not just clip-path: Chrome excludes fully transparent elements
+       from the LCP candidate set. Without this the browser treats the last
+       stacked frame as the largest paint and LCP waits on every hero image
+       instead of the first — measured at 1256ms against 420ms. The opacity
+       transition is instant, so the visible effect is still a pure wipe. */
+    opacity: 0;
+    transition: clip-path 1400ms var(--ease-in-out), opacity 0s;
+    z-index: 0;
+    /* The placeholder sits on the ink base rather than the lighter panel, so
+       its left edge does not show as a hard vertical seam through the scrim.
+       A supplied photograph fills this box and the scrim does the blending. */
+    background:
+      repeating-linear-gradient(
+        135deg,
+        rgba(213, 201, 177, .02) 0 12px,
+        transparent 12px 24px
+      ),
+      var(--ink-2);
+  }
+  .hero-photo :global(.fill.on) { clip-path: inset(0 0 0 0); opacity: 1; z-index: 1; }
+  /* Two-axis scrim tinted with the ink base, so the photo dissolves into the
+     page instead of ending on a hard edge. */
+  .hero-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    /* Above every frame. The rotation gives frames a z-index so the incoming
+       one can wipe over the outgoing one, and without this the scrim ends up
+       underneath them — which put the headline straight onto a lit photograph. */
+    z-index: 5;
+    background:
+      linear-gradient(
+        90deg,
+        var(--ink) 0%,
+        color-mix(in srgb, var(--ink) 42%, transparent) 46%,
+        transparent 100%
+      ),
+      linear-gradient(0deg, var(--ink) 0%, transparent 48%);
+    pointer-events: none;
+  }
+
+  .hero > .wrap {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    /* Viewport-height aware: on a short laptop screen the padding gives way
+       before the call to action does. */
+    padding-top: clamp(28px, 4.5vh, 64px);
+    padding-bottom: clamp(28px, 4.5vh, 56px);
+  }
+  /* 820px is what turns the headline from four lines into three at 1440, which
+     is the single biggest thing keeping the CTA above the fold. The left 46% of
+     the photo sits under the scrim, so the copy can run this wide without
+     landing on her face. */
+  .hero-copy { max-width: 820px; }
+
+  .seal { display: flex; align-items: center; gap: 16px; margin-bottom: clamp(16px, 2.5vh, 28px); }
+  /* Her real circle seal, masked so it takes the sand token. */
+  .seal-mark {
+    width: 66px;
+    height: 66px;
+    flex-shrink: 0;
+    background: var(--tan);
+    -webkit-mask: url('/logo/seal-mask.png') no-repeat center / contain;
+    mask: url('/logo/seal-mask.png') no-repeat center / contain;
+  }
+  .seal-text {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--muted);
+    max-width: 268px;
+    text-wrap: pretty;
+    hyphens: none;
+  }
+  .seal-text strong { display: block; color: var(--bone); font-weight: 600; }
+
+  .hero h1 {
+    /* The headline sets its own sentence break with <br>; `balance` would
+       redistribute words across it and undo that decision. */
+    text-wrap: pretty;
+    margin-bottom: clamp(14px, 2vh, 22px);
+    /* Capped against viewport HEIGHT as well as width. A four-line headline at
+       the full 96px pushes the primary CTA off the bottom of a 768px laptop
+       screen, and the headline cannot wrap to fewer lines without running over
+       the subject of the photograph. So the type gives way instead. */
+    font-size: min(var(--h1), 10.5vh);
+  }
+  .hero .lede { margin-bottom: clamp(20px, 3vh, 32px); max-width: 30em; }
+
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .hero-actions .note { max-width: 18em; }
+
+  /* Quiet scroll cue: a hairline that travels, not a bouncing chevron. */
+  .scrollcue {
+    position: absolute;
+    right: var(--pad);
+    bottom: 34px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+  }
+  .scrollcue::after {
+    content: '';
+    width: 54px;
+    height: 1px;
+    background: color-mix(in srgb, var(--tan) 30%, transparent);
+    transform-origin: left;
+    animation: travel 2.6s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+  }
+  @keyframes travel {
+    0%       { transform: scaleX(0); opacity: 0; }
+    35%, 65% { transform: scaleX(1); opacity: 1; }
+    100%     { transform: scaleX(1); opacity: 0; transform-origin: right; }
+  }
+
+  @media (max-width: 820px) {
+    .hero, .hero.compact {
+      min-height: auto;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    /* min-height was winning over the vw height on a 390px screen and pushing
+       the CTA off the bottom. 58vw with a 260px floor keeps it in view. */
+    .hero-photo { position: relative; width: 100%; height: 58vw; min-height: 248px; }
+    .hero-photo::after {
+      background: linear-gradient(0deg, var(--ink) 0%, transparent 62%);
+    }
+    .hero > .wrap { padding-top: 0; margin-top: -80px; }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .hero-photo { animation: none; }
+    /* No rotation, and no wipe on the one frame that shows. */
+    .hero-photo :global(.fill) { transition: none; }
+    .scrollcue::after { animation: none; transform: scaleX(1); opacity: 1; }
+  }
+</style>
+
+<script>
+  /**
+   * Hero rotation.
+   *
+   * The incoming frame is lifted above the outgoing one and its clip-path is
+   * opened, so the new photograph wipes across the old rather than dissolving
+   * through it. Once the wipe finishes the outgoing frame is closed again
+   * underneath, where the reset is invisible.
+   *
+   * Deliberately does nothing at all when there is one frame, when the visitor
+   * prefers reduced motion, or while the tab is in the background — a timer
+   * firing against a hidden tab burns battery and guarantees the visitor
+   * returns mid-transition.
+   */
+  const stage = document.querySelector<HTMLElement>('.hero-photo[data-dwell]');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (stage && !reduced.matches) {
+    const frames = [...stage.querySelectorAll<HTMLImageElement>('.fill')];
+
+    if (frames.length > 1) {
+      /* Attach the deferred frames only once the page has finished loading, so
+         they never compete with the hero image for bandwidth. */
+      const hydrate = () => {
+        for (const f of frames) {
+          if (f.dataset.srcset && !f.srcset) {
+            f.srcset = f.dataset.srcset;
+            f.src = f.dataset.src ?? '';
+          }
+        }
+      };
+      /* `load` OR a short timeout, whichever comes first. Binding hydration to
+         `load` alone couples the hero rotation to every other resource on the
+         page — a slow third-party image (the YouTube thumbnail, say) would hold
+         the rotation frames hostage indefinitely. */
+      let hydrated = false;
+      const hydrateOnce = () => {
+        if (hydrated) return;
+        hydrated = true;
+        hydrate();
+      };
+      if (document.readyState === 'complete') hydrateOnce();
+      else {
+        window.addEventListener('load', hydrateOnce, { once: true });
+        window.setTimeout(hydrateOnce, 2500);
+      }
+
+      const dwell = (Number(stage.dataset.dwell) || 6.5) * 1000;
+      const WIPE = 1400;
+      let current = 0;
+      let timer = 0;
+
+      const advance = () => {
+        const next = (current + 1) % frames.length;
+        const outgoing = frames[current]!;
+        const incoming = frames[next]!;
+
+        incoming.style.zIndex = '2';
+        incoming.classList.add('on');
+
+        window.setTimeout(() => {
+          outgoing.classList.remove('on');
+          outgoing.style.zIndex = '0';
+          incoming.style.zIndex = '1';
+          current = next;
+        }, WIPE);
+      };
+
+      const start = () => {
+        stop();
+        timer = window.setInterval(advance, dwell + WIPE);
+      };
+      const stop = () => {
+        if (timer) window.clearInterval(timer);
+        timer = 0;
+      };
+
+      document.addEventListener('visibilitychange', () =>
+        document.hidden ? stop() : start()
+      );
+      reduced.addEventListener('change', (e) => (e.matches ? stop() : start()));
+
+      start();
+    }
+  }
+</script>

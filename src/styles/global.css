@@ -1,0 +1,632 @@
+@import './tokens.css';
+
+/* ===========================================================================
+   Self-hosted fonts.
+
+   `font-display: optional` rather than `swap`. Both faces are preloaded in the
+   document head, so they are almost always in the memory cache before first
+   paint and render normally. When they are not, the browser keeps the
+   metrics-matched fallback for that one load instead of swapping mid-render.
+
+   That matters because the hero copy is vertically centred: any change in the
+   headline's height moves the whole block by half the difference. With `swap`
+   this measured a consistent 0.0218 CLS on every load. With `optional` there is
+   no swap to shift anything, and the fallbacks below keep the layout identical
+   either way. Latin + Latin Extended only (pt-BR / fr coverage).
+   The Bodoni `opsz` files carry BOTH the optical-size and weight axes, which
+   is what lets `font-optical-sizing: auto` actually do something on display.
+   =========================================================================== */
+
+@font-face {
+  font-family: 'Bodoni Moda Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 400 900;
+  src: url('/fonts/bodoni-moda-latin-opsz-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Bodoni Moda Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 400 900;
+  src: url('/fonts/bodoni-moda-latin-ext-opsz-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Bodoni Moda Variable';
+  font-style: italic;
+  font-display: optional;
+  font-weight: 400 900;
+  src: url('/fonts/bodoni-moda-latin-opsz-italic.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Bodoni Moda Variable';
+  font-style: italic;
+  font-display: optional;
+  font-weight: 400 900;
+  src: url('/fonts/bodoni-moda-latin-ext-opsz-italic.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Geist Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 100 900;
+  src: url('/fonts/geist-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Geist Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 100 900;
+  src: url('/fonts/geist-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* ---------------------------------------------------------------------------
+   Metrics-matched fallbacks.
+
+   Geist renders 4.5% wider than Arial and Bodoni Moda 5.9% narrower than
+   Georgia. Without correcting for that, the moment the real fonts arrive every
+   line re-measures and the layout moves — it showed up as an intermittent 0.026
+   CLS in the nav, where the links row and the CTA jumped sideways.
+
+   `size-adjust` scales the fallback so it occupies the same width as the real
+   face, which means the swap changes the shapes and nothing else. Ratios were
+   measured in-browser, not estimated.
+
+   Deliberately no ascent/descent overrides: every line-height in this stylesheet
+   is a unitless number, so line boxes are driven by font-size rather than by
+   font metrics. Overriding them only introduces a vertical mismatch — guessed
+   values here made CLS worse, not better.
+   --------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: 'Geist Fallback';
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans');
+  size-adjust: 104.53%;
+}
+@font-face {
+  font-family: 'Bodoni Fallback';
+  src: local('Georgia'), local('Times New Roman'), local('Liberation Serif');
+  size-adjust: 94.09%;
+}
+
+/* ===========================================================================
+   Reset
+   =========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-h) + 24px);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.6;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+img, svg, video { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+::selection { background: var(--tan); color: var(--ink); }
+
+:is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--tan);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+/* Anything the visitor can act on says so. */
+a, button, summary, [role='tab'], label[for] { cursor: pointer; }
+
+/* ===========================================================================
+   Typography
+   =========================================================================== */
+
+h1, h2, h3, h4 {
+  font-family: var(--serif);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -.01em;
+  font-optical-sizing: auto;
+  text-wrap: balance;
+  color: var(--bone);
+}
+h1 { font-size: var(--h1); font-weight: 700; letter-spacing: -.025em; }
+h2 { font-size: var(--h2); margin-bottom: .35em; }
+h3 { font-size: var(--h3); }
+h4 { font-size: 20px; }
+
+h1 em, h2 em, h3 em { font-style: italic; font-weight: 600; color: var(--tan); }
+
+p { max-width: 34em; }
+p + p { margin-top: 1.1em; }
+
+.lede {
+  font-size: var(--lede);
+  line-height: 1.55;
+  color: var(--body);
+  max-width: 30em;
+  text-wrap: pretty;
+}
+
+.prose { color: var(--body); }
+.prose a {
+  color: var(--tan);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--tan) 40%, transparent);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--t-hover) var(--ease-out);
+}
+.prose a:hover { text-decoration-color: var(--tan); }
+
+.muted { color: var(--muted); }
+.small { font-size: 13.5px; line-height: 1.45; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.skip {
+  position: absolute; left: var(--pad); top: -100px; z-index: 100;
+  background: var(--tan); color: var(--ink); font-weight: 600;
+  padding: 12px 20px; transition: top var(--t-ui) var(--ease-out);
+}
+.skip:focus { top: 12px; }
+
+/* ===========================================================================
+   Layout primitives
+   =========================================================================== */
+
+.wrap {
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+
+.section { padding-block: var(--section-y); position: relative; }
+.section.tight { padding-block: var(--section-y-tight); }
+.section.panel { background: var(--panel); }
+.section.ruled { border-top: 1px solid var(--hairline); }
+
+/* ---------------------------------------------------------------------------
+   Tan band.
+   A full-bleed section in the brand tan with ink type. This is where the
+   palette actually announces itself, so it is used sparingly — two bands on
+   the homepage, one per inner page at most. Anything more and it stops being
+   an accent.
+
+   Rather than restyling every child, the band REDEFINES the surface tokens
+   inside its own scope. Components keep using --bone, --body, --hairline and
+   so on, and they resolve to the on-tan values automatically. A component
+   dropped into a band is correct without knowing the band exists.
+   --------------------------------------------------------------------------- */
+
+.section.tan {
+  background: var(--tan-band);
+  color: var(--on-tan);
+
+  --bone: var(--on-tan);
+  --body: var(--on-tan-strong);
+  --muted: var(--on-tan-soft);
+  --ink: var(--tan-band);
+  --ink-2: var(--tan-band);
+  --panel: var(--tan-band);
+  --hairline: var(--hairline-on-tan);
+  --hairline-soft: var(--hairline-on-tan);
+  --panel-hover: var(--tan-hover);
+  --spot: var(--spot-on-tan);
+  --tan: var(--on-tan);       /* accents invert: ink is the accent on tan */
+  --tan-lift: var(--on-tan-strong);
+}
+
+/* The button inverts with the band: ink fill, tan label. 15.73:1. */
+.section.tan .btn {
+  background: var(--on-tan);
+  border-color: var(--on-tan);
+  color: #f2ede2;
+}
+.section.tan .btn:hover {
+  background: var(--on-tan-strong);
+  border-color: var(--on-tan-strong);
+}
+.section.tan .btn.ghost {
+  background: transparent;
+  color: var(--on-tan);
+  border-color: rgba(23, 20, 15, .3);
+}
+.section.tan .btn.ghost:hover {
+  border-color: var(--on-tan);
+  color: var(--on-tan);
+  background: transparent;
+}
+.section.tan :is(a, button, input, select, textarea, summary):focus-visible {
+  outline-color: var(--on-tan);
+}
+.section.tan ::selection { background: var(--on-tan); color: var(--tan-band); }
+
+.head {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 48px;
+  align-items: end;
+  margin-bottom: clamp(40px, 5vw, 64px);
+}
+.head > p { max-width: 30em; }
+@media (max-width: 820px) {
+  .head { grid-template-columns: 1fr; gap: 18px; }
+}
+
+/* ---------------------------------------------------------------------------
+   Hairline grid. Cards are grid cells separated by 1px gaps that let the
+   container background show through. One mechanism for every card surface,
+   so borders never double up or go ragged at a breakpoint.
+   --------------------------------------------------------------------------- */
+
+.hgrid {
+  display: grid;
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+}
+.hgrid > * { background: var(--ink); }
+.hgrid.on-panel { background: var(--hairline-soft); border-color: var(--hairline-soft); }
+.hgrid.on-panel > * { background: var(--panel); }
+.hgrid.bare { border: 0; }
+
+.hgrid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.hgrid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.hgrid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 820px) {
+  .hgrid.cols-3, .hgrid.cols-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .hgrid.cols-2, .hgrid.cols-3, .hgrid.cols-4 { grid-template-columns: 1fr; }
+}
+
+/* ---------------------------------------------------------------------------
+   Cursor spotlight.
+   A card lit by a soft radial gradient that tracks the pointer. The JS only
+   writes two custom properties; all rendering is CSS. Opacity is the only
+   animated property, so it composites on the GPU.
+   --------------------------------------------------------------------------- */
+
+.spot { position: relative; isolation: isolate; }
+.spot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity var(--t-hover) var(--ease-out);
+  background: radial-gradient(
+    380px circle at var(--mx, 50%) var(--my, 50%),
+    var(--spot),
+    transparent 70%
+  );
+}
+@media (hover: hover) and (pointer: fine) {
+  .spot:hover::before { opacity: 1; }
+}
+
+/* ===========================================================================
+   Buttons. Sand is the accent; teal never carries small text.
+   =========================================================================== */
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--tan);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1;
+  letter-spacing: -.005em;
+  padding: 17px 28px;
+  border: 1px solid var(--tan);
+  cursor: pointer;
+  transition:
+    background var(--t-hover) var(--ease-out),
+    border-color var(--t-hover) var(--ease-out),
+    color var(--t-hover) var(--ease-out),
+    transform var(--t-press) var(--ease-out);
+}
+.btn:hover { background: var(--tan-lift); border-color: var(--tan-lift); }
+/* Instant physical feedback. The interface heard you. */
+.btn:active { transform: scale(.975); }
+.btn[disabled] { opacity: .55; cursor: not-allowed; transform: none; }
+
+.btn.ghost { background: transparent; color: var(--bone); border-color: var(--surface); }
+.btn.ghost:hover { background: transparent; border-color: var(--tan); color: var(--tan); }
+
+.btn.small { padding: 12px 20px; font-size: 14px; }
+
+/* The magnetic wrapper is a separate element so the pull transform and the
+   press transform never fight over the same property. */
+.magnet { display: inline-block; will-change: transform; }
+
+.tlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--tan);
+  font-size: 14.5px;
+  font-weight: 500;
+  padding-bottom: 3px;
+  border-bottom: 1px solid color-mix(in srgb, var(--tan) 35%, transparent);
+  transition: border-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out);
+  width: fit-content;
+}
+.tlink:hover { border-color: var(--tan); color: var(--tan-lift); }
+.tlink .arw { transition: transform var(--t-hover) var(--ease-out); }
+.tlink:hover .arw { transform: translateX(4px); }
+
+/* ===========================================================================
+   Scroll reveal.
+   Elements start slightly down and transparent, and are released by an
+   IntersectionObserver adding [data-shown]. `.reveal` is only applied by that
+   script, so with JS disabled nothing is ever hidden.
+   --------------------------------------------------------------------------- */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--t-enter) var(--ease-out),
+    transform var(--t-enter) var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+[data-reveal][data-shown] { opacity: 1; transform: none; }
+
+/* Cells of a hairline grid are the exception: the grid paints its separator
+   colour behind every cell, so fading the cell itself exposes that colour as a
+   grey slab until the reveal fires. Keep the cell opaque and animate what is
+   inside it. --reveal-delay inherits, so the stagger is unchanged. */
+.hgrid > [data-reveal],
+.cities > [data-reveal],
+.countries > [data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+:is(.hgrid, .cities, .countries) > [data-reveal] > * {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity var(--t-enter) var(--ease-out),
+    transform var(--t-enter) var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+:is(.hgrid, .cities, .countries) > [data-reveal][data-shown] > * {
+  opacity: 1;
+  transform: none;
+}
+
+/* ===========================================================================
+   Placeholder slots — assets section 11 says the client must still supply.
+   Deliberately visible: these must not survive to launch.
+   =========================================================================== */
+
+.slot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(213, 201, 177, .022) 0 12px,
+      transparent 12px 24px
+    ),
+    var(--panel);
+  border: 1px solid var(--hairline);
+  color: var(--muted);
+  text-align: center;
+  padding: 24px;
+  overflow: hidden;
+}
+.slot > span {
+  font-size: 12.5px;
+  line-height: 1.5;
+  max-width: 24em;
+}
+.slot > span b {
+  display: block;
+  color: var(--tan);
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* ===========================================================================
+   Reduced motion. Fewer and gentler, not zero: opacity still aids
+   comprehension, but nothing moves or is ever left invisible.
+   =========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-reveal], [data-reveal] > * { opacity: 1 !important; transform: none !important; }
+  .magnet { transform: none !important; }
+  .btn:active { transform: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Video lightbox
+   Markup is created by lib/videoLightbox.ts and appended to <body>, so these
+   live here rather than in a component's scoped block.
+   --------------------------------------------------------------------------- */
+
+.vbox {
+  /* Aspect ratio of whatever is on the stage, as a bare number. Set per open;
+     16:9 is only the fallback. */
+  --arn: 1.7778;
+  /* Vertical room reserved for the caption beneath the stage. */
+  --cap: 200px;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: clamp(16px, 4vw, 48px);
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  color: var(--bone);
+}
+.vbox::backdrop {
+  background: color-mix(in srgb, var(--ink) 88%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+/* Fade the backdrop in with the panel rather than having it snap to opaque. */
+@media (prefers-reduced-motion: no-preference) {
+  .vbox[open]::backdrop { animation: vbox-veil 320ms var(--ease-out); }
+}
+@keyframes vbox-veil { from { opacity: 0; } }
+
+/* Locks the page behind the dialog. showModal() makes the background inert,
+   but does not reliably stop it scrolling. */
+.vbox-open, .vbox-open body { overflow: hidden; }
+
+/* Width is capped by the viewport HEIGHT as well as its width, so the stage
+   plus the caption beneath it always fits without the stage having to fight a
+   max-height (which would break the aspect ratio and letterbox the content).
+   Driving the cap from --arn is what lets a portrait photograph open tall
+   instead of being crushed into a landscape box. */
+.vbox-panel {
+  width: min(1180px, 100%, calc((100vh - var(--cap)) * var(--arn)));
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.vbox-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--arn);
+  background: #000;
+  border: 1px solid var(--hairline);
+  overflow: hidden;
+  will-change: transform;
+}
+.vbox-stage iframe,
+.vbox-full,
+.vbox-thumb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+.vbox-thumb {
+  object-fit: cover;
+  pointer-events: none;
+  transition: opacity 420ms var(--ease-out);
+}
+/* contain, not cover: at full size the whole frame matters, and a photograph
+   whose ratio differs slightly from the stage must not be cropped. */
+.vbox-full { object-fit: contain; }
+.vbox-link[hidden], .vbox-cap[hidden] { display: none; }
+
+.vbox-cap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px 32px;
+}
+.vbox-title {
+  font-family: var(--serif);
+  font-size: clamp(20px, 2.2vw, 27px);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--bone);
+}
+.vbox-meta { margin-top: 6px; }
+.vbox-link {
+  color: var(--tan);
+  white-space: nowrap;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--t-hover) var(--ease-out);
+}
+.vbox-link:hover { border-bottom-color: var(--tan); }
+
+.vbox-close {
+  position: fixed;
+  top: clamp(10px, 2vw, 22px);
+  right: clamp(10px, 2vw, 22px);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--hairline);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  color: var(--body);
+  cursor: pointer;
+  transition: color var(--t-hover) var(--ease-out),
+              border-color var(--t-hover) var(--ease-out),
+              transform var(--t-press) var(--ease-out);
+}
+.vbox-close:hover { color: var(--bone); border-color: var(--tan); }
+.vbox-close:active { transform: scale(0.94); }
+
+@media (max-width: 640px) {
+  .vbox-cap { flex-direction: column; align-items: flex-start; }
+  .vbox-panel { width: min(100%, calc((100vh - var(--cap) - 30px) * var(--arn))); }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Image download friction
+   Requested by the client. Worth being clear about what this is: a speed bump,
+   not protection. Anyone can still reach the file through devtools, the network
+   panel, a screenshot, or by disabling JavaScript — a browser cannot be made to
+   display an image it will not also hand over. It stops the casual right-click
+   save, and nothing beyond that. Real control comes from what is published:
+   web-sized renditions here, print originals held by her team.
+   --------------------------------------------------------------------------- */
+img {
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none; /* iOS long-press "Save Image" sheet */
+  user-select: none;
+}

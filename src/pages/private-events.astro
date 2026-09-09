@@ -1,0 +1,47 @@
+---
+import Service from '../layouts/Service.astro';
+import { PRIVATE_FAQ } from '../data/faqs';
+---
+
+<Service
+  title="Private Event and Wedding DJ | DEEJAY T-JR., 3x DMC Canadian Champion"
+  description="Book a three-time DMC Canadian Champion for your wedding, milestone birthday or private celebration. Tailored music, complete discretion, and entertainment your guests could not have booked themselves."
+  path="/private-events"
+  type="private"
+  serviceName="Private event DJ"
+  serviceType="Private event entertainment"
+  areaServed={['Toronto', 'Ontario', 'Canada', 'United States']}
+  headline="Something your guests could not have <em>booked</em> themselves."
+  lede="Weddings, milestone birthdays and anniversaries. Your music, played properly, by the only woman to win three consecutive DMC Canadian championships — and nothing leaves the room unless you want it to."
+  heroPhoto="performance-wide"
+  proof={[
+    { stat: 'Three-time champion', detail: 'DMC Canada, 2022, 2023 and 2024' },
+    { stat: 'Discretion by default', detail: 'Nothing filmed or posted without your written say-so' },
+    { stat: '40 to 800 guests', detail: 'From a private room to a full ballroom' },
+  ]}
+  formatsTitle="How a private booking is built."
+  formatsLede="Everything below is agreed with you in advance. On the night you should not have to think about the music once."
+  formats={[
+    {
+      title: 'Your music, planned in advance',
+      body: 'A conversation about what you love, what you cannot stand, and the handful of songs that actually matter — the first dance, the one for your father, the one that ends the night. Must-play and do-not-play lists both welcome.',
+    },
+    {
+      title: 'Ceremony through reception',
+      body: 'Ceremony, cocktail hour and reception as one booking with one point of contact. Volume, timing and transitions handled so your planner has one fewer thing to chase.',
+    },
+    {
+      title: 'A championship moment',
+      body: 'Optional. A short scratch showcase placed where it lands best — usually after dinner, before the floor opens. Guests do not expect it, which is exactly why they remember it.',
+    },
+  ]}
+  eventsTitle="Selected private work."
+  eventsLede="Private clients are not named. Where a host has agreed to be credited, they appear here."
+  faqTitle="What hosts ask."
+  faq={PRIVATE_FAQ}
+  related={[
+    { label: 'Corporate events', href: '/corporate-events', note: 'Conferences, galas, launches and awards nights.' },
+    { label: 'Watch', href: '/watch', note: 'Event footage and championship routines, kept separate.' },
+    { label: 'The story', href: '/about', note: 'Three national titles and how they happened.' },
+  ]}
+/>

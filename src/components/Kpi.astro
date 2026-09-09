@@ -1,0 +1,40 @@
+---
+/**
+ * Audience and reach numbers. Used by /international, /clubs-and-festivals and
+ * the brand media kit.
+ *
+ * Every figure here traces to the client-supplied baseline (section 11, item 9,
+ * June 2026 screenshots). Refresh before launch and note the date on the page.
+ */
+export interface Props {
+  items: { figure: string; label: string }[];
+  cols?: 2 | 3 | 4;
+  onPanel?: boolean;
+}
+const { items, cols = 4, onPanel = false } = Astro.props;
+---
+
+<div class={`hgrid cols-${cols} kpis${onPanel ? ' on-panel' : ''}`} data-reveal-group>
+  {
+    items.map((k) => (
+      <div class="kpi spot">
+        <b data-count={/\d/.test(k.figure) ? "" : undefined}>{k.figure}</b>
+        <span class="small muted">{k.label}</span>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .kpi { padding: clamp(22px, 2.4vw, 30px); }
+  .kpi b {
+    display: block;
+    font-family: var(--serif);
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 600;
+    line-height: 1.05;
+    color: var(--tan);
+    margin-bottom: 8px;
+  }
+  .kpi span { display: block; max-width: 20em; }
+</style>

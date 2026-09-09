@@ -1,0 +1,131 @@
+---
+import { getCollection } from 'astro:content';
+import VideoTile from './VideoTile.astro';
+
+export interface Props {
+  /** Filter to one tab’s worth of videos. Omit for a mixed homepage grid. */
+  category?: 'event' | 'battle' | 'interview';
+  /** Leave a category out. The homepage uses this to stay on performance
+   *  footage: a documentary thumbnail showing someone else is the wrong thing
+   *  to put in the largest tile on a booking site. */
+  exclude?: 'event' | 'battle' | 'interview';
+  /** Filter to clips tagged for a service page. */
+  service?: 'corporate' | 'private' | 'club' | 'brand';
+  limit?: number;
+  /** 2fr/1fr/1fr layout with one large lead tile. */
+  featureFirst?: boolean;
+}
+const { category, service, exclude, limit, featureFirst = true } = Astro.props;
+
+let videos = await getCollection('videos');
+if (category) videos = videos.filter((v) => v.data.category === category);
+if (service) videos = videos.filter((v) => v.data.services.includes(service));
+if (exclude) videos = videos.filter((v) => v.data.category !== exclude);
+/**
+ * Clips we actually have footage for lead; the rest are marked slots waiting on
+ * the client. So as links arrive, real video promotes itself to the large tile
+ * without anyone re-ordering anything by hand.
+ */
+videos.sort((a, b) => {
+  const real = Number(!!b.data.youtubeId) - Number(!!a.data.youtubeId);
+  return real !== 0 ? real : a.data.order - b.data.order;
+});
+if (limit) videos = videos.slice(0, limit);
+
+const [lead, ...rest] = videos;
+---
+
+{
+  videos.length === 0 ? (
+    <p class="muted">No videos in this category yet.</p>
+  ) : featureFirst && lead ? (
+    <div class="vgrid">
+      <div class="lead">
+        <VideoTile video={lead} large />
+      </div>
+      {rest.map((v) => (
+        <VideoTile video={v} />
+      ))}
+    </div>
+  ) : (
+    <div class={`vgrid flat${videos.length === 1 ? ' one' : ''}`}>
+      {videos.map((v) => (
+        <VideoTile video={v} />
+      ))}
+    </div>
+  )
+}
+
+<script>
+  import { videoLightbox } from '../lib/videoLightbox';
+
+  /**
+   * Swap a facade for the real player on click. Only runs if a facade exists,
+   * so pages with no linked videos ship no behaviour at all.
+   */
+  /* YouTube only generates maxresdefault for HD sources. Swap in the always
+     present hqdefault rather than leaving a broken image on the page. */
+  document.querySelectorAll<HTMLImageElement>('.facade img[data-fallback]').forEach((img) => {
+    img.addEventListener(
+      'error',
+      () => {
+        if (img.dataset.fallback && img.src !== img.dataset.fallback) {
+          img.src = img.dataset.fallback;
+        }
+      },
+      { once: true }
+    );
+  });
+
+  /* Tiles too small to play in place expand into the viewport instead. */
+  videoLightbox();
+
+  document
+    .querySelectorAll<HTMLButtonElement>('button.facade:not([data-lightbox])')
+    .forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.youtube;
+      const title = btn.dataset.title ?? 'Video';
+      if (!id) return;
+
+      const frame = document.createElement('iframe');
+      /* start= drops the viewer at her segment rather than at 0:00 of a
+         six-hour livestream. */
+      const start = btn.dataset.start;
+      frame.src =
+        `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0` +
+        (start ? `&start=${encodeURIComponent(start)}` : '');
+      frame.title = title;
+      frame.allow =
+        'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      frame.allowFullscreen = true;
+      frame.loading = 'lazy';
+
+      btn.replaceWith(frame);
+      frame.focus();
+    });
+  });
+</script>
+
+<style>
+  .vgrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: clamp(24px, 3vw, 40px);
+  }
+  .lead { grid-column: 1 / -1; }
+  .vgrid.flat { grid-template-columns: repeat(3, 1fr); }
+  /* A single clip should read as a feature, not a third of an empty row. */
+  .vgrid.one { grid-template-columns: minmax(0, 860px); }
+
+  @media (min-width: 1000px) {
+    .vgrid .lead { grid-column: span 2; grid-row: span 2; }
+  }
+  @media (max-width: 999px) {
+    .vgrid, .vgrid.flat { grid-template-columns: repeat(2, 1fr); }
+    .lead { grid-column: 1 / -1; }
+  }
+  @media (max-width: 640px) {
+    .vgrid, .vgrid.flat { grid-template-columns: 1fr; }
+  }
+</style>

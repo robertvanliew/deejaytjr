@@ -1,0 +1,15 @@
+---
+export interface Props {
+  /** Allows a single <em> for the accent word. */
+  title: string;
+  lede?: string;
+  id?: string;
+  as?: 'h2' | 'h3';
+}
+const { title, lede, id, as: Tag = 'h2' } = Astro.props;
+---
+
+<div class="head">
+  <Tag id={id} set:html={title} />
+  {lede && <p class="lede">{lede}</p>}
+</div>

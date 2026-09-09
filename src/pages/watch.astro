@@ -1,0 +1,182 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import VideoGrid from '../components/VideoGrid.astro';
+import AvailabilityForm from '../components/AvailabilityForm.astro';
+import { getCollection } from 'astro:content';
+import { breadcrumbNode, personRef } from '../lib/schema';
+
+const videos = await getCollection('videos');
+
+/**
+ * VideoObject nodes, but only for videos that actually exist. A schema node
+ * pointing at a video we have not been given yet is worse than no node.
+ */
+const videoNodes = videos
+  .filter((v) => v.data.youtubeId)
+  .map((v) => ({
+    '@type': 'VideoObject',
+    name: v.data.title,
+    description: v.data.description,
+    thumbnailUrl: `https://i.ytimg.com/vi/${v.data.youtubeId}/maxresdefault.jpg`,
+    embedUrl:
+      `https://www.youtube-nocookie.com/embed/${v.data.youtubeId}` +
+      (v.data.start ? `?start=${v.data.start}` : ''),
+    ...(v.data.duration ? { duration: v.data.duration } : {}),
+    ...(v.data.date ? { uploadDate: `${v.data.date}-01-01` } : {}),
+    author: personRef(),
+  }));
+---
+
+<Base
+  title="Watch DEEJAY T-JR. | Event Sets and Championship Routines"
+  description="Live event footage and championship battle routines from DEEJAY T-JR., three-time DMC Canadian Champion. Corporate and private event sets kept separate from competition routines."
+  path="/watch"
+  schema={[
+    ...videoNodes,
+    breadcrumbNode([
+      { name: 'Home', path: '/' },
+      { name: 'Watch', path: '/watch' },
+    ]),
+  ]}
+>
+  <section class="section tight pagehead">
+    <div class="wrap">
+      <h1>Watch her <em>play</em>.</h1>
+      <p class="lede">
+        Two different things, kept apart on purpose. The events are what you are booking. The
+        battles are why you can trust the booking.
+      </p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="wrap">
+      <div class="tabs" role="tablist" aria-label="Video categories">
+        <button id="tab-events" class="tab" role="tab" aria-selected="true" aria-controls="panel-events">
+          Events
+        </button>
+        <button id="tab-battles" class="tab" role="tab" aria-selected="false" aria-controls="panel-battles" tabindex="-1">
+          Battles
+        </button>
+        <button id="tab-interviews" class="tab" role="tab" aria-selected="false" aria-controls="panel-interviews" tabindex="-1">
+          Interviews
+        </button>
+      </div>
+
+      <div id="panel-events" role="tabpanel" aria-labelledby="tab-events" tabindex="0">
+        <SectionHead
+          title="Events."
+          lede="Corporate ballrooms, private celebrations and club floors. What the room actually looks and sounds like when she is working."
+          as="h2"
+        />
+        <VideoGrid category="event" />
+      </div>
+
+      <div id="panel-battles" role="tabpanel" aria-labelledby="tab-battles" tabindex="0" hidden>
+        <SectionHead
+          title="Battles."
+          lede="DMC, IDA and the Goldie Awards. Six judged minutes at a time, which is where the three national titles came from."
+          as="h2"
+        />
+        <VideoGrid category="battle" />
+      </div>
+
+      <div id="panel-interviews" role="tabpanel" aria-labelledby="tab-interviews" tabindex="0" hidden>
+        <SectionHead
+          title="Interviews."
+          lede="Documentary and long-form appearances. Each link opens at her segment rather than at the start of the film."
+          as="h2"
+        />
+        <VideoGrid category="interview" featureFirst={false} />
+      </div>
+    </div>
+  </section>
+
+  <AvailabilityForm
+    heading="Seen enough?"
+    lede="Send the date and the room. We reply within one business day."
+  />
+</Base>
+
+<style>
+  .pagehead h1 { margin-bottom: 20px; }
+
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--hairline);
+    margin-bottom: clamp(36px, 5vw, 56px);
+  }
+  .tab {
+    background: none;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 14px 22px 14px 0;
+    margin-right: 14px;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color var(--t-hover) var(--ease-out), border-color var(--t-hover) var(--ease-out);
+  }
+  .tab:hover { color: var(--bone); }
+  .tab[aria-selected='true'] { color: var(--bone); border-bottom-color: var(--tan); }
+  /* Transitioning border-color alone makes the indicator blink between tabs.
+     Scaling a dedicated rule from the correct side makes it travel. */
+  .tab { border-bottom-color: transparent !important; }
+  .tab::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: calc(100% - 22px);
+    height: 2px;
+    background: var(--tan);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--t-ui) var(--ease-out);
+  }
+  .tab { position: relative; }
+  .tab[aria-selected='true']::after { transform: scaleX(1); }
+</style>
+
+<script>
+  /**
+   * Tabs. Falls back gracefully: with JS off both panels are in the DOM, the
+   * second is `hidden`, and every video is still reachable from the sitemap.
+   */
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('.tab')];
+
+  const select = (tab: HTMLButtonElement) => {
+    tabs.forEach((t) => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      const panel = document.getElementById(t.getAttribute('aria-controls')!);
+      if (panel) panel.hidden = !on;
+    });
+  };
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(tab));
+
+    // Arrow-key navigation, which is what a tablist is expected to do.
+    tab.addEventListener('keydown', (e) => {
+      const dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!dir) return;
+      e.preventDefault();
+      const next = tabs[(i + dir + tabs.length) % tabs.length]!;
+      select(next);
+      next.focus();
+    });
+  });
+
+  // Deep links: /watch#battles and /watch#interviews open those tabs.
+  const deep = location.hash.replace('#', '');
+  if (deep) {
+    const target = document.getElementById(`tab-${deep}`) as HTMLButtonElement | null;
+    if (target) select(target);
+  }
+</script>

@@ -1,0 +1,181 @@
+---
+import Brand from './Brand.astro';
+import { SITE, SOCIALS, MUSIC_PLATFORMS, SUPPORT_PLATFORMS } from '../data/site';
+
+const year = new Date().getFullYear();
+
+const columns = [
+  {
+    title: 'Book',
+    links: [
+      { label: 'Corporate events', href: '/corporate-events' },
+      { label: 'Private events', href: '/private-events' },
+      { label: 'Clubs and festivals', href: '/clubs-and-festivals' },
+      { label: 'Brand partnerships', href: '/brand-partnerships' },
+      { label: 'Check availability', href: '/contact' },
+    ],
+  },
+  {
+    title: 'About',
+    links: [
+      { label: 'The story', href: '/about' },
+      { label: 'Press and EPK', href: '/press' },
+      { label: 'Media kit', href: '/media-kit' },
+      { label: 'Watch', href: '/watch' },
+      { label: 'International', href: '/international' },
+    ],
+  },
+  {
+    /* Music, merch and support live down here on purpose. Section 3. */
+    title: 'Listen and support',
+    links: [
+      { label: 'Listen', href: '/music' },
+      /* Bandcamp appears twice in this column — catalogue and merch. Bare
+         "Bandcamp" next to "Merch on Bandcamp" reads as though the first one
+         is the ambiguous leftover, so it is labelled by what it does. */
+      ...MUSIC_PLATFORMS.map((m) => ({
+        label: m.label === 'Bandcamp' ? 'Listen on Bandcamp' : m.label,
+        href: m.url,
+        external: true,
+      })),
+      ...SUPPORT_PLATFORMS.map((m) => ({ label: m.label, href: m.url, external: true })),
+      { label: 'Merch on Bandcamp', href: 'https://deejaytjr.bandcamp.com/merch', external: true },
+    ],
+  },
+];
+---
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="grid">
+      <div class="col brandcol">
+        <Brand size={34} />
+        <p class="small muted">
+          Three-time DMC Canadian Champion. Based in {SITE.homeCity}, available worldwide for
+          corporate, private, club, festival and brand bookings.
+        </p>
+        <a class="tlink" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      </div>
+
+      {
+        columns.map((col) => (
+          <nav class="col" aria-label={col.title}>
+            <h2 class="coltitle">{col.title}</h2>
+            <ul>
+              {col.links.map((l) => (
+                <li>
+                  <a
+                    href={l.href}
+                    rel={'external' in l && l.external ? 'noopener' : undefined}
+                    target={'external' in l && l.external ? '_blank' : undefined}
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))
+      }
+    </div>
+
+    <div class="social">
+      <span class="small muted">Follow</span>
+      <ul>
+        {
+          SOCIALS.map((s) => (
+            <li>
+              <a href={s.url} rel="me noopener" target="_blank">
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="legal">
+      <p class="small muted">© {year} {SITE.name}. All rights reserved.</p>
+      <nav class="small" aria-label="Legal">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    background: var(--panel);
+    border-top: 1px solid var(--hairline);
+    padding-block: clamp(56px, 7vw, 88px) 32px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 48px 40px;
+  }
+  .brandcol { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
+  .brandcol p { max-width: 26em; }
+
+  .coltitle {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--bone);
+    letter-spacing: 0;
+    line-height: 1.4;
+    margin-bottom: 16px;
+  }
+  .col ul { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+  .col a {
+    font-size: 14.5px;
+    color: var(--muted);
+    transition: color var(--t-hover) var(--ease-out);
+  }
+  .col a:hover { color: var(--tan); }
+
+  .social {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px 24px;
+    margin-top: clamp(40px, 5vw, 64px);
+    padding-top: 26px;
+    border-top: 1px solid var(--hairline);
+  }
+  .social ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 24px;
+  }
+  .social a {
+    font-size: 14px;
+    color: var(--body);
+    transition: color var(--t-hover) var(--ease-out);
+  }
+  .social a:hover { color: var(--tan); }
+
+  .legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 24px;
+    margin-top: 26px;
+    padding-top: 22px;
+    border-top: 1px solid var(--hairline);
+  }
+  .legal nav { display: flex; gap: 22px; }
+  .legal a { color: var(--muted); transition: color var(--t-hover) var(--ease-out); }
+  .legal a:hover { color: var(--bone); }
+
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+    .brandcol { grid-column: 1 / -1; }
+  }
+  @media (max-width: 560px) {
+    .grid { grid-template-columns: 1fr; gap: 36px; }
+  }
+</style>

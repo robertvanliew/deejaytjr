@@ -1,0 +1,28 @@
+---
+/**
+ * A marked placeholder standing in for a client-supplied asset (brief section 11).
+ *
+ * It reserves the exact aspect ratio the real image will occupy, so dropping the
+ * photograph in later causes zero layout shift — CLS 0 is an acceptance
+ * criterion and it is much easier to hold if the box never changes size.
+ *
+ * Every slot in the build is listed in ASSETS-NEEDED.md by its `name`.
+ */
+export interface Props {
+  /** Matches the entry in ASSETS-NEEDED.md. */
+  name: string;
+  /** e.g. "3/2", "16/9", "4/5". */
+  ratio?: string;
+  /** What the finished image needs to be. Shown in the box. */
+  spec?: string;
+  class?: string;
+}
+const { name, ratio = '3/2', spec = '', class: cls = '' } = Astro.props;
+---
+
+<div class={`slot ${cls}`} style={`aspect-ratio: ${ratio}`} role="img" aria-label={`Placeholder: ${name}`}>
+  <span>
+    <b>{name}</b>
+    {spec}
+  </span>
+</div>

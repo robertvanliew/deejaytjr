@@ -1,0 +1,167 @@
+---
+import { getImage } from 'astro:assets';
+import Photo from './Photo.astro';
+import { MARQUEE, PHOTOS, type PhotoKey } from '../data/photos';
+
+/**
+ * Full-bleed band of her own photography, scrolling horizontally.
+ *
+ * The track is duplicated once and translated by exactly -50%, which is what
+ * makes the loop seamless — at the moment the animation resets, the second
+ * copy is sitting precisely where the first started.
+ *
+ * Pure CSS: `animation` on a transform, so it runs off the main thread and
+ * keeps going smoothly while the rest of the page is still loading images.
+ * The duplicate is aria-hidden so a screen reader hears each photo once.
+ *
+ * Clicking a photo opens it full size in the shared lightbox rather than
+ * navigating away. The band ships images only a few hundred pixels wide, so a
+ * larger rendition is built here and carried on the trigger; blowing the
+ * marquee copy up to fill a viewport would just show the compression.
+ */
+export interface Props {
+  photos?: PhotoKey[];
+  /** Seconds for one full pass. Longer is calmer. */
+  duration?: number;
+  reverse?: boolean;
+  height?: string;
+}
+const {
+  photos = MARQUEE,
+  duration = 64,
+  reverse = false,
+  height = 'clamp(180px, 22vw, 320px)',
+} = Astro.props;
+
+/* Built once per photo at build time, not per copy of the track. */
+const full = new Map(
+  await Promise.all(
+    [...new Set(photos)].map(async (key) => {
+      const img = await getImage({ src: PHOTOS[key].src, width: 1800, format: 'webp' });
+      return [key, img] as const;
+    })
+  )
+);
+---
+
+<section
+  class={`marquee${reverse ? ' rev' : ''}`}
+  aria-label="Photographs of DEEJAY T-JR. performing"
+  style={`--dur:${duration}s; --h:${height}`}
+>
+  <div class="track">
+    {
+      [0, 1].map((copy) => (
+        <ul class="run" aria-hidden={copy === 1 ? 'true' : undefined}>
+          {photos.map((key) => (
+            <li>
+              <button
+                class="pzoom"
+                type="button"
+                data-photo
+                data-full={full.get(key)!.src}
+                data-w={full.get(key)!.attributes.width ?? full.get(key)!.options.width}
+                data-h={full.get(key)!.attributes.height}
+                data-alt={PHOTOS[key].alt}
+                tabindex={copy === 1 ? -1 : undefined}
+                aria-hidden={copy === 1 ? 'true' : undefined}
+                aria-label={`View photograph: ${PHOTOS[key].alt}`}
+              >
+                <Photo
+                  name={key}
+                  widths={[320, 480, 720]}
+                  sizes="(max-width: 820px) 60vw, 30vw"
+                  alt={copy === 1 ? '' : PHOTOS[key].alt}
+                />
+              </button>
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  import { photoLightbox } from '../lib/videoLightbox';
+  photoLightbox();
+</script>
+
+<style>
+  .pzoom {
+    display: block;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+    height: 100%;
+  }
+
+  .marquee {
+    position: relative;
+    overflow: hidden;
+    padding-block: 0;
+    background: var(--ink);
+    border-block: 1px solid var(--hairline);
+    /* The band bleeds past the content column on both sides. */
+    width: 100%;
+  }
+
+  .track {
+    display: flex;
+    width: max-content;
+    animation: slide var(--dur) linear infinite;
+  }
+  .rev .track { animation-direction: reverse; }
+
+  /* Exactly -50%: the track holds two identical copies, so at the reset point
+     the second copy is where the first began and the seam is invisible. */
+  @keyframes slide {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-50%, 0, 0); }
+  }
+
+  .run {
+    display: flex;
+    list-style: none;
+    flex-shrink: 0;
+  }
+  .run li {
+    flex-shrink: 0;
+    height: var(--h);
+    border-right: 1px solid var(--hairline);
+  }
+  .run a { display: block; height: 100%; }
+
+  .run :global(img) {
+    height: 100%;
+    width: auto;
+    object-fit: cover;
+    /* Held back a touch so the band reads as texture behind the type, then
+       comes forward under the cursor. */
+    filter: grayscale(45%) contrast(1.04) brightness(0.82);
+    transition: filter var(--t-hover) var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    /* Slowing rather than stopping: a hard stop feels broken, a glide feels
+       deliberate. The whole band eases down so the photo you are pointing at
+       stays under the cursor long enough to look at. */
+    .marquee:hover .track { animation-play-state: paused; }
+    .run .pzoom:hover :global(img) { filter: grayscale(0%) contrast(1.04) brightness(1); }
+  }
+  /* Also pause for keyboard users tabbing through, and while a photo is open
+     in the lightbox — the band must not slide out from under the tile the
+     panel is going to morph back into. */
+  .marquee:focus-within .track { animation-play-state: paused; }
+  :global(.vbox-open) .track { animation-play-state: paused; }
+  .run .pzoom:focus-visible :global(img) { filter: grayscale(0%) contrast(1.04) brightness(1); }
+  .run .pzoom:focus-visible { outline: 2px solid var(--tan); outline-offset: -2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .track { animation: none; }
+    /* Static, but still browsable rather than clipped. */
+    .marquee { overflow-x: auto; }
+    .run[aria-hidden='true'] { display: none; }
+  }
+</style>

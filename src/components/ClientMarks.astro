@@ -1,0 +1,158 @@
+---
+/**
+ * Client marks.
+ *
+ * Logo use is confirmed as permitted by the client (Sept 2026), and every file
+ * was pulled from that organisation's own web property — see CLIENT_MARKS in
+ * data/site.ts for the source of each.
+ *
+ * A mark renders one of three ways, chosen from the data rather than by a flag
+ * passed in here:
+ *
+ *   no `file`        → serif wordmark. Still the correct fallback: a mark whose
+ *                      artwork we do not hold should look deliberate, not broken.
+ *   `.svg` file      → inlined and filled with currentColor.
+ *   raster file      → CSS mask filled with currentColor.
+ *
+ * All three inherit one ink and one hover transition, so the row reads as a
+ * single designed object instead of six suppliers' brand palettes competing on
+ * a dark band. Every one of these logos is single-colour artwork, which is what
+ * makes the knockout faithful rather than a flattening.
+ *
+ * `color: true` on a mark opts out and paints the file as authored — for a
+ * brand whose guidelines require full colour.
+ */
+import { CLIENT_MARKS, type ClientMark } from '../data/site';
+import { inlineSvg } from '../lib/inline-svg';
+
+export interface Props {
+  label?: string;
+  marks?: ClientMark[];
+}
+const { label = 'Selected clients include', marks = CLIENT_MARKS } = Astro.props;
+
+const DEFAULT_HEIGHT = 24;
+const isSvg = (m: ClientMark) => !!m.file?.endsWith('.svg');
+const src = (m: ClientMark) => `/logo/clients/${m.file}`;
+
+/* Read at build time, once per mark. */
+const inlined = new Map(
+  marks.filter((m) => isSvg(m) && !m.color).map((m) => [m.name, inlineSvg(src(m), 'art')])
+);
+---
+
+<section class="logos" aria-label="Selected clients">
+  <div class="wrap">
+    <span class="label small muted">{label}</span>
+    <ul data-reveal-group>
+      {
+        marks.map((m) => {
+          const h = m.height ?? DEFAULT_HEIGHT;
+
+          if (!m.file) return <li class="mark word">{m.name}</li>;
+
+          if (inlined.has(m.name)) {
+            return (
+              <li class="mark logo vec" style={`--h:${h}px`}>
+                <Fragment set:html={inlined.get(m.name)!.markup} />
+                <span class="sr-only">{m.name}</span>
+              </li>
+            );
+          }
+
+          /* Raster. The <img> establishes the box from the file's own aspect
+             ratio — which is why no width is ever hardcoded — and the visible
+             shape is the mask, unless this mark opted into full colour. */
+          return (
+            <li class:list={['mark', 'logo', 'ras', m.color && 'full']} style={`--h:${h}px`}>
+              <img
+                src={src(m)}
+                alt={m.color ? m.name : ''}
+                aria-hidden={m.color ? undefined : 'true'}
+                loading="lazy"
+                decoding="async"
+              />
+              {!m.color && <span class="sr-only">{m.name}</span>}
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .logos {
+    background: var(--panel);
+    border-top: 1px solid var(--hairline-soft);
+    border-bottom: 1px solid var(--hairline-soft);
+  }
+  .logos .wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px 44px;
+    padding-block: 32px;
+  }
+  .label { margin-right: 8px; }
+  ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px 44px;
+  }
+
+  /* One ink and one hover for all three render paths: the row dims as a whole
+     and the mark under the cursor comes back up. */
+  .mark {
+    color: var(--body);
+    opacity: 0.72;
+    transition: opacity var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out);
+  }
+  .logos:hover .mark { opacity: 0.45; }
+  .logos .mark:hover { opacity: 1; color: var(--tan); }
+
+  .word {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 19px;
+    white-space: nowrap;
+  }
+
+  .logo { display: block; }
+
+  /* Height is authored; width follows the viewBox, so ratios stay honest. */
+  .vec :global(svg.art) { display: block; height: var(--h); width: auto; }
+
+  .ras {
+    background-color: currentColor;
+    -webkit-mask: var(--logo-src) center / contain no-repeat;
+    mask: var(--logo-src) center / contain no-repeat;
+  }
+  .ras img { display: block; height: var(--h); width: auto; visibility: hidden; }
+
+  .ras.full {
+    background-color: transparent;
+    -webkit-mask: none;
+    mask: none;
+  }
+  .ras.full img { visibility: visible; }
+  .logos .ras.full:hover { color: inherit; }
+
+  @media (max-width: 560px) {
+    .logos .wrap, ul { gap: 16px 26px; }
+    .word { font-size: 17px; }
+    /* Six logos at full size wrap into an untidy stack on a phone. */
+    .vec :global(svg.art), .ras img { height: calc(var(--h) * 0.84); }
+  }
+</style>
+
+<script>
+  /* The mask URL reaches CSS as a custom property, read back off the sizer
+     <img> so the path is not duplicated between template and stylesheet. */
+  for (const el of document.querySelectorAll<HTMLElement>('.mark.ras:not(.full)')) {
+    const src = el.querySelector('img')?.getAttribute('src');
+    if (src) el.style.setProperty('--logo-src', `url("${src}")`);
+  }
+</script>

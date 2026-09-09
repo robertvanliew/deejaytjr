@@ -1,0 +1,157 @@
+---
+import Service from '../layouts/Service.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Kpi from '../components/Kpi.astro';
+import VideoGrid from '../components/VideoGrid.astro';
+import PlatformReach from '../components/PlatformReach.astro';
+import AudienceGeography from '../components/AudienceGeography.astro';
+import { BRAND_FAQ } from '../data/faqs';
+import { getAudience, formatFollowers } from '../lib/audience';
+
+/**
+ * Media kit figures now come from the dated snapshots in src/content/audience
+ * via lib/audience.ts, so nothing numeric is typed on this page. Add a new
+ * snapshot file and every figure here, on the media kit and in the credentials
+ * strip updates together.
+ */
+const a = await getAudience();
+const total = formatFollowers(a);
+
+const reach = [
+  ...(total ? [{ figure: total, label: 'Followers across platforms' }] : []),
+  ...a.highlights.map((h) => ({ figure: h.figure, label: h.label })),
+  ...(a.demographics.malePct !== null
+    ? [
+        {
+          figure: `${a.demographics.malePct}%`,
+          label: a.demographics.coreAge
+            ? `Male audience, weighted ${a.demographics.coreAge}`
+            : 'Male audience',
+        },
+      ]
+    : []),
+  ...(a.countries.length
+    ? [{ figure: String(a.countries.length), label: 'Countries driving the majority of reach' }]
+    : []),
+];
+---
+
+<Service
+  title="Brand Partnerships and Showcases | DEEJAY T-JR."
+  description="Partner with DEEJAY T-JR.: three-time DMC Canadian Champion and AlphaTheta and Pioneer DJ showcase performer, with an audience concentrated in the US, Brazil, France, the UK and South Africa. Media kit, audience data and activation formats."
+  path="/brand-partnerships"
+  type="brand"
+  serviceName="Brand partnerships and showcases"
+  serviceType="Brand ambassadorship and event activation"
+  areaServed={['Canada', 'United States', 'Worldwide']}
+  headline="Reach and performance from <em>one</em> partner."
+  lede="Gear, spirits, sneakers, automotive and sport. A three-time national champion who can demo your product on a trade show floor, headline your activation, and produce the content afterwards — for an audience that is already watching DJs."
+  heroPhoto="dmc-2024-hands"
+  proof={[
+    { stat: 'NAMM', detail: 'Trade show showcase performance' },
+    { stat: 'Pioneer DJ', detail: 'Product showcase performance' },
+    ...(total
+      ? [{ stat: `${total} followers`, detail: a.highlights[0]?.figure ? `${a.highlights[0].figure} on TikTok over a 60-day window` : 'Across her platforms' }]
+      : [{ stat: 'An international audience', detail: 'Concentrated outside Canada' }]),
+    { stat: 'Three-time champion', detail: 'DMC Canada, 2022, 2023 and 2024' },
+  ]}
+  formatsTitle="Five ways brands work with her."
+  formatsLede="Most partnerships combine two or three of these. Send the brief and we will come back with a rate and availability."
+  formats={[
+    {
+      title: 'Trade show and product demo',
+      body: 'Booth performance and hands-on demonstration for gear and audio brands. She can actually explain the product, because she competes on it.',
+    },
+    {
+      title: 'Event activation',
+      body: 'A performance built around your brand moment — launch, pop-up, hospitality suite or festival stage. She draws a crowd to the activation rather than playing to an empty one.',
+    },
+    {
+      title: 'Ambassador terms',
+      body: 'Longer-term association with defined deliverables: appearances, content, credits and exclusivity where you need it.',
+    },
+  ]}
+  eventsTitle="Selected brand work."
+  eventsLede="Showcases and activations. Brand names publish only where we hold written permission."
+  faqTitle="What brands and agencies ask."
+  faq={BRAND_FAQ}
+  related={[
+    { label: 'Clubs and festivals', href: '/clubs-and-festivals', note: 'Promoter-facing booking and audience by market.' },
+    { label: 'International', href: '/international', note: 'Territories, travel and work authorisation.' },
+    { label: 'Press and EPK', href: '/press', note: 'Photos, logos, bios and the one-sheet PDF.' },
+  ]}
+>
+  <Fragment slot="after-formats">
+    <section class="section" id="brand-work">
+      <div class="wrap">
+        <SectionHead
+          title="What it looks like when a brand puts its own name on it."
+          lede="AlphaTheta and Pioneer DJ published this on their own channel — a full performance on the DJM-S11 and the PLX-CRSS12."
+        />
+        <VideoGrid service="brand" featureFirst={false} />
+      </div>
+    </section>
+
+    <section class="section panel" id="media-kit">
+      <div class="wrap">
+        <SectionHead
+          title="The media kit."
+          lede={`Audience figures from her own analytics, not estimates.${a.asOfLabel ? ` Captured ${a.asOfLabel}.` : ''} Net rates on request.`}
+        />
+
+        <h3 class="subhead">Reach</h3>
+        <Kpi items={reach} onPanel cols={4} />
+
+        <h3 class="subhead">By platform</h3>
+        <PlatformReach />
+
+        <h3 class="subhead">Where her audience is</h3>
+        <AudienceGeography onPanel />
+
+        <div class="kitnote">
+          <div>
+            <h3>The full media kit</h3>
+            <p class="small prose">
+              Reach by platform and by country, demographics, performance video and her competitive
+              record, on one page you can send on or save as a PDF. No form, no gate.
+            </p>
+            <a class="btn" href="/media-kit">Open the media kit</a>
+          </div>
+          <div>
+            <h3>Photography and bios</h3>
+            <p class="small prose">
+              Hi-res images with credits, the logo pack and three bio lengths are on the press page.
+              Net rates on request — we quote per brief.
+            </p>
+            <a class="btn ghost" href="/press">Open the press kit</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </Fragment>
+</Service>
+
+<style>
+  .subhead {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .subhead + :global(.hgrid) { margin-bottom: 44px; }
+
+  .kitnote {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(24px, 3vw, 44px);
+    align-items: start;
+    margin-top: 8px;
+  }
+  .kitnote > div { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+  .kitnote h3 { font-size: 21px; }
+
+  @media (max-width: 820px) {
+    .kitnote { grid-template-columns: 1fr; }
+  }
+</style>

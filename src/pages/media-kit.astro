@@ -1,0 +1,323 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import PlatformReach from '../components/PlatformReach.astro';
+import AudienceGeography from '../components/AudienceGeography.astro';
+import Kpi from '../components/Kpi.astro';
+import VideoGrid from '../components/VideoGrid.astro';
+import AvailabilityForm from '../components/AvailabilityForm.astro';
+import { getAudience, formatFollowers, formatPct } from '../lib/audience';
+import { AWARDS, ROLES, SITE, ALL_PROFILES } from '../data/site';
+import { breadcrumbNode } from '../lib/schema';
+
+/**
+ * The shareable media kit.
+ *
+ * Built for someone who will never meet her: an agency or promoter in another
+ * country deciding from a link alone. Everything numeric comes from the dated
+ * snapshots in src/content/audience, and every figure carries the date it was
+ * captured — an unattributed number invites a brand team to check her live
+ * profiles and find a different one.
+ */
+const a = await getAudience();
+const total = formatFollowers(a);
+const totalGrowth = formatPct(a.totalDeltaPct);
+
+const reach = [
+  ...(total ? [{ figure: total, label: 'Followers across her platforms' }] : []),
+  ...a.highlights.map((h) => ({ figure: h.figure, label: h.label })),
+  ...(a.demographics.malePct !== null
+    ? [
+        {
+          figure: `${a.demographics.malePct}%`,
+          label: a.demographics.coreAge
+            ? `Male audience, weighted ${a.demographics.coreAge}`
+            : 'Male audience',
+        },
+      ]
+    : []),
+  ...(a.countries.length
+    ? [{ figure: String(a.countries.length), label: 'Countries driving the majority of reach' }]
+    : []),
+];
+---
+
+<Base
+  title="Media Kit | DEEJAY T-JR., 3x DMC Canadian Champion"
+  description="Media kit for DEEJAY T-JR.: audience reach by platform and country, demographics, performance video, credentials and booking contact. Three-time DMC Canadian Champion, available worldwide."
+  path="/media-kit"
+  schema={[breadcrumbNode([{ name: 'Home', path: '/' }, { name: 'Media kit', path: '/media-kit' }])]}
+>
+  <section class="section tight kithead">
+    <div class="wrap">
+      <h1>Media kit.</h1>
+      <p class="lede">
+        Everything a promoter, agency or brand needs to make a decision without being in the room.
+        Audience by platform and by country, performance video, credentials and a direct line to us.
+      </p>
+      <p class="small muted asof">
+        {a.asOfLabel ? `Audience figures captured ${a.asOfLabel}.` : 'Audience figures pending.'}
+        {a.source && ` Source: ${a.source}.`}
+      </p>
+      <div class="kitactions">
+        <span class="magnet" data-magnetic="0.24">
+          <a class="btn" href="/contact">Check availability</a>
+        </span>
+        <a class="btn ghost" href={`mailto:${SITE.email}`}>Email the team</a>
+        <button class="btn ghost printbtn" type="button">Save as PDF</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight ruled">
+    <div class="wrap">
+      <SectionHead
+        title="The record."
+        lede="Competitive results are the shortest route to trusting a booking you cannot audition."
+      />
+      <ol class="awards" data-reveal-group>
+        {
+          AWARDS.map((a) => (
+            <li>
+              <span class="atitle">{a.title}</span>
+              {a.source && (
+                <a class="asource" href={a.source} rel="noopener" target="_blank">
+                  {a.sourceLabel ?? 'Source'}
+                </a>
+              )}
+            </li>
+          ))
+        }
+      </ol>
+      {
+        ROLES.length > 0 && (
+          <div class="roles">
+            <h3 class="rolehead">Positions held</h3>
+            <ul>
+              {ROLES.map((r) => (
+                <li>
+                  <b>{r.title}</b>
+                  <span class="small muted">{r.detail}</span>
+                  {r.source && (
+                    <a class="asource" href={r.source} rel="noopener" target="_blank">
+                      {r.sourceLabel ?? 'Source'}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="section panel">
+    <div class="wrap">
+      <SectionHead
+        title="Reach."
+        lede={
+          totalGrowth
+            ? `Across all platforms, ${totalGrowth} since the previous count.`
+            : 'Figures come from her own platform analytics, never from estimates.'
+        }
+      />
+      {reach.length > 0 && <Kpi items={reach} onPanel cols={4} />}
+
+      <h3 class="subhead">By platform</h3>
+      <PlatformReach />
+      {
+        !a.hasPlatformDetail && (
+          <p class="small muted platnote">
+            Per-platform figures have not been supplied yet, so they are shown as pending rather
+            than estimated. The total above is a client-confirmed aggregate. Add a dated file to
+            <code>src/content/audience/</code> and every figure on this page updates itself.
+          </p>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead
+        title="Where her audience <em>is</em>."
+        lede="The majority of it sits outside Canada. For a promoter, this is the number that matters: not how many people follow her, but how many of them are in your city."
+      />
+      <AudienceGeography />
+      <p class="small muted geonote">
+        Cities are ordered by audience share within each country. Ask us for the full breakdown on any market you are considering.
+      </p>
+    </div>
+  </section>
+
+  {
+    a.demographics.malePct !== null && (
+      <section class="section tight panel">
+        <div class="wrap">
+          <SectionHead title="Who they are." />
+          <div class="demo">
+            <div class="bar" aria-hidden="true">
+              <span class="male" style={`width:${a.demographics.malePct}%`} />
+              <span class="female" style={`width:${a.demographics.femalePct ?? 100 - a.demographics.malePct}%`} />
+            </div>
+            <p class="small muted">
+              {a.demographics.malePct}% male, {a.demographics.femalePct ?? 100 - a.demographics.malePct}%
+              female{a.demographics.coreAge ? `, weighted ${a.demographics.coreAge}` : ''}. That is a
+              DJ-equipment and culture audience rather than a local-events one, which is why it suits
+              product and lifestyle brands and international club bookings more than regional retail.
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead
+        title="See her work."
+        lede="A full dance floor, the World Finals and an open-format set. Nothing here autoplays."
+      />
+      <VideoGrid limit={3} exclude="interview" />
+      <p style="margin-top:32px">
+        <a class="tlink" href="/watch">All video, events and battles <span class="arw" aria-hidden="true">→</span></a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section tight panel">
+    <div class="wrap">
+      <SectionHead title="Profiles." />
+      <ul class="socials" data-reveal-group>
+        {
+          ALL_PROFILES.map((s) => (
+            <li>
+              <a href={s.url} rel="me noopener" target="_blank">
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="small muted" style="margin-top:22px">
+        Photography, logo files and three bio lengths are on the
+        <a class="inline" href="/press">press page</a>, and a full set is on the
+        <a class="inline" href="/music">listen page</a> — both with nothing to fill in first.
+      </p>
+    </div>
+  </section>
+
+  <AvailabilityForm
+    tan
+    heading="Book her."
+    lede="Include the city and the date. We reply within one business day with availability, a landed cost and the work-authorisation timeline."
+  />
+</Base>
+
+<style>
+  .kithead h1 { margin-bottom: 20px; }
+  .asof { margin-top: 18px; }
+  .kitactions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+
+  .awards { list-style: none; max-width: 48em; }
+  .awards li {
+    padding: 13px 0;
+    border-bottom: 1px solid var(--hairline);
+    font-family: var(--serif);
+    font-size: 19px;
+    color: var(--body);
+  }
+  .awards li:first-child { border-top: 1px solid var(--hairline); color: var(--bone); }
+  .awards li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px 24px;
+  }
+  .atitle { flex: 1 1 auto; }
+  /* A result a promoter can click and confirm is worth more than one they have
+     to take on trust. */
+  .asource {
+    font-family: var(--sans);
+    font-size: 12.5px;
+    color: var(--muted);
+    white-space: nowrap;
+    border-bottom: 1px solid transparent;
+    transition: color var(--t-hover) var(--ease-out), border-color var(--t-hover) var(--ease-out);
+  }
+  .asource:hover { color: var(--tan); border-bottom-color: var(--tan); }
+  .roles { margin-top: 40px; }
+  .rolehead {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .roles ul { list-style: none; max-width: 48em; }
+  .roles li {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .roles li:first-child { border-top: 1px solid var(--hairline); }
+  .roles b { font-family: var(--serif); font-size: 21px; color: var(--tan); }
+  .roles .asource { width: fit-content; margin-top: 2px; }
+
+
+
+  .subhead {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--muted);
+    margin: 44px 0 14px;
+  }
+  .platnote, .geonote { margin-top: 22px; max-width: 46em; }
+  .platnote code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12.5px;
+    color: var(--tan);
+  }
+
+  .demo { max-width: 52em; }
+  .bar {
+    display: flex;
+    height: 10px;
+    margin-bottom: 18px;
+    border: 1px solid var(--hairline);
+  }
+  .bar .male { background: var(--tan); }
+  .bar .female { background: var(--surface); }
+
+  .socials { list-style: none; display: flex; flex-wrap: wrap; gap: 12px 30px; }
+  .socials a {
+    font-size: 15px;
+    color: var(--body);
+    border-bottom: 1px solid transparent;
+    transition: color var(--t-hover) var(--ease-out), border-color var(--t-hover) var(--ease-out);
+  }
+  .socials a:hover { color: var(--tan); border-bottom-color: var(--tan); }
+  .inline { color: var(--tan); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* Agencies circulate this internally. Make the printed version behave. */
+  @media print {
+    :global(.nav), :global(.foot), .kitactions, :global(.avail), :global(.marquee) { display: none !important; }
+    :global(body) { background: #fff !important; color: #000 !important; }
+    :global(.section) { padding-block: 18px !important; break-inside: avoid; }
+    :global(h1), :global(h2), :global(h3), .awards li, .socials a { color: #000 !important; }
+    :global(.hgrid) { background: #999 !important; border-color: #999 !important; }
+    :global(.hgrid) > * { background: #fff !important; }
+    .bar .male { background: #000 !important; }
+  }
+</style>
+
+<script>
+  document
+    .querySelector<HTMLButtonElement>('.printbtn')
+    ?.addEventListener('click', () => window.print());
+</script>

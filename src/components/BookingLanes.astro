@@ -1,0 +1,86 @@
+---
+/**
+ * The four buyer lanes from section 2 of the brief. Each cell is a whole link —
+ * planners scan these, they should not have to find a small "learn more".
+ */
+export interface Props {
+  lanes?: {
+    title: string;
+    body: string;
+    href: string;
+    proof: string;
+    cta: string;
+  }[];
+}
+
+const defaultLanes = [
+  {
+    title: 'Corporate events',
+    body: 'Conferences, galas, holiday parties, product launches and awards nights. She works to a run of show, holds the room through speeches and dinner, then turns it into a party on cue.',
+    proof: 'MLSE, Government of Ontario, Fairmont Royal York',
+    cta: 'See corporate bookings',
+    href: '/corporate-events',
+  },
+  {
+    title: 'Private events',
+    body: 'Weddings, milestone birthdays and anniversaries where the entertainment is the thing guests remember. Discreet, tailored to your music taste, and something your guests could not have booked themselves.',
+    proof: 'Championship routines, on request',
+    cta: 'See private bookings',
+    href: '/private-events',
+  },
+  {
+    title: 'Clubs and festivals',
+    body: 'A name that sells tickets and a set that earns the room. Open format with live turntablism, plus clips your promoter can run before the date.',
+    proof: 'Audiences in the US, Brazil, France, the UK and South Africa',
+    cta: 'See club and festival bookings',
+    href: '/clubs-and-festivals',
+  },
+  {
+    title: 'Brand partnerships and showcases',
+    body: 'Gear, spirits, sneakers, automotive and sport. Trade show demos, campaign shoots, ambassador work and content. Reach and performance from one partner.',
+    proof: 'NAMM and Pioneer DJ showcases',
+    cta: 'See partnership formats',
+    href: '/brand-partnerships',
+  },
+];
+
+const { lanes = defaultLanes } = Astro.props;
+---
+
+<div class="hgrid cols-2 lanes" data-reveal-group>
+  {
+    lanes.map((lane) => (
+      <a class="lane spot" href={lane.href}>
+        <h3>{lane.title}</h3>
+        <p class="prose">{lane.body}</p>
+        <span class="proof small muted">{lane.proof}</span>
+        <span class="tlink">
+          {lane.cta}
+          <span class="arw" aria-hidden="true">→</span>
+        </span>
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  .lane {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: clamp(28px, 3.4vw, 48px);
+    min-height: 340px;
+    transition: background var(--t-hover) var(--ease-out);
+  }
+  .lane:hover { background: var(--panel-hover); }
+  .lane h3 { transition: color var(--t-hover) var(--ease-out); }
+  .lane:hover h3 { color: var(--tan); }
+  .lane p { flex-grow: 1; max-width: 34em; }
+  .lane .proof {
+    padding-top: 14px;
+    border-top: 1px solid var(--hairline);
+  }
+  .lane .tlink { margin-top: 4px; }
+  .lane:hover .tlink { border-color: var(--tan); color: var(--tan-lift); }
+  .lane:hover .arw { transform: translateX(3px); }
+</style>

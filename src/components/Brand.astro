@@ -1,0 +1,54 @@
+---
+/**
+ * Her actual signature, from TJR_logos/300ppi_PNG.
+ *
+ * Rendered as a CSS mask rather than an <img>, so one asset takes any brand
+ * colour from a token — sand in the nav, ink on a sand surface, teal on bone —
+ * without exporting a recoloured file for each placement, and without ever
+ * drifting from the palette.
+ *
+ * Still worth getting the SVG source from the client (the .ai and .eps are in
+ * TJR_logos) so the mark is resolution-independent. At the sizes used here the
+ * 3x mask is indistinguishable, so this is no longer a launch blocker.
+ */
+export interface Props {
+  /** Rendered height of the signature in px. */
+  size?: number;
+  href?: string;
+  /** Any colour token. Defaults to the sand accent. */
+  color?: string;
+}
+const { size = 26, href = '/', color = 'var(--tan)' } = Astro.props;
+
+// Intrinsic ratio of the cropped signature asset, 469 x 240.
+const width = Math.round((469 / 240) * size);
+---
+
+<a class="brand" href={href} aria-label="DEEJAY T-JR. — home">
+  <span
+    class="sig"
+    aria-hidden="true"
+    style={`--sig-w:${width}px; --sig-h:${size}px; --sig-color:${color}`}
+  ></span>
+</a>
+
+<style>
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    /* The signature has optical whitespace at its baseline; nudge it onto the
+       same optical centre line as the nav links. */
+    padding-block: 4px;
+  }
+  .sig {
+    display: block;
+    width: var(--sig-w);
+    height: var(--sig-h);
+    background: var(--sig-color);
+    -webkit-mask: url('/logo/signature-mask.png') no-repeat center / contain;
+    mask: url('/logo/signature-mask.png') no-repeat center / contain;
+    transition: background var(--t-hover) var(--ease-out), opacity var(--t-hover) var(--ease-out);
+  }
+  .brand:hover .sig { background: var(--tan-lift); }
+</style>

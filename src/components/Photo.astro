@@ -1,0 +1,47 @@
+---
+import { Image } from 'astro:assets';
+import { PHOTOS, type PhotoKey } from '../data/photos';
+
+export interface Props {
+  name: PhotoKey;
+  /** Overrides the registry alt where context needs something more specific. */
+  alt?: string;
+  /** Rendered widths, for the srcset. */
+  widths?: number[];
+  sizes?: string;
+  /** Hero images only — everything else should stay lazy. */
+  priority?: boolean;
+  /** Loads after the page settles. For images that are in the viewport but
+      are not the LCP candidate, e.g. the hero rotation's later frames. */
+  deferred?: boolean;
+  /** Purely visual: hidden from assistive tech, which describes the group. */
+  decorative?: boolean;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const {
+  name,
+  alt,
+  widths = [480, 800, 1200, 1800],
+  sizes = '(max-width: 820px) 100vw, 62vw',
+  priority = false,
+  deferred = false,
+  decorative = false,
+  class: cls = '',
+} = Astro.props;
+
+const photo = PHOTOS[name];
+---
+
+<Image
+  src={photo.src}
+  alt={decorative ? '' : (alt ?? photo.alt)}
+  aria-hidden={decorative ? 'true' : undefined}
+  widths={widths}
+  sizes={sizes}
+  class={cls}
+  loading={priority ? 'eager' : 'lazy'}
+  decoding={priority ? 'sync' : 'async'}
+  fetchpriority={priority ? 'high' : deferred ? 'low' : 'auto'}
+/>

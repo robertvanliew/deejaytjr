@@ -1,0 +1,452 @@
+---
+import { EVENT_TYPES, BUDGET_RANGES, SITE } from '../data/site';
+
+export interface Props {
+  /** Service pages pass their own type; ?type= in the URL still wins at runtime. */
+  defaultType?: string;
+  heading?: string;
+  lede?: string;
+  id?: string;
+  /** Render the whole section as a tan band. */
+  tan?: boolean;
+}
+const {
+  defaultType = '',
+  heading = 'Check her availability.',
+  lede = 'Tell us the date and the room. We reply within one business day with availability and a quote.',
+  id = 'availability',
+  tan = false,
+} = Astro.props;
+---
+
+<section class={`section avail${tan ? ' tan' : ''}`} id={id}>
+  <div class="wrap">
+    <div class="head">
+      <h2 set:html={heading} />
+      <p class="lede">{lede}</p>
+    </div>
+
+    <div class="formwrap">
+      <form id="booking-form" novalidate data-default-type={defaultType}>
+        <!-- Anti-spam. Hidden from people, irresistible to bots. -->
+        <div class="hp" aria-hidden="true">
+          <label for="company_website">Company website</label>
+          <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="fields" data-reveal-group>
+          <p class="field">
+            <label for="f-name">Your name <span class="req" aria-hidden="true">*</span></label>
+            <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="e-name" />
+            <span class="err" id="e-name" role="alert"></span>
+          </p>
+
+          <p class="field">
+            <label for="f-email">Email <span class="req" aria-hidden="true">*</span></label>
+            <input id="f-email" name="email" type="email" autocomplete="email" required aria-describedby="e-email" />
+            <span class="err" id="e-email" role="alert"></span>
+          </p>
+
+          <p class="field">
+            <label for="f-type">Event type <span class="req" aria-hidden="true">*</span></label>
+            <select id="f-type" name="eventType" required aria-describedby="e-type">
+              <option value="">Select one</option>
+              {EVENT_TYPES.map((t) => <option value={t.value}>{t.label}</option>)}
+            </select>
+            <span class="err" id="e-type" role="alert"></span>
+          </p>
+
+          <p class="field">
+            <label for="f-date">Event date</label>
+            <input id="f-date" name="eventDate" type="date" />
+          </p>
+
+          <p class="field">
+            <label for="f-city">City and country</label>
+            <input id="f-city" name="city" type="text" autocomplete="address-level2" />
+          </p>
+
+          <p class="field">
+            <label for="f-guests">Guest count</label>
+            <input id="f-guests" name="guests" type="text" inputmode="numeric" />
+          </p>
+
+          <p class="field">
+            <label for="f-budget">Entertainment budget</label>
+            <select id="f-budget" name="budget">
+              {BUDGET_RANGES.map((b) => <option value={b}>{b}</option>)}
+            </select>
+          </p>
+
+          <p class="field">
+            <label for="f-heard">How did you hear about DEEJAY T-JR.?</label>
+            <input id="f-heard" name="heard" type="text" />
+          </p>
+
+          <p class="field wide">
+            <label for="f-message">Tell us about the event</label>
+            <textarea id="f-message" name="message" rows="5"></textarea>
+          </p>
+        </div>
+
+        <div class="actions">
+          <span class="magnet" data-magnetic="0.22">
+            <button class="btn" type="submit">Send booking request</button>
+          </span>
+          <span class="small muted consent">
+            We only use this to answer your enquiry. No list, no newsletter.
+          </span>
+        </div>
+
+        <p class="formerr" role="alert" hidden></p>
+      </form>
+
+      <output class="success" for="booking-form" hidden>
+        <h3>Sent.</h3>
+        <p class="prose">
+          You’ll hear from us within one business day. A copy of your request is on its
+          way to your inbox, with the one-sheet attached.
+        </p>
+      </output>
+
+      <aside class="aside">
+        <h3>Direct</h3>
+        <p class="small prose">
+          Prefer email? Reach us at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+        </p>
+        <h3>What to include</h3>
+        <ul class="small muted">
+          <li>Date, or a range of dates you are holding</li>
+          <li>City, venue and expected guest count</li>
+          <li>Set length and whether you want a scratch showcase</li>
+          <li>Whether you need her to host or MC any part of the night</li>
+        </ul>
+        <h3>Travel</h3>
+        <p class="small prose">
+          Based in {SITE.homeCity}, travelling from Toronto Pearson. International dates are routine;
+          allow travel and accommodation in the budget.
+        </p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .avail { background: var(--panel); }
+  /* A tan band paints its own background; do not fight it. */
+  .avail.tan { background: var(--tan-band); }
+
+  /* On tan, fields lift toward paper rather than sitting flush with the band.
+     A field the same colour as its surroundings relies entirely on its border
+     to be findable, which is a weaker affordance than it needs to be for the
+     one form on the site that has to get filled in. */
+  /* background-COLOR, not the `background` shorthand: the shorthand resets
+     background-position/size/repeat, which the select's CSS-drawn arrow
+     depends on. Using it here tiled the arrow gradient across the whole
+     control and turned every select into a dark block. */
+  .avail.tan :is(input, select, textarea) {
+    background-color: var(--field-on-tan);
+    border-color: rgba(23, 20, 15, .22);
+  }
+  .avail.tan :is(input, select, textarea):hover { border-color: rgba(23, 20, 15, .4); }
+  .avail.tan :is(input, select, textarea):is(:focus, :focus-within) {
+    background-color: #ffffff;
+    border-color: var(--on-tan);
+    outline-color: var(--on-tan);
+  }
+  .avail.tan input[type='date'] { color-scheme: light; }
+  .avail.tan select {
+    background-image: linear-gradient(45deg, transparent 50%, var(--on-tan-soft) 50%),
+      linear-gradient(135deg, var(--on-tan-soft) 50%, transparent 50%);
+    background-position: calc(100% - 19px) calc(50% + 1px), calc(100% - 13px) calc(50% + 1px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+  }
+  .avail.tan .aside { border-color: var(--hairline-on-tan); }
+  .avail.tan .success { border-left-color: var(--on-tan); }
+  .avail.tan .success h3 { color: var(--on-tan); }
+  .avail.tan .formerr {
+    border-color: #a33c2e;
+    background: rgba(163, 60, 46, .1);
+    color: #7d2b20;
+  }
+  .avail.tan .err { color: #8c3325; }
+  .avail.tan [aria-invalid='true'] { border-color: #a33c2e; }
+
+  .formwrap {
+    display: grid;
+    grid-template-columns: 1.55fr 0.85fr;
+    gap: clamp(32px, 5vw, 72px);
+    align-items: start;
+  }
+
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 24px;
+  }
+  .field { margin: 0; max-width: none; display: flex; flex-direction: column; gap: 8px; }
+  .field.wide { grid-column: 1 / -1; }
+
+  label {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .req { color: var(--tan); }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    background: var(--ink);
+    border: 1px solid var(--surface);
+    color: var(--bone);
+    font-size: 16px;
+    padding: 14px 15px;
+    border-radius: 0;
+    appearance: none;
+    transition:
+      border-color var(--t-hover) var(--ease-out),
+      background var(--t-hover) var(--ease-out),
+      box-shadow var(--t-hover) var(--ease-out);
+  }
+  /* Focus reads as the field lifting toward you, not just an outline.
+     `:focus-within` rather than `:focus` or `:focus-visible`: keyboard focus on
+     an <input type="date"> lands on a segment inside the control's shadow tree,
+     so the host matches neither of those even though document.activeElement
+     retargets to it. That left the date field as the one control on the site
+     with no visible focus indicator. */
+  input:is(:focus, :focus-within),
+  select:is(:focus, :focus-within),
+  textarea:is(:focus, :focus-within) {
+    border-color: var(--tan);
+    background: color-mix(in srgb, var(--tan) 4%, var(--ink));
+    outline: 2px solid var(--tan);
+    outline-offset: 2px;
+  }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.5; }
+  input:hover, select:hover, textarea:hover { border-color: var(--surface); }
+  input::placeholder, textarea::placeholder { color: var(--muted); }
+
+  /* The label lifts to the sand accent while its field has focus, so the eye
+     is told where it is without a colour change large enough to distract. */
+  .field:focus-within label { color: var(--tan); }
+  label { transition: color var(--t-hover) var(--ease-out); }
+
+  /* Native date and select controls are light by default in some browsers. */
+  input[type='date'] { color-scheme: dark; }
+  select {
+    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+      linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position: calc(100% - 19px) calc(50% + 1px), calc(100% - 13px) calc(50% + 1px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 40px;
+  }
+
+  [aria-invalid='true'] { border-color: #c2564a; }
+  [aria-invalid='true']:focus { border-color: #d97a6d; background: rgba(194, 86, 74, .06); }
+
+  .err {
+    font-size: 13px;
+    line-height: 1.15;
+    color: #e08b80;
+  }
+  .err:empty { display: none; }
+
+  /* Once the form has been submitted once, reserve the error line on every
+     field. Without this, correcting a field clears its message, the message's
+     space collapses, and everything below it — including the submit button —
+     jumps upward while the visitor is still typing. Reserving only after the
+     first submit keeps the untouched form tight. */
+  form[data-submitted] .err {
+    display: block;
+    min-height: 1.15em;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+    margin-top: 28px;
+  }
+  .consent { max-width: 26em; }
+
+  .formerr {
+    margin-top: 20px;
+    padding: 14px 16px;
+    border: 1px solid #52322e;
+    background: rgba(194, 86, 74, 0.08);
+    color: #e08b80;
+    font-size: 14.5px;
+    max-width: none;
+  }
+  .formerr :global(a) { color: var(--tan); text-decoration: underline; }
+
+  /* `display` beats the `hidden` attribute, so this must be scoped or the
+     success state renders on page load. */
+  .success:not([hidden]) {
+    display: block;
+    border-left: 2px solid var(--tan);
+    padding: 4px 0 4px 26px;
+  }
+  .success h3 { color: var(--tan); margin-bottom: 10px; }
+
+  .aside { border-left: 1px solid var(--hairline); padding-left: clamp(24px, 3vw, 40px); }
+  .aside h3 {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--bone);
+    margin-bottom: 8px;
+  }
+  .aside h3 + p, .aside h3 + ul { margin-bottom: 26px; }
+  .aside ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .aside li { padding-left: 15px; position: relative; }
+  .aside li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 5px;
+    height: 1px;
+    background: color-mix(in srgb, var(--tan) 35%, transparent);
+  }
+  .aside a { color: var(--tan); text-decoration: underline; text-underline-offset: 3px; }
+
+  @media (max-width: 900px) {
+    .formwrap { grid-template-columns: 1fr; }
+    .aside { border-left: 0; border-top: 1px solid var(--hairline); padding-left: 0; padding-top: 32px; }
+  }
+  @media (max-width: 560px) {
+    .fields { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  import { SITE_EMAIL, validate, type LeadPayload } from '../lib/form';
+
+  const form = document.querySelector<HTMLFormElement>('#booking-form');
+  const success = document.querySelector<HTMLElement>('.avail .success');
+  const formErr = document.querySelector<HTMLParagraphElement>('.formerr');
+
+  if (form && success && formErr) {
+    const field = (n: string) => form.elements.namedItem(n) as HTMLInputElement | null;
+
+    /* Pre-select the event type. ?type= wins over the page’s own default so a
+       campaign link can override the page it lands on. */
+    const params = new URLSearchParams(location.search);
+    const type = params.get('type') || form.dataset.defaultType;
+    const typeSelect = field('eventType') as unknown as HTMLSelectElement | null;
+    if (type && typeSelect && [...typeSelect.options].some((o) => o.value === type)) {
+      typeSelect.value = type;
+    }
+
+    const showError = (name: string, message: string) => {
+      const input = field(name);
+      const slot = document.getElementById(`e-${name === 'eventType' ? 'type' : name}`);
+      if (slot) slot.textContent = message;
+      if (input) input.setAttribute('aria-invalid', 'true');
+    };
+
+    const clearErrors = () => {
+      form.querySelectorAll('.err').forEach((e) => (e.textContent = ''));
+      form.querySelectorAll('[aria-invalid]').forEach((e) => e.removeAttribute('aria-invalid'));
+      formErr.hidden = true;
+    };
+
+    /* Re-validate a field once the visitor has fixed it, not on every keystroke
+       before they have had a chance to type anything. */
+    form.addEventListener(
+      'blur',
+      (e) => {
+        const el = e.target as HTMLElement;
+        if (el.hasAttribute('aria-invalid')) {
+          const name = (el as HTMLInputElement).name;
+          const errors = validate(Object.fromEntries(new FormData(form)) as Record<string, string>);
+          if (!errors[name]) {
+            el.removeAttribute('aria-invalid');
+            const slot = document.getElementById(`e-${name === 'eventType' ? 'type' : name}`);
+            if (slot) slot.textContent = '';
+          }
+        }
+      },
+      true
+    );
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      /* Freezes the field rhythm from here on, so clearing an error message
+         cannot shift the submit button out from under the pointer. */
+      form.setAttribute('data-submitted', '');
+      clearErrors();
+
+      const raw = Object.fromEntries(new FormData(form)) as Record<string, string>;
+      const errors = validate(raw);
+
+      if (Object.keys(errors).length) {
+        for (const [name, message] of Object.entries(errors)) showError(name, message);
+        (form.querySelector('[aria-invalid="true"]') as HTMLElement | null)?.focus();
+        return;
+      }
+
+      const payload: LeadPayload = {
+        ...raw,
+        pagePath: location.pathname,
+        pageTitle: document.title,
+        utmSource: params.get('utm_source') ?? '',
+        utmMedium: params.get('utm_medium') ?? '',
+        utmCampaign: params.get('utm_campaign') ?? '',
+        referrer: document.referrer,
+      } as LeadPayload;
+
+      const btn = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+      const label = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+
+      try {
+        const res = await fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+
+        /* GA4 generate_lead, with event type as a parameter. Section 7, step 4. */
+        (window as any).gtag?.('event', 'generate_lead', {
+          event_type: payload.eventType,
+          page_path: payload.pagePath,
+          currency: 'CAD',
+        });
+
+        form.hidden = true;
+        success.hidden = false;
+        success.focus?.();
+        success.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      } catch (err) {
+        /* Never swallow a lead. If the endpoint is down, hand them the mailto. */
+        const subject = encodeURIComponent(
+          `Booking request: ${payload.eventType || 'event'}${payload.city ? ` in ${payload.city}` : ''}`
+        );
+        formErr.innerHTML =
+          'Something went wrong sending that. Please email ' +
+          `<a href="mailto:${SITE_EMAIL}?subject=${subject}">${SITE_EMAIL}</a> ` +
+          'and we will pick it up directly.';
+        formErr.hidden = false;
+        btn.disabled = false;
+        btn.textContent = label;
+      }
+    });
+  }
+</script>

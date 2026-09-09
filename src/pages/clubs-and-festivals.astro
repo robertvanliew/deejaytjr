@@ -1,0 +1,61 @@
+---
+import Service from '../layouts/Service.astro';
+import { CLUB_FAQ } from '../data/faqs';
+import { getAudience, formatFollowers } from '../lib/audience';
+
+const a = await getAudience();
+const total = formatFollowers(a);
+---
+
+<Service
+  title="Club and Festival Booking | DEEJAY T-JR., DMC World Top 9"
+  description="Book DEEJAY T-JR. for your club night or festival. Three-time DMC Canadian Champion, top 9 at the 2023 DMC World Finals, with an audience concentrated in the US, Brazil, France, the UK and South Africa."
+  path="/clubs-and-festivals"
+  type="club"
+  serviceName="Club and festival DJ booking"
+  serviceType="Club and festival performance"
+  areaServed={['Canada', 'United States', 'Brazil', 'France', 'United Kingdom', 'South Africa']}
+  headline="A name that sells tickets. A set that <em>earns</em> the room."
+  lede="Top 9 at the 2023 DMC World Finals and the only woman to have competed at all four majors. Her audience is largest outside Canada — if you are promoting in the US, Brazil, France, the UK or South Africa, she already has a crowd in your city."
+  heroPhoto="stage-crowd"
+  proof={[
+    { stat: 'Top 9 in the world', detail: '2023 Technics DMC World DJ Championships' },
+    { stat: 'Four majors', detail: 'DMC World, IDA World, the Goldie Awards and Red Bull 3Style' },
+    total
+      ? { stat: `${total} followers`, detail: a.highlights[0]?.label ? `${a.highlights[0].figure} — ${a.highlights[0].label.toLowerCase()}` : 'Across her platforms' }
+      : { stat: 'An international audience', detail: 'Concentrated outside Canada' },
+    {
+      stat: `${a.countries.length} key markets`,
+      detail: a.countries.map((c) => c.name).join(', '),
+    },
+  ]}
+  formatsTitle="What you are actually booking."
+  formatsLede="A headline slot that gives your promoter something to sell and your photographers something to shoot."
+  formats={[
+    {
+      title: 'Open format with live turntablism',
+      body: 'Hip hop, R&B, house and Latin depending on the room, cut with the routines that won three national titles. Not a laptop set with a name attached.',
+    },
+    {
+      title: 'Championship showcase',
+      body: 'A featured battle-standard routine inside the set. It is the reason a turntablism crowd buys a ticket and the reason a general crowd films it.',
+    },
+    {
+      title: 'Promotional assets, ungated',
+      body: 'Hi-res photos, logo pack, three bio lengths and video clips, all available without a form. Your marketing team can start the day you confirm.',
+    },
+    {
+      title: 'International routing',
+      body: 'Travelling from Toronto Pearson. We handle work authorisation and travel; allow six to eight weeks of lead time for most territories.',
+    },
+  ]}
+  eventsTitle="Selected dates."
+  eventsLede="Past club and festival appearances. Send your date and market and we will tell you what she draws there."
+  faqTitle="What promoters ask."
+  faq={CLUB_FAQ}
+  related={[
+    { label: 'International', href: '/international', note: 'Travel, territories and where her audience actually is.' },
+    { label: 'Press and EPK', href: '/press', note: 'Everything you need to promote the date.' },
+    { label: 'Watch', href: '/watch', note: 'Battle routines and live event footage.' },
+  ]}
+/>

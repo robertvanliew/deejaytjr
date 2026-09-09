@@ -1,0 +1,27 @@
+{
+  "name": "deejaytjr-site",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "deejaytjr.com — booking site for DEEJAY T-JR. Built by Frankpella LLC.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "audience": "node scripts/audience.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.6.0",
+    "@astrojs/vercel": "^8.2.9",
+    "@fontsource-variable/bodoni-moda": "^5.2.11",
+    "@fontsource-variable/geist": "^5.3.0",
+    "astro": "^5.16.0",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.5",
+    "lightningcss": "^1.33.0",
+    "typescript": "^5.9.3"
+  }
+}
