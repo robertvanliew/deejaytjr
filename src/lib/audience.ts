@@ -265,7 +265,6 @@ export function formatPct(pct: number | null): string | null {
 export async function getCredentials() {
   const a = await getAudience();
   const total = formatFollowers(a);
-  const growth = a.highlights[0];
 
   return [
     {
@@ -284,9 +283,9 @@ export async function getCredentials() {
     total
       ? {
           stat: `${total} followers`,
-          detail: growth
-            ? `${growth.figure} — ${growth.label.toLowerCase()}. An audience across ${a.countries.length} countries.`
-            : `An audience across ${a.countries.length} countries.`,
+          /* Followers only. A likes or growth figure is a different measure and
+             reads as part of this number if it shares the line (spec, Oct 2026). */
+          detail: `Across Instagram, TikTok, YouTube and Twitch, with an audience in ${a.countries.length} countries.`,
         }
       : {
           stat: 'An international audience',

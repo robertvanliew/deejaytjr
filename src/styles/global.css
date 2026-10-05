@@ -635,3 +635,16 @@ img {
   -webkit-touch-callout: none; /* iOS long-press "Save Image" sheet */
   user-select: none;
 }
+
+/* Reviewer banner on unpublished translations (noindex drafts). */
+.draftbar {
+  /* Full width: a site-wide paragraph measure would otherwise cap it. */
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 10px clamp(16px, 4vw, 40px);
+  background: #6b4b1a;
+  color: #fff4dd;
+  font-size: 13.5px;
+  text-align: center;
+}

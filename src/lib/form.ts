@@ -37,6 +37,21 @@ export interface LeadPayload {
   elapsedMs?: number;
   /** Cloudflare Turnstile token, when the site key is configured. */
   turnstileToken?: string;
+  /** Page language: en, pt-br or fr. */
+  locale?: string;
+  /** Market key from data/markets.json, e.g. "houston". Empty on general pages. */
+  market?: string;
+  /** Human-readable market for the subject line, e.g. "Houston, United States". */
+  marketName?: string;
+  /** Promoters routing more than one date. */
+  otherCities?: string;
+  /** Destination and offsite leads: where the event is vs where the buyer is. */
+  basedIn?: string;
+  /** First-touch campaign, kept 30 days (lib/firstTouch.ts). */
+  ftSource?: string;
+  ftMedium?: string;
+  ftCampaign?: string;
+  ftLanding?: string;
 }
 
 /**
@@ -79,10 +94,14 @@ export function validate(data: Record<string, string>): Record<string, string> {
   return errors;
 }
 
-/** Subject line format is fixed by section 7, step 1. */
+/**
+ * Subject line: [Booking] <market> · <event type> · <date>, so the inbox can be
+ * filtered by market (spec, Oct 2026). Market is the page's market when the
+ * lead came from a country or city page, otherwise the city they typed.
+ */
 export function subjectFor(lead: LeadPayload): string {
   const type = EVENT_TYPE_LABELS[lead.eventType] ?? lead.eventType;
-  const where = lead.city?.trim() ? ` in ${lead.city.trim()}` : '';
-  const when = lead.eventDate?.trim() ? ` on ${lead.eventDate.trim()}` : '';
-  return `Booking request: ${type}${where}${when}`;
+  const market = lead.marketName?.trim() || lead.city?.trim() || 'General';
+  const when = lead.eventDate?.trim() || 'date TBC';
+  return `[Booking] ${market} \u00b7 ${type} \u00b7 ${when}`;
 }

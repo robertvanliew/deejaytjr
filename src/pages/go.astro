@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import { liveHref } from '../lib/markets';
+
+/**
+ * /go: her link-in-bio (spec, Oct 2026). Replaces a third-party link tool so
+ * the clicks stay in her own analytics.
+ *
+ * Put the platform in the bio link: deejaytjr.com/go?s=tiktok, ?s=instagram,
+ * ?s=youtube. Every button then carries utm_source=<platform> and
+ * utm_campaign=<market>, so a lead is traced to the platform AND the market.
+ *
+ * The Brazil and France buttons point at the Portuguese and French pages only
+ * once those are reviewed and live; until then they go to the English pages,
+ * with English labels, so nobody lands on an unreviewed draft.
+ */
+const pt = liveHref('brazil', 'pt-br');
+const fr = liveHref('france', 'fr');
+const buttons = [
+  { label: 'Book in the USA', href: '/international/usa', market: 'usa' },
+  { label: pt ? 'Contratar no Brasil' : 'Book in Brazil', href: pt ?? '/international/brazil', market: 'brazil' },
+  { label: fr ? 'Réserver en France' : 'Book in France', href: fr ?? '/international/france', market: 'france' },
+  { label: 'Book in the UK', href: '/international', market: 'uk' },
+  { label: 'Book in Canada', href: '/contact', market: 'canada' },
+  { label: 'Destination events', href: '/destination-events', market: 'destination' },
+];
+---
+
+<Base
+  title="DEEJAY T-JR. | Book her"
+  description="Booking links for DEEJAY T-JR."
+  path="/go"
+  noindex
+>
+  <section class="section go">
+    <div class="wrap">
+      <h1>Book <em>DEEJAY T-JR.</em></h1>
+      <p class="lede">Three-time DMC Canadian Champion. Choose where the date is.</p>
+      <ul class="btns">
+        {
+          buttons.map((b) => (
+            <li>
+              <a class="btn" href={`${b.href}?utm_source=linkinbio&utm_medium=social&utm_campaign=${b.market}`} data-market={b.market}>
+                {b.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="small muted">
+        Or write to <a href="mailto:mgmt@deejaytjr.com">mgmt@deejaytjr.com</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .go .wrap { max-width: 480px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .go h1 { font-size: clamp(38px, 8vw, 56px); }
+  .btns { list-style: none; width: 100%; display: flex; flex-direction: column; gap: 10px; margin: 10px 0 8px; }
+  .btns .btn { width: 100%; justify-content: center; }
+</style>
+
+<script>
+  /* ?s=tiktok in the bio link becomes utm_source=tiktok on every button. */
+  const s = new URLSearchParams(location.search).get('s');
+  if (s && /^[a-z0-9_-]{2,24}$/i.test(s)) {
+    document.querySelectorAll<HTMLAnchorElement>('.btns a').forEach((a) => {
+      const u = new URL(a.href);
+      u.searchParams.set('utm_source', s.toLowerCase());
+      a.href = u.toString();
+    });
+  }
+</script>

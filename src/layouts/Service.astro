@@ -122,17 +122,17 @@ const hasTestimonials = (await getTestimonials(type)).length > 0;
   <!-- Escape hatch for page-specific blocks, e.g. the brand media kit. -->
   <slot name="after-formats" />
 
-  <section class="section panel">
-    <div class="wrap">
-      <SectionHead title={eventsTitle} lede={eventsLede} />
-      {
-        events.length > 0 ? (
+  {
+    /* Named past events when we have them. When we do not, the page either
+       supplies its own block (slot "no-events") or the section is left out:
+       a "pending" placeholder on a sales page advertises the gap. */
+    events.length > 0 ? (
+      <section class="section panel">
+        <div class="wrap">
+          <SectionHead title={eventsTitle} lede={eventsLede} />
           <ul class="events" data-reveal-group>
             {events.map((e) => (
               <li>
-                {/* No event has its own photograph yet. A grey "photo pending"
-                    box on a sales page advertises the gap, so the entry is
-                    text-only until one exists. */}
                 <div class="ev-copy">
                   <h3>{e.data.permissionOnFile ? e.data.client : e.data.name}</h3>
                   <p class="small muted">
@@ -144,18 +144,12 @@ const hasTestimonials = (await getTestimonials(type)).length > 0;
               </li>
             ))}
           </ul>
-        ) : (
-          <div class="slot" style="min-height:200px">
-            <span>
-              <b>Selected events pending</b>
-              Three to six named past events of this type, with photography and written permission
-              to name the client. Section 11, items 1 and 5.
-            </span>
-          </div>
-        )
-      }
-    </div>
-  </section>
+        </div>
+      </section>
+    ) : (
+      <slot name="no-events" />
+    )
+  }
 
   {
     /* No publishable quotes yet, so the section does not appear. A heading over

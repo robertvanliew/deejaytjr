@@ -1,6 +1,19 @@
 ---
 import Brand from './Brand.astro';
 import { NAV } from '../data/site';
+import type { Locale } from '../lib/markets';
+
+export interface Props {
+  /** From Base: live hreflang siblings of this page. */
+  alternates?: { hreflang: string; href: string; locale: Locale }[];
+  locale?: Locale;
+}
+const { alternates = [], locale = 'en' } = Astro.props;
+/* The switcher shows only when this page has a live sibling, and links to
+   that sibling — never to a language home page, and never by redirect. */
+const LABEL: Record<Locale, string> = { en: 'EN', 'pt-br': 'PT', fr: 'FR' };
+const langs = alternates.filter((a) => a.hreflang !== 'x-default');
+const showSwitch = langs.length > 1;
 
 const here = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
@@ -18,6 +31,23 @@ const here = Astro.url.pathname.replace(/\/$/, '') || '/';
         ))
       }
     </nav>
+
+    {
+      showSwitch && (
+        <nav class="langs small" aria-label="Language">
+          {langs.map((a, i) => (
+            <>
+              {i > 0 && <span aria-hidden="true">·</span>}
+              {a.locale === locale ? (
+                <span class="cur" aria-current="true">{LABEL[a.locale]}</span>
+              ) : (
+                <a href={a.href} hreflang={a.hreflang} lang={a.hreflang}>{LABEL[a.locale]}</a>
+              )}
+            </>
+          ))}
+        </nav>
+      )
+    }
 
     <span class="magnet cta" data-magnetic="0.24">
       <a class="btn small" href="/contact">Check availability</a>
@@ -116,6 +146,11 @@ const here = Astro.url.pathname.replace(/\/$/, '') || '/';
   .links a[aria-current='page']::after { transform: scaleX(1); }
 
   .cta { flex-shrink: 0; }
+
+  .langs { display: flex; align-items: center; gap: 6px; margin-left: 22px; color: var(--muted); letter-spacing: .06em; }
+  .langs a { color: var(--body); }
+  .langs a:hover { color: var(--tan); }
+  .langs .cur { color: var(--tan); font-weight: 600; }
 
   /* Hamburger */
   .burger {

@@ -245,14 +245,16 @@ export const EVENT_TYPES = [
   { value: 'other', label: 'Other' },
 ];
 
-/** Client to confirm ranges and currency before launch. Section 7. */
-export const BUDGET_RANGES = [
-  'Prefer not to say yet',
-  'Under $2,500',
-  '$2,500 to $5,000',
-  '$5,000 to $10,000',
-  '$10,000 and up',
-];
+/**
+ * Budget options per quoting currency. The lowest option starts at her floor
+ * (spec, Oct 2026): nothing under $3,000 CAD or $5,000 USD is offered, so an
+ * enquiry below it self-selects out instead of costing a reply.
+ * "Prefer not to say yet" is always first and is the default.
+ */
+export const BUDGET_RANGES: Record<'CAD' | 'USD', string[]> = {
+  CAD: ['$3,000 to $5,000 CAD', '$5,000 to $10,000 CAD', '$10,000 CAD and up'],
+  USD: ['$5,000 to $7,500 USD', '$7,500 to $15,000 USD', '$15,000 USD and up'],
+};
 
 /**
  * The timeline: one short line per result, newest first. Edited in the admin

@@ -8,21 +8,22 @@ import AvailabilityForm from '../../components/AvailabilityForm.astro';
 import { INTERNATIONAL_FAQ } from '../../data/faqs';
 import { faqNode, breadcrumbNode } from '../../lib/schema';
 import { getAudience, formatFollowers } from '../../lib/audience';
+import { currencyRule } from '../../lib/markets';
 
 /**
- * Phase 1 ships the hub plus the USA page. Brazil, France, the UK and South
- * Africa are Phase 2 and need human-reviewed pt-BR and fr copy (section 10),
- * so they are listed here as "in progress" rather than linked to thin stubs.
+ * The hub. Live country pages are linked; markets without a page yet are
+ * plain text that points to the form, never a link to a thin stub. Cities
+ * listed are the ones in her own audience data.
  */
 const countries = [
   {
     name: 'United States',
     href: '/international/usa',
-    cities: 'Houston, Dallas, Austin, San Antonio, New York, Los Angeles, Chicago, Miami, Las Vegas',
+    cities: 'Houston, Dallas, Austin, San Antonio, New York, Los Angeles, Chicago',
     live: true,
   },
-  { name: 'Brazil', href: null, cities: 'São Paulo, Rio de Janeiro', live: false, lang: 'Portuguese (pt-BR)' },
-  { name: 'France', href: null, cities: 'Paris', live: false, lang: 'French (fr)' },
+  { name: 'Brazil', href: '/international/brazil', cities: 'São Paulo', live: true },
+  { name: 'France', href: '/international/france', cities: 'Paris, where she competed at the 2024 DMC World Finals', live: true },
   { name: 'United Kingdom', href: null, cities: 'London', live: false },
   { name: 'South Africa', href: null, cities: 'Johannesburg, Cape Town', live: false },
   { name: 'Canada', href: '/', cities: 'Toronto, Montreal, Vancouver, Calgary', live: true },
@@ -92,8 +93,7 @@ const reach = [
                     </span>
                   ) : (
                     <span class="small pending">
-                      Page in progress{'lang' in c && c.lang ? ` — shipping in ${c.lang}` : ''}. Book
-                      through the form below in the meantime.
+                      Name your city in the form below and we will tell you what she draws there.
                     </span>
                   )}
                 </Tag>
@@ -125,13 +125,12 @@ const reach = [
         </p>
         <p>
           Quotes are itemised: performance fee, flights, accommodation and ground transport, so you
-          see the landed cost rather than a fee plus surprises. Canadian dollars by default, or your
-          local currency on request.
+          see the landed cost rather than a fee plus surprises. {currencyRule('en')}
         </p>
         <p>
-          She travels with her own controller and needs the venue to supply sound and monitoring.
-          For long-haul dates a supported local backline is usually simpler; the technical rider on
-          the <a href="/press">press page</a> lists what works.
+          She plays her own battle setup, or the venue's CDJs where turntables are not practical,
+          and needs the venue to supply sound and monitoring. The technical rider on the
+          <a href="/press">press page</a> lists both setups.
         </p>
       </div>
     </div>
@@ -147,6 +146,8 @@ const reach = [
   <AvailabilityForm
     heading="Book an international date."
     lede="Include the country and your target date. We will come back with availability, the landed cost and the authorisation timeline."
+    currency="USD"
+    travel
   />
 </Base>
 

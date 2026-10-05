@@ -411,6 +411,48 @@ past events, testimonials, audience numbers. Page body copy (headlines,
 paragraphs) is still in the page files — move sections into the editor on
 request.
 
+### 17. International visibility build — Phase 1 (Oct 2026)
+
+**Live (English):** `/international/usa/houston`, `/dallas`, `/austin`,
+`/new-york`, `/international/brazil`, `/international/france`,
+`/destination-events`, the `#offsites` section on `/corporate-events`, and
+`/go` (noindex link-in-bio: use `deejaytjr.com/go?s=tiktok`, `?s=instagram`).
+All facts are in `src/data/markets.json`.
+
+**Built as drafts, NOT published:** `/pt-br/internacional/brasil`,
+`/pt-br/internacional/brasil/sao-paulo`, `/fr/international/france`,
+`/fr/international/france/paris`. Machine-drafted, so they are noindex, out of
+the sitemap and hreflang, linked from nowhere, and carry a reviewer banner.
+**To publish one:** a native speaker reviews the page at its URL, corrects the
+text in `markets.json` (and shared strings in `src/i18n/ui.ts`), then set that
+page's `"reviewed": true`. Hreflang, sitemap alternates and the EN/PT/FR
+switcher switch on automatically.
+
+**Leads now carry:** market, page language, other cities on the trip,
+event-location/based-in, and the first-touch campaign (30-day cookie,
+disclosed in the privacy policy). Subject line: `[Booking] <market> · <type> · <date>`.
+If Airtable is used as the market sheet, add these columns: Market, Locale,
+Other cities, Based in, First touch source, First touch campaign, First touch landing.
+
+**Budget floors:** CAD from $3,000; USD from $5,000. "Under $2,500" is gone.
+Confirm these with Linda's rate card.
+
+**Open questions from the spec, still open:**
+- Albuquerque (TikTok) has no page; confirm before Phase 2.
+- Rio de Janeiro (June data) vs Brasília (spec's September export): send the
+  September export so the Brazil city list matches it.
+- The spec's TikTok figure (24.4K, +827%) and 92% men 35–54 are the June
+  snapshot; the site uses the newer September count (36.8K). Send her
+  September analytics to refresh demographics.
+
+**Still needed from her (spec):** past dates outside Canada; promoter or venue
+contacts per city; a native pt-BR and a native fr reviewer; two client quotes
+with permission; currency preference per market.
+
+**Note on FAQ schema:** FAQPage is emitted on every market page, but since
+Aug 2023 Google shows FAQ rich results only for government and health sites.
+It is there for AI answers, which do cite it — not for a Google rich result.
+
 ### 14. Bot protection keys (Cloudflare Turnstile)
 
 Both forms already carry a honeypot and a timing trap. Turnstile is wired in

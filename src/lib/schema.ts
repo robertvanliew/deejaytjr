@@ -86,9 +86,22 @@ export function serviceNode(opts: {
   name: string;
   description: string;
   url: string;
-  serviceType: string;
+  serviceType: string | string[];
   areaServed?: string[];
+  /** Typed areas for market pages: a Country, or a City contained in one. */
+  area?: { type: 'Country' | 'City'; name: string; country?: string };
+  /** BCP 47 tags the service is offered in, e.g. ['en', 'pt-BR']. */
+  availableLanguage?: string[];
 }) {
+  const areaServed = opts.area
+    ? [
+        {
+          '@type': opts.area.type,
+          name: opts.area.name,
+          ...(opts.area.country ? { containedInPlace: { '@type': 'Country', name: opts.area.country } } : {}),
+        },
+      ]
+    : (opts.areaServed ?? ['Canada', 'United States', 'Worldwide']).map((n) => ({ '@type': 'Place', name: n }));
   return {
     '@type': 'Service',
     name: opts.name,
@@ -96,10 +109,8 @@ export function serviceNode(opts: {
     url: opts.url,
     serviceType: opts.serviceType,
     provider: personRef(),
-    areaServed: (opts.areaServed ?? ['Canada', 'United States', 'Worldwide']).map((n) => ({
-      '@type': 'Place',
-      name: n,
-    })),
+    areaServed,
+    ...(opts.availableLanguage ? { availableLanguage: opts.availableLanguage } : {}),
   };
 }
 

@@ -197,7 +197,10 @@ const schema = [
 
   .gallery { display: grid; gap: 14px; margin-top: clamp(32px, 4vw, 52px); }
   .g3 { grid-template-columns: repeat(3, 1fr); }
-  .gallery :global(img) { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; display: block; }
+  /* height:auto is what lets aspect-ratio win: the <img> carries the photo's
+     own height attribute (1280px+), and an aspect ratio only applies to a box
+     whose height is auto. Without it each tile rendered as a 356x1280 strip. */
+  .gallery :global(img) { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; display: block; }
   #playlist .src { margin-top: 18px; }
 
   @media (max-width: 860px) {

@@ -5,6 +5,8 @@ import Footer from '../components/Footer.astro';
 import ContactDialog from '../components/ContactDialog.astro';
 import { SITE } from '../data/site';
 import { graph, personNode, websiteNode } from '../lib/schema';
+import { LANG_TAG, OG_LOCALE, type Locale } from '../lib/markets';
+import { t } from '../i18n/ui';
 
 export interface Props {
   title: string;
@@ -17,6 +19,15 @@ export interface Props {
   schema?: object[];
   /** Adds a subtle top rule under the nav on inner pages. */
   bodyClass?: string;
+  /** Page language. Sets <html lang>, og:locale and the draft banner text. */
+  locale?: Locale;
+  /**
+   * hreflang set from lib/markets alternates(): every live sibling plus
+   * x-default. Also drives the nav's language switcher. Empty = no siblings.
+   */
+  alternates?: { hreflang: string; href: string; locale: Locale }[];
+  /** Unreviewed translation: noindex plus a visible reviewer banner. */
+  draft?: boolean;
 }
 
 const {
@@ -27,7 +38,12 @@ const {
   noindex = false,
   schema = [],
   bodyClass = '',
+  locale = 'en',
+  alternates = [],
+  draft = false,
 } = Astro.props;
+const robotsNoindex = noindex || draft;
+const ogAlternates = alternates.filter((a) => a.hreflang !== 'x-default' && a.locale !== locale);
 
 const canonical = `${SITE.url}${path === '/' ? '/' : path}`;
 const ogUrl = new URL(ogImage, SITE.url).href;
@@ -36,7 +52,7 @@ const ga4 = import.meta.env.PUBLIC_GA4_ID;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={LANG_TAG[locale]}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -44,7 +60,8 @@ const ga4 = import.meta.env.PUBLIC_GA4_ID;
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {robotsNoindex && <meta name="robots" content="noindex, nofollow" />}
+    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
 
     <!-- Display face used by the h1 on every page. Preloaded to kill the FOUT. -->
     <link
@@ -63,6 +80,8 @@ const ga4 = import.meta.env.PUBLIC_GA4_ID;
     />
 
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content={OG_LOCALE[locale]} />
+    {ogAlternates.map((a) => <meta property="og:locale:alternate" content={OG_LOCALE[a.locale]} />)}
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -102,7 +121,8 @@ const ga4 = import.meta.env.PUBLIC_GA4_ID;
 
   <body class={bodyClass}>
     <a class="skip" href="#main">Skip to content</a>
-    <Nav />
+    <Nav alternates={alternates} locale={locale} />
+    {draft && <p class="draftbar" role="note">{t(locale).draftBanner}</p>}
     <main id="main">
       <slot />
     </main>
@@ -113,6 +133,8 @@ const ga4 = import.meta.env.PUBLIC_GA4_ID;
       import { protectImages } from '../lib/protectImages';
       import { contactDialog } from '../lib/contactDialog';
       import { photoLightbox } from '../lib/videoLightbox';
+      import { recordFirstTouch } from '../lib/firstTouch';
+      recordFirstTouch();
       initMotion();
       protectImages();
       contactDialog();

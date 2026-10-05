@@ -1,5 +1,6 @@
 ---
 import Service from '../layouts/Service.astro';
+import RecentStages from '../components/RecentStages.astro';
 import { CLUB_FAQ } from '../data/faqs';
 import { getAudience, formatFollowers } from '../lib/audience';
 
@@ -58,4 +59,6 @@ const total = formatFollowers(a);
     { label: 'Press and EPK', href: '/press', note: 'Everything you need to promote the date.' },
     { label: 'Watch', href: '/watch', note: 'Battle routines and live event footage.' },
   ]}
-/>
+>
+  <RecentStages slot="no-events" />
+</Service>

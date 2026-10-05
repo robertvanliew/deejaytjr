@@ -1,0 +1,17 @@
+---
+import MarketPage from '../../../components/MarketPage.astro';
+import { MARKETS } from '../../../lib/markets';
+
+/* One page per US city that has an English entry in data/markets.json. A city
+   without a page entry (e.g. San Antonio) is not built: the spec ships a city
+   only with a real local fact behind it. */
+export function getStaticPaths() {
+  return MARKETS.filter((m) => m.kind === 'city' && m.parent === 'usa' && m.pages.en).map((m) => ({
+    params: { city: m.pages.en!.path.split('/').pop()! },
+    props: { key: m.key },
+  }));
+}
+const { key } = Astro.props;
+---
+
+<MarketPage marketKey={key} locale="en" />

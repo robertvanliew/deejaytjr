@@ -1,0 +1,51 @@
+---
+import { t } from '../i18n/ui';
+import { currencyRule, type Locale } from '../lib/markets';
+
+/**
+ * "How a date here works": the logistics block every market page shares, with
+ * that market's values filled in. Flights only say "direct" where the market
+ * data says direct is true; null means we have not confirmed it, so the copy
+ * says "usually one connection" rather than guessing.
+ */
+export interface Props {
+  locale: Locale;
+  airport?: string;
+  direct?: boolean | null;
+}
+const { locale, airport, direct } = Astro.props;
+const s = t(locale);
+---
+
+<dl class="facts">
+  {
+    airport && (
+      <div>
+        <dt>{s.flights}</dt>
+        <dd>{direct ? s.direct(airport) : s.connection(airport)}</dd>
+      </div>
+    )
+  }
+  <div>
+    <dt>{s.authorisation}</dt>
+    <dd>{s.authText}</dd>
+  </div>
+  <div>
+    <dt>{s.quote}</dt>
+    <dd>{s.quoteText}</dd>
+  </div>
+  <div>
+    <dt>{s.backline}</dt>
+    <dd>{s.backlineText}</dd>
+  </div>
+</dl>
+<p class="small muted rule">{currencyRule(locale)}</p>
+
+<style>
+  .facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--hairline); border: 1px solid var(--hairline); }
+  .facts > div { background: var(--panel); padding: clamp(18px, 2.4vw, 26px); display: flex; flex-direction: column; gap: 8px; }
+  dt { font-family: var(--serif); font-size: 20px; font-weight: 600; color: var(--tan); }
+  dd { margin: 0; font-size: 15px; line-height: 1.55; color: var(--body); }
+  .rule { margin-top: 18px; max-width: 52em; }
+  @media (max-width: 680px) { .facts { grid-template-columns: 1fr; } }
+</style>

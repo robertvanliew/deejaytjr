@@ -1,5 +1,6 @@
 ---
 import Service from '../layouts/Service.astro';
+import PrivateReach from '../components/PrivateReach.astro';
 import { PRIVATE_FAQ } from '../data/faqs';
 ---
 
@@ -44,4 +45,6 @@ import { PRIVATE_FAQ } from '../data/faqs';
     { label: 'Watch', href: '/watch', note: 'Event footage and championship routines, kept separate.' },
     { label: 'The story', href: '/about', note: 'Three national titles and how they happened.' },
   ]}
-/>
+>
+  <PrivateReach slot="no-events" />
+</Service>

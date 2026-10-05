@@ -158,7 +158,9 @@ export function pressCarousel() {
     $('[data-a-title]').textContent = a.title ?? '';
     $('[data-a-byline]').textContent = a.byline ? `By ${a.byline}` : '';
     $('[data-a-excerpt]').textContent = a.excerpt ?? '';
-    $('[data-a-host]').textContent = a.host ?? '';
+    $('[data-a-src]').textContent = a.host
+      ? `Opens on ${a.host}. The full text is theirs; this is our summary.`
+      : `The full text is on the publisher's site; this is our summary.`;
     $<HTMLAnchorElement>('[data-a-read]').href = a.url ?? '#';
     $<HTMLAnchorElement>('[data-a-read]').innerHTML = `Read the full article on ${esc(a.outlet ?? '')} <span aria-hidden="true">↗</span>`;
     wireShareLinks(a);

@@ -1,0 +1,47 @@
+---
+/**
+ * #offsites on /corporate-events (spec, Oct 2026). Overseas corporate work is
+ * bought at home: a Toronto company's incentive trip to Lisbon is booked in
+ * Toronto. So this sits on the corporate page, where that buyer already is,
+ * rather than on a separate page they would never search for.
+ */
+---
+
+<section class="section" id="offsites">
+  <div class="wrap">
+    <div class="head">
+      <h2>Offsites and <em>incentive trips</em>.</h2>
+      <p class="lede">
+        Sales kickoffs at a resort, award trips, company retreats abroad. She travels, works to
+        your run of show wherever it is, and the quote itemises everything.
+      </p>
+    </div>
+    <ol class="steps">
+      <li>
+        <b>Tell us where and when</b>
+        <p class="small prose">The destination, the dates and where your team is flying from. That is what decides the quote.</p>
+      </li>
+      <li>
+        <b>One itemised landed cost</b>
+        <p class="small prose">Performance fee, travel days, flights, hotel, ground transport and per diem, shown line by line. No fee-plus-surprises.</p>
+      </li>
+      <li>
+        <b>Run of show, anywhere</b>
+        <p class="small prose">Welcome reception, awards dinner, closing party. Same planning call and timings as at home, with your DMC or resort team in the loop.</p>
+      </li>
+    </ol>
+    <p class="more">
+      <a class="tlink" href="/destination-events">How destination events work <span class="arw" aria-hidden="true">→</span></a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px 64px; align-items: end; margin-bottom: clamp(28px, 4vw, 44px); }
+  .head h2 { font-size: var(--h2); line-height: 1.04; }
+  .steps { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  .steps li { border-top: 1px solid var(--tan); padding-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .steps b { font-family: var(--serif); font-size: 22px; color: var(--bone); font-weight: 600; }
+  .more { margin-top: 32px; }
+  @media (max-width: 860px) { .head, .steps { grid-template-columns: 1fr; } }
+</style>

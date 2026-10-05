@@ -1,0 +1,127 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Faq from '../components/Faq.astro';
+import AvailabilityForm from '../components/AvailabilityForm.astro';
+import { serviceNode, faqNode, breadcrumbNode } from '../lib/schema';
+import { SITE } from '../data/site';
+
+/**
+ * /destination-events (spec, Oct 2026). For private hosts and planners whose
+ * event is abroad: destination weddings, milestone trips, villa weekends.
+ * These are bought at home, so the page is written for a couple in Toronto or
+ * New York, not for a fan in Tulum.
+ *
+ * No "where she has played" list of destination events yet: none exist to
+ * name. What is true and shown instead is that she already works long-haul
+ * (London, Paris, Tokyo). Destination sub-pages ship only with a real fact.
+ *
+ * The quote structure is described; rates are never on the site.
+ */
+const FAQ = [
+  {
+    q: 'Will she travel to our wedding or event abroad?',
+    a: '<p>Yes. Tell us the destination and dates and where you are based. She arrives the day before and leaves the day after, so nothing about the night depends on a same-day flight.</p>',
+  },
+  {
+    q: 'What does a destination quote include?',
+    a: '<p>One itemised landed cost: performance fee, travel days, flights, hotel, ground transport and per diem, each on its own line. You see the whole number before you commit.</p>',
+  },
+  {
+    q: 'Does she need local equipment?',
+    a: '<p>She can travel with her own battle setup or play the venue’s CDJs. Most resorts and venues supply sound; the technical rider on the press page lists both setups so your planner can confirm in one email.</p>',
+  },
+  {
+    q: 'How far ahead should we book?',
+    a: '<p>As early as you have a date. Destination dates need travel and, in some countries, work authorisation, so three months or more is comfortable.</p>',
+  },
+  {
+    q: 'Do you work with our planner or resort?',
+    a: '<p>Yes. We plan timings and logistics directly with your planner or the resort’s events team, so you are not the go-between.</p>',
+  },
+];
+---
+
+<Base
+  title="Destination Wedding and Private Event DJ | DEEJAY T-JR., Fly-In DJ"
+  description="Book DEEJAY T-JR. as a fly-in DJ for destination weddings, milestone birthdays and private events abroad. Three-time DMC Canadian Champion; one itemised landed cost covering fee, flights, hotel and ground transport."
+  path="/destination-events"
+  schema={[
+    serviceNode({
+      name: 'Destination wedding and private event DJ',
+      description:
+        'Fly-in DJ for destination weddings, private celebrations and corporate offsites abroad, by three-time DMC Canadian Champion DEEJAY T-JR.',
+      url: `${SITE.url}/destination-events`,
+      serviceType: ['Wedding DJ', 'Private event DJ', 'Corporate event DJ'],
+      areaServed: ['Worldwide'],
+    }),
+    faqNode(FAQ),
+    breadcrumbNode([
+      { name: 'Home', path: '/' },
+      { name: 'Destination events', path: '/destination-events' },
+    ]),
+  ]}
+>
+  <Hero
+    compact
+    headline="Celebrating somewhere else? She <em>flies in</em>."
+    lede="Destination weddings, milestone birthdays, villa weekends and yacht parties. A three-time national champion for the night, and one itemised cost for getting her there."
+    photo="portrait-turntable"
+    note="Travelling from Toronto Pearson."
+  />
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead title="Who books her abroad." lede="The event is overseas; the booking is made at home." />
+      <ul class="who" data-reveal-group>
+        <li><h3>Couples and wedding planners</h3><p class="small prose">Weddings in Mexico, the Caribbean, Italy, Portugal and Greece, from the welcome party to the last song.</p></li>
+        <li><h3>Private hosts</h3><p class="small prose">Milestone birthdays and anniversaries abroad, villa weekends, yacht parties and buyouts.</p></li>
+        <li><h3>Companies</h3><p class="small prose">Incentive trips, sales kickoffs and offsites. <a class="inline" href="/corporate-events#offsites">Offsites and incentive trips</a>.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section panel">
+    <div class="wrap">
+      <SectionHead title="How travel works." lede="Nothing about the night depends on a same-day flight." />
+      <ol class="steps">
+        <li><b>Tell us where, when, and where you are</b><p class="small prose">The destination and the dates, plus where you are based. That decides the quote.</p></li>
+        <li><b>One itemised landed cost</b><p class="small prose">Performance fee, travel days, flights, hotel, ground transport and per diem, line by line.</p></li>
+        <li><b>She arrives the day before</b><p class="small prose">And leaves the day after. Timings are planned with your planner or the resort’s events team.</p></li>
+      </ol>
+      <p class="small muted travelled">
+        Long-haul is routine: World Finals stages in London (2023) and Paris (2024), and host of the
+        40th DMC World Championships in Tokyo (2025).
+      </p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="wrap">
+      <SectionHead title="What hosts and planners ask." />
+      <Faq items={FAQ} />
+    </div>
+  </section>
+
+  <AvailabilityForm
+    tan
+    heading="Plan a destination date."
+    lede="Tell us where the event is, the dates, and where you are based. You will have availability and an itemised landed cost within one business day."
+    defaultType="private"
+    currency="USD"
+    travel
+  />
+</Base>
+
+<style>
+  .who { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  .who li { border-top: 1px solid var(--tan); padding-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .who h3 { font-size: 22px; }
+  .steps { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  .steps li { border-top: 1px solid var(--tan); padding-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .steps b { font-family: var(--serif); font-size: 22px; color: var(--bone); font-weight: 600; }
+  .travelled { margin-top: 28px; max-width: 48em; }
+  .inline { color: var(--tan); text-decoration: underline; text-underline-offset: 3px; }
+  @media (max-width: 860px) { .who, .steps { grid-template-columns: 1fr; } }
+</style>

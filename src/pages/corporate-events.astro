@@ -1,5 +1,6 @@
 ---
 import Service from '../layouts/Service.astro';
+import Offsites from '../components/Offsites.astro';
 import { CORPORATE_FAQ } from '../data/faqs';
 ---
 
@@ -49,4 +50,6 @@ import { CORPORATE_FAQ } from '../data/faqs';
     { label: 'Brand partnerships', href: '/brand-partnerships', note: 'Audience data, activation formats and the media kit.' },
     { label: 'Press and EPK', href: '/press', note: 'Photos, bios, stage plot and technical rider. No form.' },
   ]}
-/>
+>
+  <Offsites slot="after-formats" />
+</Service>

@@ -1,5 +1,7 @@
 ---
 import { EVENT_TYPES, BUDGET_RANGES, SITE } from '../data/site';
+import { t, EVENT_LABELS } from '../i18n/ui';
+import type { Locale } from '../lib/markets';
 
 export interface Props {
   /** Service pages pass their own type; ?type= in the URL still wins at runtime. */
@@ -9,6 +11,17 @@ export interface Props {
   id?: string;
   /** Render the whole section as a tan band. */
   tan?: boolean;
+  /** Page language. Labels, errors and the confirmation follow it. */
+  locale?: Locale;
+  /** Market key (data/markets.json) and its readable name, sent with the lead. */
+  market?: string;
+  marketName?: string;
+  /** Prefills "City and country". Still editable. */
+  prefillCity?: string;
+  /** Quoting currency: drives the budget options. */
+  currency?: 'CAD' | 'USD';
+  /** International and destination pages: adds the routing and location fields. */
+  travel?: boolean;
 }
 const {
   defaultType = '',
@@ -16,7 +29,16 @@ const {
   lede = 'Tell us the date and the room. We reply within one business day with availability and a quote.',
   id = 'availability',
   tan = false,
+  locale = 'en',
+  market = '',
+  marketName = '',
+  prefillCity = '',
+  currency = 'CAD',
+  travel = false,
 } = Astro.props;
+
+const s = t(locale).f;
+const labels = EVENT_LABELS[locale];
 ---
 
 <section class={`section avail${tan ? ' tan' : ''}`} id={id}>
@@ -27,113 +49,134 @@ const {
     </div>
 
     <div class="formwrap">
-      <form id="booking-form" novalidate data-default-type={defaultType}>
-        <!-- Anti-spam. Hidden from people, irresistible to bots. -->
+      <form
+        id="booking-form"
+        novalidate
+        data-default-type={defaultType}
+        data-locale={locale}
+        data-errors={JSON.stringify(s.errors)}
+        data-sending={s.sending}
+        data-fail={s.fail}
+      >
+        <!-- Anti-spam. Off-screen, aria-hidden and out of the tab order: people
+             never meet it; form-filling bots do. -->
         <div class="hp" aria-hidden="true">
           <label for="company_website">Company website</label>
           <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off" />
         </div>
 
+        <input type="hidden" name="locale" value={locale} />
+        <input type="hidden" name="market" value={market} />
+        <input type="hidden" name="marketName" value={marketName} />
+
         <div class="ts" data-turnstile></div>
 
         <div class="fields" data-reveal-group>
           <p class="field">
-            <label for="f-name">Your name <span class="req" aria-hidden="true">*</span></label>
+            <label for="f-name">{s.name} <span class="req" aria-hidden="true">*</span></label>
             <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="e-name" />
             <span class="err" id="e-name" role="alert"></span>
           </p>
 
           <p class="field">
-            <label for="f-email">Email <span class="req" aria-hidden="true">*</span></label>
+            <label for="f-email">{s.email} <span class="req" aria-hidden="true">*</span></label>
             <input id="f-email" name="email" type="email" autocomplete="email" required aria-describedby="e-email" />
             <span class="err" id="e-email" role="alert"></span>
           </p>
 
           <p class="field">
-            <label for="f-type">Event type <span class="req" aria-hidden="true">*</span></label>
+            <label for="f-type">{s.type} <span class="req" aria-hidden="true">*</span></label>
             <select id="f-type" name="eventType" required aria-describedby="e-type">
-              <option value="">Select one</option>
-              {EVENT_TYPES.map((t) => <option value={t.value}>{t.label}</option>)}
+              <option value="">{s.select}</option>
+              {EVENT_TYPES.map((et) => <option value={et.value}>{labels[et.value] ?? et.label}</option>)}
             </select>
             <span class="err" id="e-type" role="alert"></span>
           </p>
 
           <p class="field">
-            <label for="f-date">Event date</label>
+            <label for="f-date">{s.date}</label>
             <input id="f-date" name="eventDate" type="date" />
           </p>
 
           <p class="field">
-            <label for="f-city">City and country</label>
-            <input id="f-city" name="city" type="text" autocomplete="address-level2" />
+            <label for="f-city">{s.city}</label>
+            <input id="f-city" name="city" type="text" autocomplete="address-level2" value={prefillCity || undefined} />
           </p>
 
           <p class="field">
-            <label for="f-guests">Guest count</label>
+            <label for="f-guests">{s.guests}</label>
             <input id="f-guests" name="guests" type="text" inputmode="numeric" />
           </p>
 
           <p class="field">
-            <label for="f-budget">Entertainment budget</label>
+            <label for="f-budget">{s.budget} ({currency})</label>
             <select id="f-budget" name="budget">
-              {BUDGET_RANGES.map((b) => <option value={b}>{b}</option>)}
+              <option value="">{s.preferNot}</option>
+              {BUDGET_RANGES[currency].map((b) => <option value={b}>{b}</option>)}
             </select>
           </p>
 
           <p class="field">
-            <label for="f-heard">How did you hear about DEEJAY T-JR.?</label>
+            <label for="f-heard">{s.heard}</label>
             <input id="f-heard" name="heard" type="text" />
           </p>
 
+          {
+            travel && (
+              <>
+                <p class="field">
+                  <label for="f-other">{s.otherCities}</label>
+                  <input id="f-other" name="otherCities" type="text" aria-describedby="h-other" />
+                  <span class="hint small muted" id="h-other">{s.otherCitiesHint}</span>
+                </p>
+                <p class="field">
+                  <label for="f-based">{s.basedIn}</label>
+                  <input id="f-based" name="basedIn" type="text" aria-describedby="h-based" />
+                  <span class="hint small muted" id="h-based">{s.basedInHint}</span>
+                </p>
+              </>
+            )
+          }
+
           <p class="field wide">
-            <label for="f-message">Tell us about the event</label>
+            <label for="f-message">{s.message}</label>
             <textarea id="f-message" name="message" rows="5"></textarea>
           </p>
         </div>
 
         <div class="actions">
           <span class="magnet" data-magnetic="0.22">
-            <button class="btn" type="submit">Send booking request</button>
+            <button class="btn" type="submit">{s.submit}</button>
           </span>
-          <span class="small muted consent">
-            We only use this to answer your enquiry. No list, no newsletter.
-          </span>
+          <span class="small muted consent">{s.consent}</span>
         </div>
 
         <p class="formerr" role="alert" hidden></p>
       </form>
 
       <output class="success" for="booking-form" hidden>
-        <h3>Sent.</h3>
-        <p class="prose">
-          You’ll hear from us within one business day. A copy of your request is on its
-          way to your inbox, with the one-sheet attached.
-        </p>
+        <h3>{s.sent}</h3>
+        <p class="prose">{s.sentText}</p>
       </output>
 
       <aside class="aside">
-        <h3>Direct</h3>
+        <h3>{s.direct}</h3>
         <p class="small prose">
-          Prefer email? Reach us at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+          {s.preferEmail} <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
         </p>
-        <h3>What to include</h3>
+        <h3>{s.include}</h3>
         <ul class="small muted">
-          <li>Date, or a range of dates you are holding</li>
-          <li>City, venue and expected guest count</li>
-          <li>Set length and whether you want a scratch showcase</li>
-          <li>Whether you need her to host or MC any part of the night</li>
+          {s.inc.map((line) => <li>{line}</li>)}
         </ul>
-        <h3>Travel</h3>
-        <p class="small prose">
-          Based in {SITE.homeCity}, travelling from Toronto Pearson. International dates are routine;
-          allow travel and accommodation in the budget.
-        </p>
+        <h3>{s.travel}</h3>
+        <p class="small prose">{s.travelText}</p>
       </aside>
     </div>
   </div>
 </section>
 
 <style>
+  .hint { display: block; margin-top: 2px; }
   .avail { background: var(--panel); }
   /* A tan band paints its own background; do not fight it. */
   .avail.tan { background: var(--tan-band); }
@@ -338,6 +381,7 @@ const {
 <script>
   import { SITE_EMAIL, validate, type LeadPayload } from '../lib/form';
   import { mountTurnstile, turnstileToken } from '../lib/turnstile';
+  import { firstTouch } from '../lib/firstTouch';
 
   const form = document.querySelector<HTMLFormElement>('#booking-form');
   const success = document.querySelector<HTMLElement>('.avail .success');
@@ -345,6 +389,9 @@ const {
 
   if (form && success && formErr) {
     const field = (n: string) => form.elements.namedItem(n) as HTMLInputElement | null;
+    /* Localised error text for non-English pages; English comes from the
+       shared validator so client and server never disagree on the rules. */
+    const localErrors: Record<string, string> = JSON.parse(form.dataset.errors || '{}');
     const shownAt = Date.now();
     mountTurnstile(form.querySelector<HTMLElement>('[data-turnstile]'));
 
@@ -400,7 +447,7 @@ const {
       const errors = validate(raw);
 
       if (Object.keys(errors).length) {
-        for (const [name, message] of Object.entries(errors)) showError(name, message);
+        for (const [name, message] of Object.entries(errors)) showError(name, localErrors[name] ?? message);
         (form.querySelector('[aria-invalid="true"]') as HTMLElement | null)?.focus();
         return;
       }
@@ -415,12 +462,13 @@ const {
         referrer: document.referrer,
         elapsedMs: Date.now() - shownAt,
         turnstileToken: turnstileToken(form),
+        ...firstTouch(),
       } as LeadPayload;
 
       const btn = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
       const label = btn.textContent;
       btn.disabled = true;
-      btn.textContent = 'Sending…';
+      btn.textContent = form.dataset.sending || 'Sending…';
 
       try {
         const res = await fetch('/api/lead', {
@@ -447,7 +495,7 @@ const {
           `Booking request: ${payload.eventType || 'event'}${payload.city ? ` in ${payload.city}` : ''}`
         );
         formErr.innerHTML =
-          'Something went wrong sending that. Please email ' +
+          `${form.dataset.fail || 'Something went wrong sending that. Please email'} ` +
           `<a href="mailto:${SITE_EMAIL}?subject=${subject}">${SITE_EMAIL}</a> ` +
           'and we will pick it up directly.';
         formErr.hidden = false;

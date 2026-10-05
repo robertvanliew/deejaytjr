@@ -1,5 +1,6 @@
 import { SITE_EMAIL, validate, type LeadPayload } from './form';
 import { mountTurnstile, turnstileToken } from './turnstile';
+import { firstTouch } from './firstTouch';
 
 /**
  * Turns the published email address into a form, without taking the address
@@ -129,6 +130,7 @@ export function contactDialog() {
       utmMedium: params.get('utm_medium') ?? '',
       utmCampaign: params.get('utm_campaign') ?? '',
       referrer: document.referrer,
+      ...firstTouch(),
       elapsedMs: Date.now() - shownAt,
       turnstileToken: turnstileToken(form),
     } as LeadPayload;

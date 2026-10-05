@@ -1,6 +1,19 @@
 ---
 import Brand from './Brand.astro';
 import { SITE, SOCIALS, MUSIC_PLATFORMS, SUPPORT_PLATFORMS } from '../data/site';
+import { MARKETS, nameOf } from '../lib/markets';
+
+/* International column: built from data/markets.json, live English pages only,
+   so a city appears here the moment its page goes live and never before.
+   Countries first, each followed by its cities. */
+const intl = MARKETS.filter((m) => m.kind === 'country' && m.pages.en?.reviewed).flatMap((c) => [
+  { label: nameOf(c, 'en'), href: c.pages.en!.path, city: false },
+  ...MARKETS.filter((m) => m.kind === 'city' && m.parent === c.key && m.pages.en?.reviewed).map((m) => ({
+    label: nameOf(m, 'en'),
+    href: m.pages.en!.path,
+    city: true,
+  })),
+]);
 
 const year = new Date().getFullYear();
 
@@ -23,7 +36,14 @@ const columns = [
       { label: 'Media kit', href: '/media-kit' },
       { label: 'Latest', href: '/latest' },
       { label: 'Watch', href: '/watch' },
-      { label: 'International', href: '/international' },
+    ],
+  },
+  {
+    title: 'International',
+    links: [
+      { label: 'All markets', href: '/international' },
+      ...intl,
+      { label: 'Destination events', href: '/destination-events' },
     ],
   },
   {
@@ -64,7 +84,7 @@ const columns = [
             <h2 class="coltitle">{col.title}</h2>
             <ul>
               {col.links.map((l) => (
-                <li>
+                <li class:list={['city' in l && l.city && 'sub']}>
                   <a
                     href={l.href}
                     rel={'external' in l && l.external ? 'noopener' : undefined}
@@ -96,11 +116,23 @@ const columns = [
     </div>
 
     <div class="legal">
-      <p class="small muted">© {year} {SITE.name}. All rights reserved.</p>
-      <nav class="small" aria-label="Legal">
-        <a href="/privacy">Privacy</a>
-        <a href="/terms">Terms</a>
-      </nav>
+      <p class="small muted copy">© {year} {SITE.name} All rights reserved.</p>
+      <div class="legal-right">
+        <nav class="small" aria-label="Legal">
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+        </nav>
+        <p class="small credit">
+          Design by
+          <a
+            class="designer"
+            href="https://robertvanliew.com"
+            rel="noopener"
+            target="_blank"
+            title="robertvanliew.com"
+          >Robert Van Liew<span class="go" aria-hidden="true">↗</span></a>
+        </p>
+      </div>
     </div>
   </div>
 </footer>
@@ -114,7 +146,7 @@ const columns = [
 
   .grid {
     display: grid;
-    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    grid-template-columns: 1.3fr repeat(4, 1fr);
     gap: 48px 40px;
   }
   .brandcol { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
@@ -136,6 +168,9 @@ const columns = [
     transition: color var(--t-hover) var(--ease-out);
   }
   .col a:hover { color: var(--tan); }
+  /* Cities sit under their country, indented, so the column reads as a map. */
+  .col li.sub a { padding-left: 14px; position: relative; font-size: 14px; }
+  .col li.sub a::before { content: ''; position: absolute; left: 0; top: 50%; width: 7px; height: 1px; background: var(--hairline); }
 
   .social {
     display: flex;
@@ -168,13 +203,45 @@ const columns = [
     padding-top: 22px;
     border-top: 1px solid var(--hairline);
   }
+  .legal { align-items: baseline; }
+  .legal-right { display: flex; align-items: baseline; gap: 22px; }
   .legal nav { display: flex; gap: 22px; }
   .legal a { color: var(--muted); transition: color var(--t-hover) var(--ease-out); }
   .legal a:hover { color: var(--bone); }
 
+  /* Designer credit. Sits on the same baseline as Privacy and Terms, divided
+     from them by a hairline, so it reads as part of the bar rather than an
+     afterthought. The name lifts to tan and shows its arrow on hover. */
+  .credit { margin: 0; max-width: none; color: var(--muted); padding-left: 22px; border-left: 1px solid var(--hairline); }
+  .credit .designer {
+    color: var(--body);
+    border-bottom: 1px solid transparent;
+    transition: color var(--t-hover) var(--ease-out), border-color var(--t-hover) var(--ease-out);
+  }
+  .credit .designer:hover, .credit .designer:focus-visible { color: var(--tan); border-bottom-color: var(--tan); }
+  .credit .go {
+    display: inline-block;
+    margin-left: 3px;
+    opacity: 0;
+    transform: translate(-2px, 2px);
+    transition: opacity var(--t-hover) var(--ease-out), transform var(--t-hover) var(--ease-out);
+  }
+  .credit .designer:hover .go, .credit .designer:focus-visible .go { opacity: 1; transform: none; }
+
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: repeat(4, 1fr); }
+    .brandcol { grid-column: 1 / -1; }
+  }
   @media (max-width: 900px) {
     .grid { grid-template-columns: 1fr 1fr; }
-    .brandcol { grid-column: 1 / -1; }
+  }
+  /* Mobile: copyright, then the links, then the credit, each on its own line
+     and left-aligned, so nothing wraps into a ragged row. */
+  @media (max-width: 640px) {
+    .legal { flex-direction: column; align-items: flex-start; gap: 14px; }
+    .legal-right { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .credit { padding-left: 0; border-left: 0; }
+    .credit .go { opacity: 1; transform: none; }
   }
   @media (max-width: 560px) {
     .grid { grid-template-columns: 1fr; gap: 36px; }

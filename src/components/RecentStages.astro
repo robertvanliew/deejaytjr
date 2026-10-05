@@ -1,0 +1,63 @@
+---
+/**
+ * Fills the "selected dates" slot on /clubs-and-festivals until named club
+ * and festival dates are supplied. A promoter wants to know where she has
+ * stood in front of a crowd; these are the verified answers, newest first.
+ */
+const stages = [
+  { year: '2026', what: 'Ran the DMC Canadian DJ Championships as branch manager', where: 'The Rec Room Roundhouse, Toronto', href: '/latest#dmc-canada-2026' },
+  { year: '2025', what: 'Host, 40th Technics DMC World DJ Championships', where: 'Spotify O-EAST, Tokyo', href: '/latest#dmc-world-2025' },
+  { year: '2025', what: 'Bastid’s BBQ, released as a live DJ mix', where: 'Toronto', href: '/music' },
+  { year: '2024', what: 'Competed at the Technics DMC World Finals', where: 'Paris', href: '/watch' },
+  { year: '2023', what: 'Top 9, Technics DMC World Finals', where: 'London', href: '/watch' },
+];
+---
+
+<section class="section panel" id="stages">
+  <div class="wrap">
+    <div class="head">
+      <h2>Recent <em>stages</em>.</h2>
+      <p class="lede">
+        Where she has worked a room lately. Promoters: ask what she draws in your city, and we
+        will send the numbers from her own analytics.
+      </p>
+    </div>
+    <ol class="stages" data-reveal-group>
+      {
+        stages.map((s) => (
+          <li>
+            <a href={s.href}>
+              <b class="yr">{s.year}</b>
+              <span class="what">{s.what}</span>
+              <span class="small muted where">{s.where}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px 64px; align-items: end; margin-bottom: clamp(28px, 4vw, 44px); }
+  .head h2 { font-size: var(--h2); line-height: 1.04; }
+  .stages { list-style: none; max-width: 980px; }
+  .stages a {
+    display: grid;
+    grid-template-columns: 5.5em minmax(0, 1fr) auto;
+    gap: 8px 24px;
+    align-items: baseline;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--hairline);
+    transition: color var(--t-hover) var(--ease-out);
+  }
+  .stages li:first-child a { border-top: 1px solid var(--hairline); }
+  .yr { font-family: var(--serif); font-size: 22px; color: var(--tan); font-weight: 600; }
+  .what { font-family: var(--serif); font-size: 20px; color: var(--bone); }
+  .stages a:hover .what { color: var(--tan); }
+  @media (max-width: 760px) {
+    .head { grid-template-columns: 1fr; }
+    .stages a { grid-template-columns: 4em minmax(0, 1fr); }
+    .where { grid-column: 2; }
+  }
+</style>
