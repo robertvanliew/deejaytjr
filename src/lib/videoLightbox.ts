@@ -125,6 +125,7 @@ function openPanel(btn: HTMLButtonElement, o: PanelOpts) {
   closing = false;
 
   r.title.textContent = o.title;
+  r.title.hidden = !o.title;
   r.meta.textContent = o.meta ?? '';
   r.meta.hidden = !o.meta;
   r.dlg.style.setProperty('--arn', String(o.ratio || 1.7778));
@@ -277,7 +278,12 @@ export function videoLightbox() {
  * like a smear once blown up to fill the viewport.
  */
 export function photoLightbox() {
-  const triggers = document.querySelectorAll<HTMLButtonElement>('button[data-photo]');
+  /* Bound once per element: the marquee, Photo.astro and Base may each call
+     this, and a second showModal() on an open dialog throws. */
+  const triggers = [...document.querySelectorAll<HTMLButtonElement>('button[data-photo]')].filter(
+    (b) => !b.dataset.lb
+  );
+  triggers.forEach((b) => (b.dataset.lb = '1'));
   triggers.forEach((btn) =>
     btn.addEventListener('click', (e) => {
       e.preventDefault();

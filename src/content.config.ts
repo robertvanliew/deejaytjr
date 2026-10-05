@@ -2,9 +2,19 @@ import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 /**
+ * The admin (Keystatic) writes an empty optional field as "" or null. These
+ * helpers read either as "not set", so saving a half-filled form can never
+ * fail the build.
+ */
+const blank = (v: unknown) => (v === '' || v === null ? undefined : v);
+const optStr = () => z.preprocess(blank, z.string().optional());
+const optUrl = () => z.preprocess(blank, z.string().url().optional());
+const optNum = () => z.preprocess(blank, z.number().optional());
+
+/**
  * Content the client should be able to edit without a developer (section 8).
- * These are JSON files in the repo now; the same schemas map cleanly onto a
- * Sanity or Decap dataset when the client wants a UI.
+ * These are JSON files in the repo, edited from the admin at /keystatic
+ * (keystatic.config.ts mirrors these schemas field for field).
  *
  * Schemas are strict on purpose: a malformed testimonial fails the build
  * rather than shipping a broken card.
@@ -17,24 +27,24 @@ const videos = defineCollection({
     /** Drives the two tabs on /watch. */
     category: z.enum(['event', 'battle', 'interview']),
     /** Null until the client supplies the link. Renders as a marked slot. */
-    youtubeId: z.string().nullable().default(null),
+    youtubeId: z.preprocess((v) => (v === '' ? null : v), z.string().nullable().default(null)),
     description: z.string(),
-    venue: z.string().optional(),
-    date: z.string().optional(),
+    venue: optStr(),
+    date: optStr(),
     /** ISO 8601 duration, e.g. "PT4M12S". Required by VideoObject schema. */
-    duration: z.string().optional(),
+    duration: optStr(),
     /**
      * Seconds into the video where her segment begins. Several of these are
      * multi-hour livestreams and documentaries; without this the viewer lands
      * at 0:00 and never finds her.
      */
-    start: z.number().optional(),
+    start: optNum(),
     /** Lower sorts first. The large tile in the grid is order 1. */
     order: z.number().default(50),
     featured: z.boolean().default(false),
     /** Channel that published the clip, when it is not hers. Shown on the tile. */
-    credit: z.string().optional(),
-    creditUrl: z.string().url().optional(),
+    credit: optStr(),
+    creditUrl: optUrl(),
     /** Surfaces the clip on these service pages, beside the relevant claim. */
     services: z.array(z.enum(['corporate', 'private', 'club', 'brand'])).default([]),
   }),
@@ -45,10 +55,17 @@ const press = defineCollection({
   schema: z.object({
     title: z.string(),
     outlet: z.string(),
-    date: z.string().optional(),
-    url: z.string().url().nullable().default(null),
+    date: optStr(),
+    url: z.preprocess((v) => (v === '' ? null : v), z.string().url().nullable().default(null)),
     excerpt: z.string(),
     order: z.number().default(50),
+    /** Writer's name, shown in the article popup. */
+    byline: optStr(),
+    /** ISO date, for the popup and a correct <time datetime>. */
+    published: optStr(),
+    /** Key into data/photos.ts for the popup and story card. Her own
+        photography, never the outlet's lead image, which we hold no rights to. */
+    photo: optStr(),
   }),
 });
 
@@ -74,8 +91,8 @@ const events = defineCollection({
     city: z.string(),
     year: z.string(),
     type: z.enum(['corporate', 'private', 'club', 'brand']),
-    venue: z.string().optional(),
-    note: z.string().optional(),
+    venue: optStr(),
+    note: optStr(),
     /** Only display named clients we have permission to name. */
     permissionOnFile: z.boolean().default(false),
   }),

@@ -1,0 +1,210 @@
+---
+import { EVENT_TYPES, SITE } from '../data/site';
+
+/**
+ * Contact dialog.
+ *
+ * A `mailto:` link is a dead end for most of the people this site is built for.
+ * On webmail it does nothing at all; on a managed Windows laptop — which is
+ * what a corporate event planner is using — it opens a blank Outlook they may
+ * not have configured. The click looks like it worked and the enquiry is gone.
+ *
+ * So the published address becomes a form that posts to the same `/api/lead`
+ * endpoint as the booking form: one inbox, one honeypot, one set of validation
+ * rules, and the enquiry is captured in the browser rather than handed to a
+ * mail client that may not exist.
+ *
+ * PROGRESSIVE ENHANCEMENT. Every link keeps its real `mailto:` href in the
+ * markup and is only intercepted once the script runs. With JavaScript off the
+ * address still behaves exactly as it always did, and the dialog's own footer
+ * offers the plain address for anyone who would rather use their own mail app —
+ * the point is to remove a dead end, not to trap people in a form.
+ *
+ * Rendered once per page from Base.astro. The markup lives here rather than
+ * being built in JS so the fields, labels and error slots are real HTML that a
+ * screen reader can describe.
+ */
+---
+
+<dialog class="cdlg" aria-labelledby="cdlg-title">
+  <div class="panel">
+    <button class="x" type="button" aria-label="Close">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" fill="none" />
+      </svg>
+    </button>
+
+    <form id="contact-form" novalidate>
+      <h2 id="cdlg-title">Send a message.</h2>
+      <p class="lede small">
+        Goes straight to her team. You will have a reply within one business day.
+      </p>
+
+      <p class="field">
+        <label for="c-name">Your name <span aria-hidden="true">*</span></label>
+        <input id="c-name" name="name" type="text" autocomplete="name" required />
+        <span class="err" id="ce-name" aria-live="polite"></span>
+      </p>
+
+      <p class="field">
+        <label for="c-email">Email <span aria-hidden="true">*</span></label>
+        <input id="c-email" name="email" type="email" autocomplete="email" required />
+        <span class="err" id="ce-email" aria-live="polite"></span>
+      </p>
+
+      <p class="field">
+        <label for="c-type">What is it about?</label>
+        <select id="c-type" name="eventType">
+          {EVENT_TYPES.map((t) => <option value={t.value}>{t.label}</option>)}
+        </select>
+        <span class="err" id="ce-type" aria-live="polite"></span>
+      </p>
+
+      <p class="field">
+        <label for="c-message">Message <span aria-hidden="true">*</span></label>
+        <textarea id="c-message" name="message" rows="5" required></textarea>
+        <span class="err" id="ce-message" aria-live="polite"></span>
+      </p>
+
+      {/* Hidden from people, irresistible to bots. Same trap as the main form. */}
+      <p class="hp" aria-hidden="true">
+        <label for="c-company">Company website</label>
+        <input id="c-company" name="company_website" type="text" tabindex="-1" autocomplete="off" />
+      </p>
+
+      <div class="ts" data-turnstile></div>
+
+      <div class="actions">
+        <button class="btn" type="submit">Send message</button>
+        <span class="small muted">We only use this to answer you. No list, no newsletter.</span>
+      </div>
+
+      <p class="formerr" role="alert" hidden></p>
+
+      <p class="small muted direct">
+        Prefer your own mail app? <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      </p>
+    </form>
+
+    <output class="done" for="contact-form" hidden tabindex="-1">
+      <h2>Sent.</h2>
+      <p class="lede small">
+        You will hear back within one business day. A copy is on its way to your inbox.
+      </p>
+      <button class="btn ghost closebtn" type="button">Close</button>
+    </output>
+  </div>
+</dialog>
+
+<style>
+  /* Same trap as .vbox: an unconditional display value un-hides a closed
+     <dialog>. This is what put the form at the bottom of the footer. */
+  .cdlg:not([open]) { display: none; }
+
+  .cdlg {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: clamp(16px, 4vw, 40px);
+    border: 0;
+    background: transparent;
+    display: grid;
+    place-items: center;
+    overflow: auto;
+    color: var(--body);
+  }
+  .cdlg::backdrop {
+    background: color-mix(in srgb, var(--ink) 88%, transparent);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .cdlg[open]::backdrop { animation: cdlg-veil 300ms var(--ease-out); }
+  }
+  @keyframes cdlg-veil { from { opacity: 0; } }
+
+  .panel {
+    position: relative;
+    width: min(520px, 100%);
+    background: var(--panel);
+    border: 1px solid var(--hairline);
+    padding: clamp(24px, 4vw, 40px);
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: clamp(27px, 3vw, 34px);
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--bone);
+  }
+  .lede { margin-top: 10px; margin-bottom: 26px; max-width: 34em; }
+
+  .field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+  label { font-size: 13.5px; color: var(--muted); }
+  input, select, textarea {
+    width: 100%;
+    padding: 12px 13px;
+    font: inherit;
+    font-size: 15px;
+    color: var(--bone);
+    background-color: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 0;
+    transition: border-color var(--t-hover) var(--ease-out);
+  }
+  textarea { resize: vertical; min-height: 110px; }
+  /* :focus-within, not :focus — Chromium focuses an inner shadow segment on
+     some controls and the ring never reaches the element itself. */
+  .field:focus-within input,
+  .field:focus-within select,
+  .field:focus-within textarea { border-color: var(--tan); outline: none; }
+
+  .err { font-size: 12.5px; color: #e4a0a0; min-height: 0; }
+  /* Once submitted, reserve the line so clearing a message cannot shift the
+     button out from under the pointer mid-click. */
+  form[data-submitted] .err { min-height: 16px; }
+
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 22px; }
+  .formerr { margin-top: 16px; font-size: 13.5px; color: #e4a0a0; }
+  .formerr[hidden] { display: none; }
+  .direct { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--hairline); }
+  .direct a { color: var(--tan); text-decoration: underline; text-underline-offset: 3px; }
+
+  .done:not([hidden]) { display: block; }
+  .done .btn { margin-top: 22px; }
+
+  .x {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color var(--t-hover) var(--ease-out),
+                border-color var(--t-hover) var(--ease-out),
+                transform var(--t-press) var(--ease-out);
+  }
+  .x:hover { color: var(--bone); border-color: var(--tan); }
+  .x:active { transform: scale(0.94); }
+
+  /* On a short phone the panel runs a few pixels past the fold. It would
+     scroll, but a form that opens already clipped reads as broken. */
+  @media (max-height: 900px) {
+    .cdlg { padding: 12px; }
+    .panel { padding: 24px 22px; }
+    .lede { margin-bottom: 20px; }
+    .field { margin-bottom: 13px; }
+    textarea { min-height: 88px; }
+  }
+</style>

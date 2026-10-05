@@ -2,12 +2,16 @@
 import { getAudience, formatPct } from '../lib/audience';
 
 export interface Props {
-  /** Show the "pending" cells too. Off for public summaries, on for the kit. */
+  /**
+   * Show platforms with no supplied figure as a "pending" cell. Off by
+   * default: a row of dashes reads as a gap in her reach rather than as a gap
+   * in our data, which is the opposite of what the page is for.
+   */
   showPending?: boolean;
   /** Omit to fit the column count to however many platforms are tracked. */
   cols?: 3 | 4;
 }
-const { showPending = true, cols: colsProp } = Astro.props;
+const { showPending = false, cols: colsProp } = Astro.props;
 
 const a = await getAudience();
 const platforms = showPending ? a.platforms : a.platforms.filter((p) => p.followers !== null);

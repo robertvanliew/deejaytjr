@@ -1,3 +1,6 @@
+import awardsFile from './editable/awards.json';
+import timelineFile from './editable/timeline.json';
+import rolesFile from './editable/roles.json';
 /**
  * Single source of truth for facts that appear in more than one place:
  * name formatting, awards, socials, nav, credentials, client marks.
@@ -61,54 +64,33 @@ export const AUTHORITY_RECORDS = [
 /**
  * Competitive record, newest first. `source` is an authoritative third-party
  * page confirming the result — the governing body's own site wherever
- * possible. Anything without one is unsourced and is marked as such in
- * ASSETS-NEEDED.md; before adding a claim here, find the page that proves it.
+ * possible. Anything without one renders without a link.
+ *
+ * EDITED IN THE ADMIN. The list lives in src/data/editable/awards.json and is
+ * maintained from /keystatic, so she can add or reword a result herself. The
+ * ordering is still done here, so whatever order she types things in, the
+ * site shows newest first; same-year entries keep the order she gave them.
  */
 export interface Award {
   title: string;
+  year: number;
   source?: string;
   sourceLabel?: string;
 }
 
-export const AWARDS: Award[] = [
-  {
-    title: '2024 DMC Canada DJ Champion',
-    source: 'https://www.dmcdjchamps.com/post/dmc-world-dj-championships-expands-with-new-branches-and-managers-for-2025',
-    sourceLabel: 'DMC World',
-  },
-  {
-    title: '2023 DMC Canada DJ Champion',
-    source: 'https://www.dmcdjchamps.com/post/dmc-world-dj-championships-expands-with-new-branches-and-managers-for-2025',
-    sourceLabel: 'DMC World',
-  },
-  {
-    title: '2022 DMC Canada DJ Champion',
-    source: 'https://www.dmcdjchamps.com/post/dmc-world-dj-championships-expands-with-new-branches-and-managers-for-2025',
-    sourceLabel: 'DMC World',
-  },
-  {
-    title: '2023 DMC World DJ Championships — 9th place',
-    source:
-      'https://www.dmcdjchamps.com/post/2023-technics-dmc-world-finals-results-judges-scores',
-    sourceLabel: 'DMC World results and judges’ scores',
-  },
-  {
-    title: '2024 DMC World DJ Championships, Paris — competitor',
-    source: 'https://www.youtube.com/watch?v=KtJcGj5j6Kc&t=19722',
-    sourceLabel: 'DMC World stream',
-  },
-  { title: '2023 IDA World DJ Championships Technical Category Finalist' },
-  {
-    title: '2019 Goldie Awards competitor',
-    source: 'https://www.goldieawards.com/2019',
-    sourceLabel: 'Goldie Awards 2019',
-  },
-  {
-    title: '2018 Red Bull 3Style Canada — 3rd place',
-    source: 'https://www.youtube.com/watch?v=4i-yM_2LCLo',
-    sourceLabel: 'Full routine',
-  },
-];
+/** Keystatic saves an empty optional field as "" or null; treat both as absent. */
+const clean = (v: unknown): string | undefined =>
+  typeof v === 'string' && v.trim() ? v.trim() : undefined;
+
+export const AWARDS: Award[] = (awardsFile.items as Array<Record<string, unknown>>)
+  .filter((a) => clean(a.title) && Number(a.year))
+  .map((a) => ({
+    title: clean(a.title)!,
+    year: Number(a.year),
+    source: clean(a.source),
+    sourceLabel: clean(a.sourceLabel),
+  }))
+  .sort((a, b) => b.year - a.year);
 
 /**
  * Positions held, as distinct from results won. Being trusted by the governing
@@ -116,16 +98,17 @@ export const AWARDS: Award[] = [
  * winning its championship, and it is the one that says she is part of how the
  * sport is run rather than only someone who competes in it.
  */
-export const ROLES = [
-  {
-    title: 'DMC Canada Branch Manager',
-    detail:
-      'Appointed for 2025 alongside Jake “Vekked” Meyer and DJ Relik to run the DMC World DJ Championships in Canada.',
-    source:
-      'https://www.dmcdjchamps.com/post/dmc-world-dj-championships-expands-with-new-branches-and-managers-for-2025',
-    sourceLabel: 'DMC World branch announcement',
-  },
-];
+/** Positions held. Edited in the admin (src/data/editable/roles.json). */
+export const ROLES: { title: string; detail: string; source?: string; sourceLabel?: string }[] = (
+  rolesFile.items as Array<Record<string, unknown>>
+)
+  .filter((r) => clean(r.title))
+  .map((r) => ({
+    title: clean(r.title)!,
+    detail: clean(r.detail) ?? '',
+    source: clean(r.source),
+    sourceLabel: clean(r.sourceLabel),
+  }));
 
 /**
  * Profiles, grouped by what they are for.
@@ -223,6 +206,8 @@ export interface ClientMark {
  *   raptors.png   cdn.nba.com (official team CDN)
  *   pioneerdj.svg assets.alphatheta.com (Pioneer DJ's parent company)
  *   namm.svg      namm.org (lifted from the site header, which inlines it)
+ *   ink-entertainment.png  supplied by the client (TJR_logos/), Oct 2026
+ *   animl-steakhouse.png   supplied by the client (TJR_logos/), Oct 2026
  *
  * Heights are optical, not mathematical: these logos have wildly different
  * aspect ratios and internal weights, so a shared height makes the wide
@@ -243,6 +228,12 @@ export const CLIENT_MARKS: ClientMark[] = [
   { name: 'Toronto Raptors', file: 'raptors.png', height: 32 },
   { name: 'Pioneer DJ', file: 'pioneerdj.svg', height: 19 },
   { name: 'NAMM', file: 'namm.svg', height: 26 },
+  /* Client-supplied file (TJR_logos/01-Primary-Logo_White.png), trimmed.
+     Single-colour white on alpha, so it masks to the row's ink cleanly. */
+  { name: 'INK Entertainment', file: 'ink-entertainment.png', height: 30 },
+  /* INK Entertainment venue, King West. Client-supplied file (TJR_logos/
+     animl steakhouse 2.png), trimmed. Single-colour white script on alpha. */
+  { name: 'Animl Steakhouse', file: 'animl-steakhouse.png', height: 30 },
 ];
 
 /** Event type options. Shared by the form and by service-page pre-selection. */
@@ -263,10 +254,14 @@ export const BUDGET_RANGES = [
   '$10,000 and up',
 ];
 
-export const YEARS = [
-  { year: '2018', note: 'Third place, Red Bull 3Style Canada' },
-  { year: '2019', note: 'Competed at the Goldie Awards' },
-  { year: '2022', note: 'DMC Canada Champion' },
-  { year: '2023', note: 'DMC Canada Champion. Top 9, DMC World Finals, London' },
-  { year: '2024', note: 'DMC Canada Champion. Three consecutive national titles' },
-];
+/**
+ * The timeline: one short line per result, newest first. Edited in the admin
+ * (src/data/editable/timeline.json). Separate competitions get separate lines
+ * — DMC and IDA are different organisations — and appearances that are not
+ * results (PLAYLIST Retreat) belong on /latest, not here.
+ */
+export const YEARS = (timelineFile.items as Array<Record<string, unknown>>)
+  .filter((y) => Number(y.year) && clean(y.note))
+  .map((y) => ({ y: Number(y.year), note: clean(y.note)! }))
+  .sort((a, b) => b.y - a.y)
+  .map((y) => ({ year: String(y.y), note: y.note }));

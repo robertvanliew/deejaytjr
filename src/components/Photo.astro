@@ -1,7 +1,21 @@
 ---
-import { Image } from 'astro:assets';
-import { PHOTOS, type PhotoKey } from '../data/photos';
+import { Image, getImage } from 'astro:assets';
+import { PHOTOS, creditFor, type PhotoKey } from '../data/photos';
 
+/**
+ * Every photograph on the site goes through here, which is what makes two
+ * things true everywhere at once: the responsive srcset and format work from
+ * the image pipeline, and — unless a caller opts out — a click opens the
+ * picture full size in the shared lightbox.
+ *
+ * `zoom` is on by default and off in exactly two places: the hero, where the
+ * image is a backdrop behind the headline rather than something to inspect,
+ * and the marquee, which supplies its own trigger. Anything new that uses
+ * this component is zoomable without anyone remembering to make it so.
+ *
+ * The lightbox needs a larger rendition than the page does, so one is built
+ * at 1800px and carried on the trigger. Nothing downloads it until a click.
+ */
 export interface Props {
   name: PhotoKey;
   /** Overrides the registry alt where context needs something more specific. */
@@ -16,6 +30,8 @@ export interface Props {
   deferred?: boolean;
   /** Purely visual: hidden from assistive tech, which describes the group. */
   decorative?: boolean;
+  /** Click to open full size. Default on. */
+  zoom?: boolean;
   class?: string;
   loading?: 'lazy' | 'eager';
 }
@@ -28,20 +44,69 @@ const {
   priority = false,
   deferred = false,
   decorative = false,
+  zoom = true,
   class: cls = '',
 } = Astro.props;
 
 const photo = PHOTOS[name];
+const text = decorative ? '' : (alt ?? photo.alt);
+const credit = creditFor(name);
+const full = zoom ? await getImage({ src: photo.src, width: 1800, format: 'webp' }) : null;
 ---
 
-<Image
-  src={photo.src}
-  alt={decorative ? '' : (alt ?? photo.alt)}
-  aria-hidden={decorative ? 'true' : undefined}
-  widths={widths}
-  sizes={sizes}
-  class={cls}
-  loading={priority ? 'eager' : 'lazy'}
-  decoding={priority ? 'sync' : 'async'}
-  fetchpriority={priority ? 'high' : deferred ? 'low' : 'auto'}
-/>
+{
+  full ? (
+    <button
+      class="pz"
+      type="button"
+      data-photo
+      data-full={full.src}
+      data-w={full.attributes.width ?? full.options.width}
+      data-h={full.attributes.height}
+      data-alt={photo.alt}
+      data-meta={credit ? `Photograph: ${credit}` : undefined}
+      aria-label={`View photograph: ${photo.alt}`}
+    >
+      <Image
+        src={photo.src}
+        alt={text}
+        aria-hidden={decorative ? 'true' : undefined}
+        widths={widths}
+        sizes={sizes}
+        class={cls}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding={priority ? 'sync' : 'async'}
+        fetchpriority={priority ? 'high' : deferred ? 'low' : 'auto'}
+      />
+    </button>
+  ) : (
+    <Image
+      src={photo.src}
+      alt={text}
+      aria-hidden={decorative ? 'true' : undefined}
+      widths={widths}
+      sizes={sizes}
+      class={cls}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding={priority ? 'sync' : 'async'}
+      fetchpriority={priority ? 'high' : deferred ? 'low' : 'auto'}
+    />
+  )
+}
+
+<style>
+  /* The trigger must be invisible as a box: no padding, no border, no
+     background, and it takes the width its parent gave the image. Callers'
+     classes still land on the <img> inside, so their sizing keeps working. */
+  .pz {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    line-height: 0;
+    cursor: zoom-in;
+  }
+  .pz:focus-visible { outline: 2px solid var(--tan); outline-offset: 2px; }
+  .pz :global(img) { display: block; }
+</style>

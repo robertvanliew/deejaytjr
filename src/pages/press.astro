@@ -2,6 +2,8 @@
 import Base from '../layouts/Base.astro';
 import SectionHead from '../components/SectionHead.astro';
 import Photo from '../components/Photo.astro';
+import StagePlot from '../components/StagePlot.astro';
+import { creditFor } from '../data/photos';
 import { getCollection } from 'astro:content';
 import { AWARDS, ROLES, SITE, ALL_PROFILES, AUTHORITY_RECORDS } from '../data/site';
 import { breadcrumbNode } from '../lib/schema';
@@ -10,7 +12,7 @@ const pressItems = (await getCollection('press')).sort((a, b) => a.data.order - 
 
 /**
  * Three bio lengths, section 6. Written from the credentials in the brief.
- * Frankpella to reconcile against the three press articles before launch.
+ * Reconciled against The Source and The Hype Magazine features (Sept 2026).
  */
 const bios = [
   {
@@ -45,17 +47,22 @@ DEEJAY T-JR. is available worldwide for corporate events, private events, clubs 
 ];
 
 /**
- * Client-supplied photography. Download links point at the processed files;
+ * Client-supplied photography. Credits come from the registry in data/photos.ts
+ * so the gallery, the lightbox and anything added later all say the same name.
+ * Download links point at the processed files;
  * the originals (up to 8192px) are with her team — noted on the page so
  * a magazine knows a print-resolution file exists.
  */
 const pressPhotos = [
-  { key: 'hero-decks', label: 'At the decks, DMC eliminations', credit: 'Jeff Straw' },
-  { key: 'dmc-2024-booth', label: '2024 DMC Canada final', credit: 'Credit to be confirmed' },
-  { key: 'portrait-decks', label: 'Portrait, vertical', credit: 'Credit to be confirmed' },
-  { key: 'stage-crowd', label: 'Stage and crowd', credit: 'Jeff Straw' },
-  { key: 'portrait-close', label: 'Portrait, close', credit: 'Credit to be confirmed' },
-  { key: 'bastids-bbq', label: "Bastid's BBQ, Toronto", credit: 'Credit to be confirmed' },
+  { key: 'hero-decks', label: 'At the decks, DMC eliminations' },
+  { key: 'dmc-2024-booth', label: '2024 DMC Canada final' },
+  { key: 'portrait-decks', label: 'Portrait, vertical' },
+  { key: 'stage-crowd', label: 'Stage and crowd' },
+  { key: 'portrait-close', label: 'Portrait, close' },
+  { key: 'bastids-bbq', label: "Bastid's BBQ, Toronto" },
+  { key: 'raptors905-purple', label: "Raptors 905 Women's Celebration Game" },
+  { key: 'raptors905-jumbotron', label: 'Raptors 905, guest DJ on the scoreboard' },
+  { key: 'raptors905-booth', label: 'Raptors 905 DJ booth, Paramount Fine Foods Centre' },
 ] as const;
 ---
 
@@ -76,7 +83,7 @@ const pressPhotos = [
       <p class="lede">
         Everything a planner, promoter, agency or journalist needs, with nothing to fill in first.
         Take what you need. If something is missing, email
-        <a class="inline" href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+        <a class="inline" data-contact href={`mailto:${SITE.email}`}>{SITE.email}</a>.
       </p>
       <nav class="jump small" aria-label="Press kit sections">
         <a href="#photos">Photos</a>
@@ -107,7 +114,11 @@ const pressPhotos = [
               />
               <figcaption class="small muted">
                 {p.label}
-                <span class="credit">Photograph: {p.credit}</span>
+                {creditFor(p.key) ? (
+                  <span class="credit">Photograph: {creditFor(p.key)}</span>
+                ) : (
+                  <span class="credit">Photographer to be confirmed</span>
+                )}
               </figcaption>
             </figure>
           ))
@@ -222,13 +233,7 @@ const pressPhotos = [
         title="Stage plot and technical rider."
         lede="What she needs from your venue. Most rooms already have it."
       />
-      <div class="slot" style="min-height:220px">
-        <span>
-          <b>Stage plot and rider pending</b>
-          Section 11, item 7. These publish here as HTML with a PDF alongside, so a production
-          manager can read them on a phone without downloading anything.
-        </span>
-      </div>
+      <StagePlot />
     </div>
   </section>
 

@@ -2,7 +2,7 @@
 import Service from '../layouts/Service.astro';
 import SectionHead from '../components/SectionHead.astro';
 import Kpi from '../components/Kpi.astro';
-import VideoGrid from '../components/VideoGrid.astro';
+import BrandShowcase from '../components/BrandShowcase.astro';
 import PlatformReach from '../components/PlatformReach.astro';
 import AudienceGeography from '../components/AudienceGeography.astro';
 import { BRAND_FAQ } from '../data/faqs';
@@ -86,9 +86,9 @@ const reach = [
       <div class="wrap">
         <SectionHead
           title="What it looks like when a brand puts its own name on it."
-          lede="AlphaTheta and Pioneer DJ published this on their own channel — a full performance on the DJM-S11 and the PLX-CRSS12."
+          lede="Two pieces AlphaTheta and Pioneer DJ published on their own channel. Press play on either one and it opens full size, without leaving the page."
         />
-        <VideoGrid service="brand" featureFirst={false} />
+        <BrandShowcase />
       </div>
     </section>
 

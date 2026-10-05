@@ -20,6 +20,24 @@ credits.
 
 ### 1 and 2. Photography — RESOLVED, credits outstanding
 
+**Raptors 905 (Oct 2026).** Four photos from the Raptors 905 Women's Celebration
+Game at Paramount Fine Foods Centre are live in the marquee and press gallery.
+Captions say "Raptors 905" deliberately — it is the Raptors' G League team, and
+"played the Raptors' arena" would be a claim a sponsor could check and find
+wrong. All four are credited to **DJ Andre905** (client-confirmed). Worth adding the game to `src/content/events/` with a date.
+Also: `portrait-vertical` (red top, outdoor) matches the outfit in `bastids-bbq`,
+so it is probably the same Bastid's BBQ and Joanna Foz-Dait's — confirm and credit.
+
+**Credits (Oct 2026).** DMC photography is **Jeff Straw**; Bastid's BBQ is
+**Joanna Foz-Dait** — both client-confirmed and now set per image in
+`src/data/photos.ts`, which feeds the press gallery and the lightbox caption
+together. Still uncredited: `early-set`, `portrait-vertical` (red outfit,
+outdoor — a different event, or a different year of the BBQ?) and
+`goldie-2019`. Name the photographer for each and it appears everywhere at once.
+One to double-check: the Paris World Finals frames (`stage-crowd`, `club-set`)
+carry DMC World's sponsor strip — confirm Jeff Straw shot those rather than
+DMC's house photographer before they go out in a press pack.
+
 **No longer blocking.** 21 photographs were found in `Deejay T-JR Photos/` and
 are now live across the site. Every hero, the story portrait, the about
 portrait, the press grid and the photo marquee use her real images. There are no
@@ -167,6 +185,15 @@ pages read.
 
 ### 8. Stage plot and technical rider (brief section 11, item 7)
 
+**Draft published (Oct 2026).** A top-down plot, input list and bring/provide
+split are live on `/press` (`StagePlot.astro`), built from the gear the client
+named: 2 × Pioneer DJ PLX-CRSS12 (battle style, tone arm left), QSC K12.2, a DJ
+table with facade; laptop upstage left, monitor upstage right, per her direction. The DJM-S11
+is inferred from the AlphaTheta session and should be confirmed. Also to confirm
+before the draft tag comes off: table height, power requirement, whether she or
+the venue supplies the K12.2s, the monitor, and the mic channel on hosting
+bookings. A PDF export should follow once her team signs it off.
+
 For `/press`. Send as a document and we will publish it as HTML with a PDF
 alongside, so a production manager can read it on a phone.
 
@@ -302,6 +329,17 @@ and any entry carrying a `source` renders as a clickable link on `/press`,
 
 - 2023 IDA World Technical Category Finalist
 - 2018 Red Bull 3Style Canada, 3rd place
+- **2021 DMC Canada DJ Finalist** — added Oct 2026, client-supplied
+- **2017 DMC Canada DJ Scratch Finalist** — added Oct 2026, client-supplied
+- **2016 DMC Canada DJ Scratch Finalist** — added Oct 2026, client-supplied
+- **2016 IDA Canada DJ Scratch Finalist** — added Oct 2026, client-supplied
+
+  These four came from the client rather than from a results page, and they are
+  the oldest claims on the site — DMC and IDA archives from 2016–2021 are the
+  hardest to find. They render without a source link, which is honest but leaves
+  four of the twelve results unverifiable by a promoter. Worth asking DMC Canada
+  directly: she is a branch manager, so the archive is a question to a colleague
+  rather than a research project.
 - **NAMM 2024.** The session URL supplied returns a 404, so it cannot be linked.
   The claim is still on the brand page from the brief. A working link, or a
   photograph with a date, would fix it.
@@ -334,6 +372,53 @@ what section 9's entity work is trying to establish.
 
 MusicBrainz already exists, so the brief's assumption that it needed creating is
 out of date.
+
+### 15. Latest page (`/latest`, Oct 2026) — to confirm
+
+- **DMC Canada 2026 champion's name.** No public result yet, so the page and
+  alt text say "the 2026 champion". Send the name (and DMC's results link)
+  and it goes in.
+- **Photographer for `IMG_3949 [TOP PICK]`** (her hosting portrait). The other
+  four are credited to Raisedwithfilm from their filenames.
+- **Photographer for the PLAYLIST Retreat photos.**
+- **CDJ option on the rider:** CDJ-3000 with CDJ-2000NXS2 accepted, and
+  DJM-S11 / DJM-A9 / DJM-900NXS2 mixers are a standard spec, not her stated
+  preference. Confirm or correct the models.
+
+### 16. Site editor (`/keystatic`) — one-time set-up to make it work on the live site
+
+The editor is built and tested locally: edit, Save, and the page updates. On the
+live site it saves by committing to the GitHub repo (Vercel then redeploys in
+about a minute), which needs a GitHub App connecting the two. Once:
+
+1. In `deejaytjr-site/.env.local` add `PUBLIC_KEYSTATIC_STORAGE=github`, run
+   `npm run dev`, open http://localhost:4321/keystatic and click **Create GitHub
+   App**. Sign in to GitHub as the repo owner. Keystatic creates the app and
+   writes four values into `.env`: `KEYSTATIC_GITHUB_CLIENT_ID`,
+   `KEYSTATIC_GITHUB_CLIENT_SECRET`, `KEYSTATIC_SECRET`,
+   `PUBLIC_KEYSTATIC_GITHUB_APP_SLUG`. Then remove the `PUBLIC_KEYSTATIC_STORAGE`
+   line again.
+2. Add those four to Vercel → Settings → Environment Variables (Production).
+3. In the new GitHub App's settings, add the callback URL
+   `https://www.deejaytjr.com/api/keystatic/github/oauth/callback` and make sure
+   the app is installed on `robertvanliew/deejaytjr`.
+4. Give her a GitHub account and add it as a collaborator on the repo
+   (repo → Settings → Collaborators). Only collaborators can save.
+5. Push and redeploy. She signs in at https://www.deejaytjr.com/keystatic.
+
+Editable today: awards and results, timeline, positions held, press, videos,
+past events, testimonials, audience numbers. Page body copy (headlines,
+paragraphs) is still in the page files — move sections into the editor on
+request.
+
+### 14. Bot protection keys (Cloudflare Turnstile)
+
+Both forms already carry a honeypot and a timing trap. Turnstile is wired in
+and dormant until two keys exist. Create a free widget at dash.cloudflare.com
+→ Turnstile with hostnames `deejaytjr.com` and `localhost`, then set
+`PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` in Vercel. It is
+invisible to ordinary visitors and shows a checkbox only to one that looks
+automated.
 
 ### The Wikidata item is in good shape
 

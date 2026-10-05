@@ -1,0 +1,160 @@
+---
+import { getEntry } from 'astro:content';
+import VideoTile from './VideoTile.astro';
+
+/**
+ * Brand showcase: the two pieces brands themselves published, each with an
+ * overview of what was on show and what the partner got out of it, then one
+ * call to action.
+ *
+ * WHAT IS AND IS NOT SAID HERE. Both videos were checked for captions
+ * (Oct 2026). The AlphaTheta session is a performance with no speech, so
+ * there is nothing to transcribe. The documentary's captions near her segment
+ * belong to DJ Craze, not to her. So nothing below is a quotation from her,
+ * and nothing is attributed to her that she did not say on camera. The product
+ * details are the manufacturer's published specifications.
+ */
+const session = await getEntry('videos', 'alphatheta-djm-s11');
+const doc = await getEntry('videos', 'pioneers-of-hip-hop');
+---
+
+<div class="showcase">
+  {
+    session && (
+      <article class="row">
+        <div class="vid">
+          <VideoTile video={session} />
+        </div>
+        <div class="over">
+          <span class="small muted kicker">Product showcase · AlphaTheta / Pioneer DJ</span>
+          <h3>The battle setup, played by someone who competes on it.</h3>
+          <p class="prose">
+            A full-length performance AlphaTheta published to its own channel, built entirely on
+            Pioneer DJ's flagship scratch rig. No voice-over is needed, because the product
+            is doing exactly what it was designed to do in the hands of a national champion.
+          </p>
+          <dl class="spec">
+            <div>
+              <dt>DJM-S11</dt>
+              <dd>
+                Two-channel, four-deck battle mixer for rekordbox and Serato DJ Pro. 4.3-inch
+                touch screen with Touch FX, large performance pads, and the strengthened MAGVEL
+                FADER PRO crossfader.
+              </dd>
+            </div>
+            <div>
+              <dt>PLX-CRSS12</dt>
+              <dd>
+                Hybrid direct-drive turntable. In Digital Vinyl mode it controls software
+                without a tone arm, so the needle cannot skip however hard she scratches; switch
+                to Analog and it plays records normally. Battle-style layout, four performance
+                pads, OLED display.
+              </dd>
+            </div>
+          </dl>
+          <p class="small muted got">
+            <b>What the brand got:</b> long-form content of its hardware in real use, a credible
+            endorsement it published itself, and footage it can keep using.
+          </p>
+        </div>
+      </article>
+    )
+  }
+
+  {
+    doc && (
+      <article class="row flip">
+        <div class="vid">
+          <VideoTile video={doc} />
+        </div>
+        <div class="over">
+          <span class="small muted kicker">Brand documentary · AlphaTheta / Pioneer DJ</span>
+          <h3>Featured in a brand's own story of hip-hop.</h3>
+          <p class="prose">
+            <i>Pioneers of Hip-Hop</i> is AlphaTheta's documentary series on the culture behind its
+            equipment. Episode two, <i>Step in the Arena</i>, is about battling, and it puts her
+            in the same episode as DJ Craze, three-time DMC World Champion. The link opens at her
+            segment.
+          </p>
+          <p class="small muted got">
+            <b>What the brand got:</b> cultural credibility. A gear company telling hip-hop's story
+            needs the people the scene already respects, and that is the role she plays in it.
+          </p>
+        </div>
+      </article>
+    )
+  }
+
+  <aside class="cta">
+    <div>
+      <h3>Put your product in a champion's hands.</h3>
+      <p class="prose">
+        Gear and audio, spirits, sneakers and apparel, automotive and sport. Tell us the product,
+        the moment and the market. We'll reply within one business day with a format, a rate
+        and her availability.
+      </p>
+    </div>
+    <div class="ctas">
+      <span class="magnet" data-magnetic="0.22">
+        <a class="btn" href="#availability" data-brand-cta>Start a brand partnership</a>
+      </span>
+      <a class="btn ghost" href="/media-kit">See the media kit</a>
+    </div>
+  </aside>
+</div>
+
+<style>
+  .showcase { display: flex; flex-direction: column; gap: clamp(48px, 6vw, 80px); }
+
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: clamp(28px, 4vw, 56px);
+    align-items: start;
+  }
+  .row.flip .vid { order: 2; }
+
+  .over { display: flex; flex-direction: column; gap: 16px; }
+  .kicker { letter-spacing: .02em; }
+  .over h3 { font-size: clamp(24px, 2.4vw, 32px); line-height: 1.12; color: var(--bone); text-wrap: balance; }
+  .over .prose { max-width: 38em; }
+
+  .spec { display: grid; gap: 0; margin: 4px 0 0; border-top: 1px solid var(--hairline); }
+  .spec > div { display: grid; grid-template-columns: 7.5em 1fr; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--hairline); }
+  .spec dt { font-family: var(--serif); font-size: 18px; font-weight: 600; color: var(--tan); }
+  .spec dd { margin: 0; font-size: 15px; line-height: 1.55; color: var(--body); }
+
+  .got { max-width: 40em; }
+  .got b { color: var(--bone); font-weight: 600; }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px 40px;
+    padding: clamp(28px, 4vw, 48px);
+    border: 1px solid var(--hairline);
+    background: var(--panel);
+  }
+  .cta h3 { font-size: clamp(26px, 2.8vw, 36px); line-height: 1.1; color: var(--bone); margin-bottom: 12px; }
+  .cta .prose { max-width: 40em; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  @media (max-width: 860px) {
+    .row { grid-template-columns: 1fr; }
+    .row.flip .vid { order: 0; }
+    .spec > div { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+
+<script>
+  /* The CTA jumps to the page's own booking form and pre-selects "brand", so a
+     visitor never has to work out which option fits them. */
+  document.querySelectorAll<HTMLAnchorElement>('[data-brand-cta]').forEach((a) =>
+    a.addEventListener('click', () => {
+      const sel = document.querySelector<HTMLSelectElement>('#booking-form select[name="eventType"]');
+      if (sel && [...sel.options].some((o) => o.value === 'brand')) sel.value = 'brand';
+    })
+  );
+</script>

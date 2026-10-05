@@ -492,6 +492,11 @@ p + p { margin-top: 1.1em; }
    live here rather than in a component's scoped block.
    --------------------------------------------------------------------------- */
 
+/* Author `display: grid` below would otherwise beat the browser's own
+   `dialog:not([open]) { display: none }` — cascade origin, not specificity —
+   and the closed dialog would sit rendered at the foot of every page. */
+.vbox:not([open]) { display: none; }
+
 .vbox {
   /* Aspect ratio of whatever is on the stage, as a bare number. Set per open;
      16:9 is only the fallback. */

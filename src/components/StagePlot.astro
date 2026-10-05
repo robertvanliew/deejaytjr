@@ -1,0 +1,273 @@
+---
+/**
+ * Stage plot and input list.
+ *
+ * A production manager wants a plot, not a product photo: what goes where,
+ * what the artist brings, what the room supplies, and what lands on which
+ * channel. Drawn as inline SVG so it prints cleanly, reads on a phone, and
+ * recolours with the page rather than arriving as a JPEG of somebody else's
+ * template. It also sidesteps using manufacturers' product photography,
+ * which we do not hold rights to.
+ *
+ * DRAWN FROM BEHIND THE DJ. A conventional plot puts the audience at the
+ * bottom, which means the performer's left appears on the right of the
+ * drawing. For a battle setup, where "tone arm on her left" is the whole
+ * point, that mirror image caused exactly the confusion it would on a load-in.
+ * So this plot looks over her shoulder: audience at the top, her left on the
+ * left. The caption says so, because a crew will assume otherwise.
+ *
+ * BATTLE STYLE: each turntable is rotated 90° so the tone arm runs along the
+ * far edge, pivot at her left, out of the path of the scratch hand.
+ *
+ * DRAFT. Gear per the client (Oct 2026). Table height, power, who supplies the
+ * K12.2s, the DJM-S11 model, and the CDJ alternative's accepted models are
+ * marked "confirm" and listed in ASSETS-NEEDED.md.
+ */
+const rows: { ch: string; source: string; conn: string; from: string }[] = [
+  { ch: '1–2', source: 'Master L / R from the DJ mixer', conn: 'XLR', from: 'DJ mixer → house PA' },
+  { ch: '3', source: 'Booth out from the DJ mixer', conn: 'XLR / TRS', from: 'DJ mixer → booth monitor' },
+  { ch: '4', source: 'Vocal mic (hosting / MC bookings only)', conn: 'XLR', from: 'Venue' },
+];
+
+const brings = [
+  '2 × Pioneer DJ PLX-CRSS12 turntables, set up battle style (rotated 90°, tone arm on her left)',
+  'Pioneer DJ DJM-S11 mixer',
+  'Laptop and stand, control media, cartridges',
+  'All cabling as far as the mixer outputs',
+];
+
+const needs = [
+  'DJ table or booth, minimum 6 ft × 2 ft, standing height, stable — with facade or skirt on the audience side',
+  '2 × QSC K12.2 (or equivalent) on stands at the front corners of the stage, fed from master L/R',
+  '1 × booth monitor (a third K12.2 is ideal) to her right, angled in to the DJ position',
+  'Space on the table to her left for the laptop stand',
+  'Dedicated clean power behind the booth: two outlets minimum, on their own circuit',
+  'Two XLR runs from the booth to front-of-house',
+  'Lighting on the booth that does not wash the screens',
+];
+
+const cdj = [
+  '2 × Pioneer DJ CDJ-3000, linked (CDJ-2000NXS2 accepted — confirm)',
+  'Pioneer DJ mixer: DJM-S11, DJM-A9 or DJM-900NXS2 (confirm)',
+  'Same speakers, monitor, power and outputs as the turntable setup',
+  'She brings her music on USB; nothing else changes on the input list',
+];
+---
+
+<div class="plot">
+  <p class="draft small">
+    <b>Draft</b> — being confirmed with her team. Items marked <i>confirm</i> may change.
+  </p>
+
+  <figure>
+    <svg viewBox="0 0 900 560" role="img" aria-labelledby="plot-t plot-d">
+      <title id="plot-t">Stage plot, viewed from behind the DJ</title>
+      <desc id="plot-d">
+        Drawn from behind the DJ, with the audience at the top. A DJ table sits centre stage with
+        its facade facing the audience. On it, two turntables are set up battle style, rotated so
+        each tone arm runs along the far edge with its pivot on her left, either side of a mixer.
+        Her laptop stand is on her left and the booth monitor on her right, angled in. A
+        loudspeaker on a stand sits at each front corner of the stage, and power is dropped
+        behind her.
+      </desc>
+
+      <!-- audience + stage -->
+      <text x="450" y="26" class="lbl dim mid">AUDIENCE · FRONT OF STAGE</text>
+      <rect x="40" y="40" width="820" height="440" class="stage" />
+      <line x1="40" y1="40" x2="860" y2="40" class="edge" />
+      <text x="60" y="468" class="lbl dim">BACK OF STAGE</text>
+
+      <!-- PA on stands, front corners -->
+      <rect x="100" y="70" width="56" height="64" rx="4" class="spk" />
+      <circle cx="128" cy="146" r="6" class="stand" />
+      <text x="128" y="172" class="lbl mid tiny">QSC K12.2</text>
+      <text x="128" y="187" class="lbl mid tiny dim">on stand · L</text>
+
+      <rect x="744" y="70" width="56" height="64" rx="4" class="spk" />
+      <circle cx="772" cy="146" r="6" class="stand" />
+      <text x="772" y="172" class="lbl mid tiny">QSC K12.2</text>
+      <text x="772" y="187" class="lbl mid tiny dim">on stand · R</text>
+
+      <!-- facade on the audience side, then the table -->
+      <rect x="240" y="196" width="420" height="14" rx="3" class="facade" />
+      <text x="450" y="188" class="lbl mid tiny dim halo">FACADE / SKIRT · table 6 ft × 2 ft, standing height (confirm)</text>
+      <rect x="250" y="212" width="400" height="104" rx="4" class="table" />
+
+      <!-- left turntable, battle style: arm along the far edge, pivot on her left -->
+      <rect x="272" y="220" width="78" height="88" rx="4" class="gear" />
+      <circle cx="311" cy="268" r="27" class="platter" />
+      <circle cx="311" cy="268" r="3" class="spindle" />
+      <circle cx="281" cy="229" r="4.5" class="pivot" />
+      <line x1="281" y1="229" x2="330" y2="234" class="arm" />
+
+      <!-- mixer -->
+      <rect x="412" y="222" width="76" height="84" rx="4" class="gear" />
+      <g class="knobs">
+        <circle cx="430" cy="240" r="3" /><circle cx="450" cy="240" r="3" /><circle cx="470" cy="240" r="3" />
+        <circle cx="430" cy="258" r="3" /><circle cx="450" cy="258" r="3" /><circle cx="470" cy="258" r="3" />
+        <rect x="424" y="286" width="52" height="4" rx="2" />
+      </g>
+
+      <!-- right turntable, same orientation -->
+      <rect x="550" y="220" width="78" height="88" rx="4" class="gear" />
+      <circle cx="589" cy="268" r="27" class="platter" />
+      <circle cx="589" cy="268" r="3" class="spindle" />
+      <circle cx="559" cy="229" r="4.5" class="pivot" />
+      <line x1="559" y1="229" x2="608" y2="234" class="arm" />
+
+      <!-- labels under the table, in her reading order -->
+      <text x="311" y="336" class="lbl mid tiny">PLX-CRSS12</text>
+      <text x="311" y="350" class="lbl mid tiny dim">battle · arm on her left</text>
+      <text x="450" y="336" class="lbl mid tiny">DJM-S11</text>
+      <text x="589" y="336" class="lbl mid tiny">PLX-CRSS12</text>
+      <text x="589" y="350" class="lbl mid tiny dim">battle · arm on her left</text>
+
+      <!-- laptop on her left -->
+      <rect x="160" y="238" width="72" height="46" rx="4" class="gear" />
+      <text x="196" y="266" class="lbl mid tiny">LAPTOP</text>
+      <text x="196" y="300" class="lbl mid tiny dim">on stand · her left</text>
+
+      <!-- booth monitor on her right, angled in -->
+      <g transform="rotate(-28 712 300)">
+        <rect x="688" y="270" width="50" height="60" rx="4" class="spk" />
+      </g>
+      <text x="716" y="356" class="lbl mid tiny">MONITOR</text>
+      <text x="716" y="371" class="lbl mid tiny dim">K12.2 · her right · confirm</text>
+
+      <!-- DJ position -->
+      <circle cx="450" cy="392" r="16" class="dj" />
+      <text x="450" y="397" class="lbl mid tiny djt">DJ</text>
+      <text x="450" y="426" class="lbl mid tiny dim">facing the audience</text>
+
+      <!-- power behind her -->
+      <rect x="610" y="420" width="36" height="24" rx="3" class="power" />
+      <text x="628" y="437" class="lbl mid tiny pw">PWR</text>
+      <text x="628" y="460" class="lbl mid tiny dim">dedicated · 2 outlets</text>
+
+      <!-- signal to the PA -->
+      <path d="M412 250 C 300 180, 200 150, 156 110" class="sig" />
+      <path d="M488 250 C 600 180, 700 150, 744 110" class="sig" />
+    </svg>
+    <figcaption class="small muted">
+      <b>Viewed from behind the DJ</b>, so left on the page is her left. Not to scale. Turntables
+      battle style: rotated 90°, tone arm along the far edge with the pivot on her left. Signal:
+      master L/R from the mixer to the house PA; booth out to the monitor.
+    </figcaption>
+  </figure>
+
+  <div class="cols">
+    <div>
+      <h3>She brings</h3>
+      <ul>{brings.map((b) => <li>{b}</li>)}</ul>
+    </div>
+    <div>
+      <h3>The venue provides</h3>
+      <ul>{needs.map((n) => <li>{n}</li>)}</ul>
+    </div>
+  </div>
+
+  <div class="alt">
+    <h3>Option: CDJ setup</h3>
+    <p class="small muted">
+      Where turntables are not practical — a club with a fixed booth, a fly-in with no room for
+      decks — she can play on the venue's CDJs instead. Tell us which you have when you book.
+    </p>
+    <ul>{cdj.map((c) => <li>{c}</li>)}</ul>
+  </div>
+
+  <h3>Input list</h3>
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th>Ch</th><th>Source</th><th>Connector</th><th>Path</th></tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr><td>{r.ch}</td><td>{r.source}</td><td>{r.conn}</td><td>{r.from}</td></tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <p class="small muted note">
+    Same inputs for either setup. Most rooms already have everything on the venue list. If yours
+    is short a loudspeaker or a table, say so in the booking form and we will quote it as part of
+    the engagement rather than leave it to the night.
+  </p>
+</div>
+
+<style>
+  .plot { max-width: 60em; }
+  .draft {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 22px;
+    border: 1px solid var(--hairline);
+    color: var(--muted);
+  }
+  .draft b { color: var(--tan); font-weight: 600; }
+
+  figure { margin: 0 0 34px; }
+  svg { display: block; width: 100%; height: auto; color: var(--body); }
+  figcaption { margin-top: 12px; max-width: 52em; }
+  figcaption b { color: var(--bone); font-weight: 600; }
+
+  .stage  { fill: var(--panel); stroke: var(--hairline); }
+  .edge   { stroke: var(--tan); stroke-dasharray: 6 6; opacity: .6; }
+  .table  { fill: var(--surface); stroke: var(--body); stroke-width: 1.2; }
+  .facade { fill: var(--tan); opacity: 0.85; }
+  .gear   { fill: var(--panel); stroke: var(--body); }
+  .platter{ fill: var(--ink); stroke: var(--body); }
+  .spindle{ fill: var(--tan); }
+  .pivot  { fill: var(--tan); }
+  .arm    { stroke: var(--tan); stroke-width: 2.4; stroke-linecap: round; }
+  .knobs  { fill: var(--tan); opacity: 0.8; }
+  .spk    { fill: var(--panel); stroke: var(--tan); stroke-width: 1.4; }
+  .stand  { fill: none; stroke: var(--muted); }
+  .power  { fill: var(--tan); }
+  .lbl.pw { fill: var(--ink); font-weight: 600; }
+  .dj     { fill: none; stroke: var(--tan); stroke-width: 1.4; }
+  .lbl.djt { fill: var(--tan); font-weight: 600; }
+  .sig    { fill: none; stroke: var(--muted); stroke-dasharray: 4 5; }
+
+  .lbl { font-family: var(--sans); font-size: 13px; fill: var(--bone); letter-spacing: .04em; }
+  .tiny { font-size: 11px; }
+  .mid  { text-anchor: middle; }
+  .dim  { fill: var(--muted); }
+  /* Knocks the signal lines out behind a label that sits on top of them. */
+  .halo { paint-order: stroke; stroke: var(--panel); stroke-width: 6px; stroke-linejoin: round; }
+
+  h3 {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; margin-bottom: 36px; }
+  .cols ul, .alt ul { list-style: none; }
+  .cols li, .alt li { padding: 9px 0; border-bottom: 1px solid var(--hairline); font-size: 15px; color: var(--body); }
+  .cols li:first-child, .alt li:first-child { border-top: 1px solid var(--hairline); }
+
+  .alt {
+    margin-bottom: 36px;
+    padding: 22px 24px;
+    border: 1px solid var(--hairline);
+    background: var(--panel);
+  }
+  .alt h3 { color: var(--tan); }
+  .alt p { margin-bottom: 14px; max-width: 48em; }
+
+  .tablewrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td { text-align: left; padding: 10px 14px 10px 0; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+  th { font-weight: 600; color: var(--muted); font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; }
+  td { color: var(--body); }
+  td:first-child { color: var(--tan); font-family: var(--serif); font-size: 17px; }
+
+  .note { margin-top: 26px; max-width: 48em; }
+
+  @media (max-width: 640px) {
+    .cols { grid-template-columns: 1fr; gap: 26px; }
+  }
+</style>

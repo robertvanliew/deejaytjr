@@ -4,9 +4,9 @@ import Hero from '../components/Hero.astro';
 import CredentialsStrip from '../components/CredentialsStrip.astro';
 import SectionHead from '../components/SectionHead.astro';
 import Testimonials from '../components/Testimonials.astro';
+import { getTestimonials } from '../lib/testimonials';
 import Faq from '../components/Faq.astro';
 import AvailabilityForm from '../components/AvailabilityForm.astro';
-import Slot from '../components/Slot.astro';
 import { getCollection } from 'astro:content';
 import type { FaqItem } from '../data/faqs';
 import { faqNode, serviceNode, breadcrumbNode } from '../lib/schema';
@@ -85,6 +85,10 @@ const schema = [
     { name: serviceName, path },
   ]),
 ];
+
+/* Decides whether the quotes section exists at all. Same permission rule the
+   component applies, from the one place that owns it. */
+const hasTestimonials = (await getTestimonials(type)).length > 0;
 ---
 
 <Base title={title} description={description} path={path} schema={schema}>
@@ -126,13 +130,9 @@ const schema = [
           <ul class="events" data-reveal-group>
             {events.map((e) => (
               <li>
-                <div class="ev-media">
-                  <Slot
-                    name={`Event photo: ${e.data.client}`}
-                    ratio="3/2"
-                    spec="Landscape, minimum 1600px wide."
-                  />
-                </div>
+                {/* No event has its own photograph yet. A grey "photo pending"
+                    box on a sales page advertises the gap, so the entry is
+                    text-only until one exists. */}
                 <div class="ev-copy">
                   <h3>{e.data.permissionOnFile ? e.data.client : e.data.name}</h3>
                   <p class="small muted">
@@ -140,12 +140,6 @@ const schema = [
                     {e.data.venue ? ` · ${e.data.venue}` : ''}
                   </p>
                   {e.data.note && <p class="small prose">{e.data.note}</p>}
-                  {!e.data.permissionOnFile && (
-                    <p class="small pending">
-                      Client name withheld until written permission to display is on file.
-                      Section 11, item 5.
-                    </p>
-                  )}
                 </div>
               </li>
             ))}
@@ -163,15 +157,21 @@ const schema = [
     </div>
   </section>
 
-  <section class="section tight">
-    <div class="wrap">
-      <SectionHead
-        title="What clients say."
-        lede="Quotes are published only with written permission from the person who gave them."
-      />
-      <Testimonials service={type} />
-    </div>
-  </section>
+  {
+    /* No publishable quotes yet, so the section does not appear. A heading over
+       an empty box advertises the gap; absence does not. */
+    hasTestimonials && (
+      <section class="section tight">
+        <div class="wrap">
+          <SectionHead
+            title="What clients say."
+            lede="Quotes are published only with written permission from the person who gave them."
+          />
+          <Testimonials service={type} />
+        </div>
+      </section>
+    )
+  }
 
   <section class="section">
     <div class="wrap">
@@ -215,7 +215,7 @@ const schema = [
   .events { list-style: none; display: flex; flex-direction: column; gap: 1px; }
   .events li {
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 1fr;
     gap: clamp(20px, 3vw, 40px);
     align-items: center;
     padding: 26px 0;
@@ -243,6 +243,5 @@ const schema = [
 
   @media (max-width: 820px) {
     .events li { grid-template-columns: 1fr; gap: 18px; }
-    .ev-media { max-width: 320px; }
   }
 </style>

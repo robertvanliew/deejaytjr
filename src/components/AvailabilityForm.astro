@@ -34,6 +34,8 @@ const {
           <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off" />
         </div>
 
+        <div class="ts" data-turnstile></div>
+
         <div class="fields" data-reveal-group>
           <p class="field">
             <label for="f-name">Your name <span class="req" aria-hidden="true">*</span></label>
@@ -335,6 +337,7 @@ const {
 
 <script>
   import { SITE_EMAIL, validate, type LeadPayload } from '../lib/form';
+  import { mountTurnstile, turnstileToken } from '../lib/turnstile';
 
   const form = document.querySelector<HTMLFormElement>('#booking-form');
   const success = document.querySelector<HTMLElement>('.avail .success');
@@ -342,6 +345,8 @@ const {
 
   if (form && success && formErr) {
     const field = (n: string) => form.elements.namedItem(n) as HTMLInputElement | null;
+    const shownAt = Date.now();
+    mountTurnstile(form.querySelector<HTMLElement>('[data-turnstile]'));
 
     /* Pre-select the event type. ?type= wins over the page’s own default so a
        campaign link can override the page it lands on. */
@@ -408,6 +413,8 @@ const {
         utmMedium: params.get('utm_medium') ?? '',
         utmCampaign: params.get('utm_campaign') ?? '',
         referrer: document.referrer,
+        elapsedMs: Date.now() - shownAt,
+        turnstileToken: turnstileToken(form),
       } as LeadPayload;
 
       const btn = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;

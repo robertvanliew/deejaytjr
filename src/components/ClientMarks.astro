@@ -140,11 +140,31 @@ const inlined = new Map(
   .ras.full img { visibility: visible; }
   .logos .ras.full:hover { color: inherit; }
 
+  /* Phones: a free-wrapping flex row puts logos of different widths on
+     ragged lines with nothing aligned. A fixed grid gives every mark a cell of
+     the same size, centred both ways, so the rows read straight across. */
   @media (max-width: 560px) {
-    .logos .wrap, ul { gap: 16px 26px; }
-    .word { font-size: 17px; }
-    /* Six logos at full size wrap into an untidy stack on a phone. */
-    .vec :global(svg.art), .ras img { height: calc(var(--h) * 0.84); }
+    .logos .wrap { gap: 18px; }
+    .label { margin: 0; width: 100%; text-align: center; }
+    /* Six-column grid, every mark spanning two, so three per row. Each mark
+       keeps its own intrinsic size inside the cell (the <li> is the logo's
+       mask box, so it must never be stretched to fill one). A short last row
+       is shifted by a column to sit centred rather than hugging the left. */
+    ul {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-auto-rows: 52px;
+      gap: 14px 10px;
+      align-items: center;
+      justify-items: center;
+    }
+    li { grid-column: span 2; }
+    li:last-child:nth-child(3n + 1) { grid-column: 3 / span 2; }
+    li:nth-last-child(2):nth-child(3n + 1) { grid-column: 2 / span 2; }
+    .mark { max-width: 100%; }
+    .word { font-size: 15px; white-space: normal; text-align: center; }
+    .vec :global(svg.art), .ras img { height: calc(var(--h) * 0.8); max-width: 100%; }
   }
 </style>
 

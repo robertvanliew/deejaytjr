@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import ContactDialog from '../components/ContactDialog.astro';
 import { SITE } from '../data/site';
 import { graph, personNode, websiteNode } from '../lib/schema';
 
@@ -106,11 +107,16 @@ const ga4 = import.meta.env.PUBLIC_GA4_ID;
       <slot />
     </main>
     <Footer />
+    <ContactDialog />
     <script>
       import { initMotion } from '../lib/motion';
       import { protectImages } from '../lib/protectImages';
+      import { contactDialog } from '../lib/contactDialog';
+      import { photoLightbox } from '../lib/videoLightbox';
       initMotion();
       protectImages();
+      contactDialog();
+      photoLightbox();
     </script>
   </body>
 </html>

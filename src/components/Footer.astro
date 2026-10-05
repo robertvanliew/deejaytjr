@@ -21,6 +21,7 @@ const columns = [
       { label: 'The story', href: '/about' },
       { label: 'Press and EPK', href: '/press' },
       { label: 'Media kit', href: '/media-kit' },
+      { label: 'Latest', href: '/latest' },
       { label: 'Watch', href: '/watch' },
       { label: 'International', href: '/international' },
     ],
@@ -54,7 +55,7 @@ const columns = [
           Three-time DMC Canadian Champion. Based in {SITE.homeCity}, available worldwide for
           corporate, private, club, festival and brand bookings.
         </p>
-        <a class="tlink" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+        <a class="tlink" data-contact href={`mailto:${SITE.email}`}>{SITE.email}</a>
       </div>
 
       {

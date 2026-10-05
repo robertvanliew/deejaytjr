@@ -1,0 +1,209 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Photo from '../components/Photo.astro';
+import AvailabilityForm from '../components/AvailabilityForm.astro';
+import { SITE } from '../data/site';
+import { breadcrumbNode, personRef } from '../lib/schema';
+
+/**
+ * Latest: what she has been doing since the third national title.
+ *
+ * Three things, newest first, each one checked before it went on the page:
+ *
+ *  - 2026 DMC Canadian DJ Championships. She ran it as branch manager.
+ *    Date and venue from DMC Canada and the venue's own listing. The winner
+ *    is deliberately not named: no public result yet, and naming the wrong
+ *    person on her own site would be worse than naming no one.
+ *  - 2025 Technics DMC World DJ Championships, Tokyo. She hosted it. The
+ *    official flyers bill her, and the DMC40 line-up announcement confirms it.
+ *  - PLAYLIST Retreat, 2026. DJ Jazzy Jeff's invitation-only retreat. Her own
+ *    photographs establish she was there; nothing beyond that is claimed.
+ *
+ * Every photo goes through Photo.astro, so all of them open full size and
+ * carry their credit where one is known.
+ */
+
+const schema = [
+  {
+    '@type': 'Event',
+    name: '2026 DMC Canadian DJ Championships',
+    startDate: '2026-09-06',
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: {
+      '@type': 'Place',
+      name: 'The Rec Room Roundhouse',
+      address: { '@type': 'PostalAddress', addressLocality: 'Toronto', addressRegion: 'ON', addressCountry: 'CA' },
+    },
+    organizer: personRef(),
+    url: 'https://www.dmcdjchamps.com/canada',
+  },
+  {
+    '@type': 'Event',
+    name: 'Technics DMC World DJ Championships 2025',
+    startDate: '2025-10-11',
+    endDate: '2025-10-12',
+    location: { '@type': 'Place', name: 'Spotify O-EAST', address: { '@type': 'PostalAddress', addressLocality: 'Tokyo', addressCountry: 'JP' } },
+    performer: personRef(),
+  },
+  breadcrumbNode([
+    { name: 'Home', path: '/' },
+    { name: 'Latest', path: '/latest' },
+  ]),
+];
+---
+
+<Base
+  title="Latest | DEEJAY T-JR., DMC Canada Branch Manager and DMC World Host"
+  description="DEEJAY T-JR. ran the 2026 DMC Canadian DJ Championships as branch manager, hosted the 40th Technics DMC World DJ Championships in Tokyo, and was invited to DJ Jazzy Jeff's PLAYLIST Retreat."
+  path="/latest"
+  schema={schema}
+>
+  <section class="section tight pagehead">
+    <div class="wrap">
+      <h1>From the booth to <em>running</em> the competition.</h1>
+      <p class="lede">
+        Three national titles made her a champion. What she has done since has moved her to the
+        other side of the table: hosting the world final, running the Canadian one, and taking a
+        seat in rooms the culture reserves for its own.
+      </p>
+      <nav class="jump small" aria-label="On this page">
+        <a href="#dmc-canada-2026">DMC Canada 2026</a>
+        <a href="#dmc-world-2025">DMC World 2025, Tokyo</a>
+        <a href="#playlist">PLAYLIST Retreat</a>
+      </nav>
+    </div>
+  </section>
+
+  <!-- ===================== DMC CANADA 2026 ===================== -->
+  <section class="section" id="dmc-canada-2026">
+    <div class="wrap">
+      <div class="split">
+        <div class="copy">
+          <span class="small muted kicker">6 September 2026 · The Rec Room Roundhouse, Toronto</span>
+          <h2>She ran the 2026 DMC Canadian DJ Championships.</h2>
+          <p class="prose">
+            Two years after her third consecutive national title, she was back at the Canadian
+            final — this time running it. As DMC Canada branch manager she put on the 2026 national
+            championships in Toronto, hosted the night from the stage, and handed the title to the
+            next champion, who goes on to represent Canada at the DMC World Finals.
+          </p>
+          <p class="prose">
+            For a promoter, this is the part of her résumé that does not show up in a set list: she
+            can run a room of competitors, judges, sponsors and a live audience to a schedule.
+          </p>
+          <p class="small muted src">
+            Event details:
+            <a class="inline" href="https://www.dmcdjchamps.com/canada" rel="noopener" target="_blank">DMC Canada</a>.
+            Photography: Raisedwithfilm.
+          </p>
+        </div>
+        <div class="feature">
+          <Photo name="dmc-canada-2026-host" widths={[420, 640, 900]} sizes="(max-width: 860px) 90vw, 36vw" />
+        </div>
+      </div>
+
+      <div class="gallery g3" data-reveal-group>
+        <Photo name="dmc-canada-2026-champion" widths={[400, 640, 900]} sizes="(max-width: 860px) 90vw, 30vw" />
+        <Photo name="dmc-canada-2026-prize" widths={[400, 640, 900]} sizes="(max-width: 860px) 90vw, 30vw" />
+        <Photo name="dmc-canada-2026-group" widths={[400, 640, 900]} sizes="(max-width: 860px) 90vw, 30vw" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== DMC WORLD 2025 ===================== -->
+  <section class="section panel" id="dmc-world-2025">
+    <div class="wrap">
+      <div class="split flip">
+        <div class="copy">
+          <span class="small muted kicker">11–12 October 2025 · Spotify O-EAST, Tokyo</span>
+          <h2>Host of the 40th DMC World Championships.</h2>
+          <p class="prose">
+            DMC's world final turned forty in 2025 and went to Asia for the first time in its
+            history. She hosted it, billed alongside Craze, DJ Babu and Darthreider, on a weekend
+            that also brought DJ Honda, Kireek, Skratch Bastid and the Invisibl Skratch Piklz to
+            the stage.
+          </p>
+          <p class="prose">
+            Two years earlier she was competing in the same final. Being asked to host it is a
+            different kind of recognition: the organisers trusting her with their audience.
+          </p>
+          <p class="small muted src">
+            Source:
+            <a class="inline" href="https://www.media.realjapanesehiphop.com/news/the-technics-dmc-world-dj-championship" rel="noopener" target="_blank">DMC40 line-up announcement</a>.
+            Flyers: DMC World.
+          </p>
+        </div>
+        <div class="flyers">
+          <Photo name="dmc-world-2025-host-flyer" widths={[360, 560, 786]} sizes="(max-width: 860px) 45vw, 22vw" />
+          <Photo name="dmc-world-2025-lineup-flyer" widths={[360, 560, 900]} sizes="(max-width: 860px) 45vw, 22vw" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PLAYLIST RETREAT ===================== -->
+  <section class="section" id="playlist">
+    <div class="wrap">
+      <SectionHead
+        title="PLAYLIST Retreat, 2026."
+        lede="DJ Jazzy Jeff's invitation-only retreat, held at his home in Delaware, brings together established artists and the ones the culture is watching to make music together. She was in the room."
+      />
+      <div class="gallery g3" data-reveal-group>
+        <Photo name="playlist-retreat-point" widths={[400, 640, 900]} sizes="(max-width: 860px) 90vw, 30vw" />
+        <Photo name="playlist-retreat-sign" widths={[400, 640, 900]} sizes="(max-width: 860px) 90vw, 30vw" />
+        <Photo name="playlist-retreat-wall" widths={[400, 640, 900]} sizes="(max-width: 860px) 90vw, 30vw" />
+      </div>
+      <p class="small muted src">
+        About the retreat:
+        <a class="inline" href="https://waxpoetics.com/blogs/hip-hop-and-r-b-stories/behind-the-scenes-at-the-playlist-retreat-with-dj-jazzy-jeff" rel="noopener" target="_blank">Wax Poetics</a>.
+      </p>
+    </div>
+  </section>
+
+  <AvailabilityForm
+    tan
+    heading="Book the person running the room."
+    lede={`Competitions, launches, galas, festivals. Send the date and the brief. We reply within one business day. Or write to ${SITE.email}.`}
+  />
+</Base>
+
+<style>
+  .pagehead h1 { margin-bottom: 20px; max-width: 15em; }
+  .jump { display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 28px; }
+  .jump a { color: var(--body); border-bottom: 1px solid var(--hairline); padding-bottom: 2px; }
+  .jump a:hover { color: var(--tan); border-color: var(--tan); }
+
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: clamp(28px, 5vw, 72px);
+    align-items: center;
+  }
+  .split.flip .copy { order: 2; }
+  .copy { display: flex; flex-direction: column; gap: 16px; }
+  .kicker { letter-spacing: .02em; }
+  .copy h2 { font-size: clamp(30px, 3.6vw, 48px); line-height: 1.06; color: var(--bone); text-wrap: balance; }
+  .copy .prose { max-width: 38em; }
+  .src { margin-top: 4px; }
+  .inline { color: var(--tan); text-decoration: underline; text-underline-offset: 3px; }
+
+  .feature { max-width: 440px; justify-self: end; width: 100%; }
+  .feature :global(img) { width: 100%; height: auto; display: block; }
+
+  .flyers { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  .flyers :global(img) { width: 100%; height: auto; display: block; border: 1px solid var(--hairline); }
+
+  .gallery { display: grid; gap: 14px; margin-top: clamp(32px, 4vw, 52px); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .gallery :global(img) { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; display: block; }
+  #playlist .src { margin-top: 18px; }
+
+  @media (max-width: 860px) {
+    .split { grid-template-columns: 1fr; }
+    .split.flip .copy { order: 0; }
+    .feature { justify-self: start; max-width: 100%; }
+    .g3 { grid-template-columns: 1fr; }
+  }
+</style>

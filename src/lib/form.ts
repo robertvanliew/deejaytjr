@@ -33,6 +33,10 @@ export interface LeadPayload {
   utmMedium?: string;
   utmCampaign?: string;
   referrer?: string;
+  /** Milliseconds between the form being shown and submitted. See lead.ts. */
+  elapsedMs?: number;
+  /** Cloudflare Turnstile token, when the site key is configured. */
+  turnstileToken?: string;
 }
 
 /**

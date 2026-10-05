@@ -69,6 +69,7 @@ const full = new Map(
               >
                 <Photo
                   name={key}
+                  zoom={false}
                   widths={[320, 480, 720]}
                   sizes="(max-width: 820px) 60vw, 30vw"
                   alt={copy === 1 ? '' : PHOTOS[key].alt}
@@ -83,8 +84,22 @@ const full = new Map(
 </section>
 
 <script>
-  import { photoLightbox } from '../lib/videoLightbox';
-  photoLightbox();
+  /* The lightbox itself is wired globally in Base. What the band needs of
+     its own is a pause on touch: without hover there is nothing to stop the
+     photos sliding out from under a fingertip, and a tap on a moving target
+     mostly misses. Held for a few seconds, then it resumes. */
+  document.querySelectorAll<HTMLElement>('.marquee').forEach((m) => {
+    let t: number | undefined;
+    m.addEventListener(
+      'touchstart',
+      () => {
+        m.classList.add('held');
+        clearTimeout(t);
+        t = window.setTimeout(() => m.classList.remove('held'), 5000);
+      },
+      { passive: true }
+    );
+  });
 </script>
 
 <style>
@@ -154,6 +169,7 @@ const full = new Map(
      in the lightbox — the band must not slide out from under the tile the
      panel is going to morph back into. */
   .marquee:focus-within .track { animation-play-state: paused; }
+  .marquee.held .track { animation-play-state: paused; }
   :global(.vbox-open) .track { animation-play-state: paused; }
   .run .pzoom:focus-visible :global(img) { filter: grayscale(0%) contrast(1.04) brightness(1); }
   .run .pzoom:focus-visible { outline: 2px solid var(--tan); outline-offset: -2px; }

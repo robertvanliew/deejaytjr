@@ -22,14 +22,14 @@ if (category) videos = videos.filter((v) => v.data.category === category);
 if (service) videos = videos.filter((v) => v.data.services.includes(service));
 if (exclude) videos = videos.filter((v) => v.data.category !== exclude);
 /**
- * Clips we actually have footage for lead; the rest are marked slots waiting on
- * the client. So as links arrive, real video promotes itself to the large tile
- * without anyone re-ordering anything by hand.
+ * Entries with no footage yet never render. They stay in the collection as the
+ * standing record of what is still owed (see ASSETS-NEEDED.md) and reappear by
+ * themselves the moment a youtubeId is filled in — but a grey "video pending"
+ * box on a booking page advertises what she cannot show, which is the opposite
+ * of the job. An absent tile says nothing; a placeholder says something bad.
  */
-videos.sort((a, b) => {
-  const real = Number(!!b.data.youtubeId) - Number(!!a.data.youtubeId);
-  return real !== 0 ? real : a.data.order - b.data.order;
-});
+videos = videos.filter((v) => v.data.youtubeId);
+videos.sort((a, b) => a.data.order - b.data.order);
 if (limit) videos = videos.slice(0, limit);
 
 const [lead, ...rest] = videos;

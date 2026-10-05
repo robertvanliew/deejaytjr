@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getTestimonials } from '../lib/testimonials';
 
 export interface Props {
   service: 'corporate' | 'private' | 'club' | 'brand';
@@ -9,14 +9,14 @@ const { service } = Astro.props;
 /**
  * Only quotes with written permission on file are eligible to render
  * (section 11, item 4). Everything else is treated as if it does not exist.
+ * When there are none, this renders nothing at all — the surrounding section
+ * is hidden by the layout, so there is no empty heading left behind.
  */
-const quotes = (await getCollection('testimonials')).filter(
-  (t) => t.data.permissionOnFile && t.data.services.includes(service)
-);
+const quotes = await getTestimonials(service);
 ---
 
 {
-  quotes.length > 0 ? (
+  quotes.length > 0 && (
     <div class="hgrid cols-2 quotes" data-reveal-group>
       {quotes.map((t) => (
         <figure class="quote spot">
@@ -29,15 +29,6 @@ const quotes = (await getCollection('testimonials')).filter(
           </figcaption>
         </figure>
       ))}
-    </div>
-  ) : (
-    <div class="slot empty">
-      <span>
-        <b>Testimonials pending</b>
-        Section 11, item 4: three quotes with name, title, company and written permission to
-        publish. Add one JSON file per quote in src/content/testimonials. Nothing renders here
-        until permissionOnFile is true.
-      </span>
     </div>
   )
 }

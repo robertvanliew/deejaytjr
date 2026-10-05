@@ -131,6 +131,30 @@ async function sendToFormspree(lead: LeadPayload, subject: string) {
   return { skipped: false as const };
 }
 
+/**
+ * Cloudflare Turnstile. Free, no puzzles for ordinary visitors, and it does
+ * the one thing a honeypot cannot: tell a headless browser from a person.
+ * Inactive until TURNSTILE_SECRET_KEY is set, so the site works with or
+ * without it; once set, a missing or failed token is rejected.
+ */
+async function verifyTurnstile(token: string | undefined, ip: string | null) {
+  const secret = env('TURNSTILE_SECRET_KEY');
+  if (!secret) return true;
+  if (!token) return false;
+  try {
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret, response: token, remoteip: ip?.split(',')[0]?.trim() }),
+    });
+    const data = (await res.json()) as { success?: boolean };
+    return !!data.success;
+  } catch (err) {
+    console.error('[lead] Turnstile verify failed:', err);
+    return false;
+  }
+}
+
 async function logToAirtable(lead: LeadPayload) {
   const key = env('AIRTABLE_API_KEY');
   const base = env('AIRTABLE_BASE_ID');
@@ -178,6 +202,23 @@ export const POST: APIRoute = async ({ request }) => {
   /* Honeypot. Return 200 so the bot believes it succeeded and moves on. */
   if (lead.company_website?.trim()) {
     return json({ ok: true });
+  }
+
+  /**
+   * Timing trap. A person needs a few seconds to read the form and type a
+   * message; a script posts the instant the page settles. The client sends
+   * elapsed time rather than a timestamp so a wrong clock on the visitor's
+   * machine cannot fail them. A real person who somehow trips this gets a
+   * clear error and the mailto fallback, not a silent drop.
+   */
+  const elapsed = Number(lead.elapsedMs);
+  if (!Number.isFinite(elapsed) || elapsed < 2500) {
+    return json({ ok: false, error: 'Could not verify this submission.' }, 400);
+  }
+
+  /* Turnstile, when configured. See verifyTurnstile. */
+  if (!(await verifyTurnstile(lead.turnstileToken, request.headers.get('x-forwarded-for')))) {
+    return json({ ok: false, error: 'Could not verify this submission.' }, 400);
   }
 
   const errors = validate(lead as unknown as Record<string, string>);

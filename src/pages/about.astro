@@ -86,10 +86,12 @@ import { breadcrumbNode } from '../lib/schema';
           World DJ Championships, which made her the only woman to have competed at all four
           majors: DMC World, IDA World, the Goldie Awards and Red Bull 3Style.
         </p>
-        <p class="pending small">
-          Source article to be inserted here in full. Frankpella holds the DMC journey piece;
-          this section carries it with an anchor link once rights are confirmed.
-        </p>
+        <a class="readmore" href="https://www.thehypemagazine.com/2026/09/17/who-is-deejay-t-jr-the-scarborough-turntablist-who-built-a-resume-that-couldnt-be-touched/" rel="noopener" target="_blank">
+          <span class="small muted rm-outlet">Read the full feature · The Hype Magazine · September 17, 2026</span>
+          <span class="rm-title">Who Is DEEJAY T-JR.? The Scarborough Turntablist Who Built a Resume That Couldn’t Be Touched</span>
+          <span class="small muted rm-by">By Jameelah “Just Jay” Wilkerson</span>
+          <span class="tlink">Read it on The Hype Magazine <span class="arw" aria-hidden="true">↗</span></span>
+        </a>
       </div>
     </div>
   </article>
@@ -108,10 +110,12 @@ import { breadcrumbNode } from '../lib/schema';
           That difference is the whole argument for booking her. A technically flawless DJ who
           cannot read a room is a liability at a wedding. She spent years doing both.
         </p>
-        <p class="pending small">
-          Source article to be inserted here in full. Frankpella holds the Bastids BBQ piece;
-          this section carries it once rights are confirmed.
-        </p>
+        <a class="readmore" href="https://thesource.com/2026/09/18/good-music-good-food-good-people-deejay-t-jr-on-bastids-bbq-and-the-culture-behind-it/" rel="noopener" target="_blank">
+          <span class="small muted rm-outlet">Read the full feature · The Source · September 18, 2026</span>
+          <span class="rm-title">Good Music, Good Food, Good People: DEEJAY T-JR. on Bastid’s BBQ and the Culture Behind It</span>
+          <span class="small muted rm-by">By Shawn Grant</span>
+          <span class="tlink">Read it on The Source <span class="arw" aria-hidden="true">↗</span></span>
+        </a>
       </div>
     </div>
   </article>
@@ -143,9 +147,11 @@ import { breadcrumbNode } from '../lib/schema';
           DJ Academy she teaches the next set of DJs coming out of Toronto, with particular
           attention to the ones who, like her, do not see themselves in the booth yet.
         </p>
-        <p class="pending small">
-          Frankpella to reconcile this against the full biography article before launch, and to
-          confirm the follower figures against current analytics.
+        <p>
+          Since then she has crossed to the other side of the table. In 2025 she hosted the 40th
+          Technics DMC World DJ Championships in Tokyo, the first world final held in Asia, and as
+          DMC Canada branch manager she ran the 2026 Canadian championships in Toronto. That same
+          year she was invited to DJ Jazzy Jeff’s PLAYLIST Retreat. <a href="/latest">More on all three</a>.
         </p>
       </div>
     </div>
@@ -180,6 +186,14 @@ import { breadcrumbNode } from '../lib/schema';
           }
         </ol>
       </div>
+          <div class="results-graphics">
+        <h3>The results, as DMC Canada published them</h3>
+        <div class="rg" data-reveal-group>
+          <Photo name="proof-2024" widths={[320, 520, 760]} sizes="(max-width: 820px) 90vw, 28vw" />
+          <Photo name="proof-2023" widths={[320, 520, 760]} sizes="(max-width: 820px) 90vw, 28vw" />
+          <Photo name="proof-2022" widths={[320, 520, 760]} sizes="(max-width: 820px) 90vw, 28vw" />
+        </div>
+      </div>
     </div>
   </section>
 
@@ -190,6 +204,27 @@ import { breadcrumbNode } from '../lib/schema';
 </Base>
 
 <style>
+  .readmore {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 30px;
+    padding: 22px 24px;
+    border: 1px solid var(--hairline);
+    background: var(--panel);
+    transition: background var(--t-hover) var(--ease-out), border-color var(--t-hover) var(--ease-out);
+  }
+  .readmore:hover { border-color: var(--tan); background: var(--panel-hover); }
+  .rm-title { font-family: var(--serif); font-size: clamp(20px, 2vw, 25px); line-height: 1.2; color: var(--bone); }
+  .readmore .tlink { align-self: flex-start; margin-top: 4px; }
+  .readmore:hover .tlink { color: var(--tan-lift); border-color: var(--tan); }
+
+  .results-graphics { margin-top: 44px; }
+  .results-graphics h3 { font-family: var(--sans); font-size: 13.5px; font-weight: 600; color: var(--on-tan-soft, var(--muted)); margin-bottom: 14px; }
+  .rg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 900px; }
+  .rg :global(img) { width: 100%; height: auto; display: block; }
+  @media (max-width: 820px) { .rg { grid-template-columns: 1fr 1fr; } }
+
   .pagehead h1 { margin-bottom: 22px; max-width: 16em; }
   .jump { display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 30px; }
   .jump a { color: var(--muted); border-bottom: 1px solid var(--hairline); padding-bottom: 3px; transition: color var(--t-hover) var(--ease-out), border-color var(--t-hover) var(--ease-out); }
