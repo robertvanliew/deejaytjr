@@ -230,8 +230,9 @@ function close() {
  */
 export function videoLightbox() {
   document
-    .querySelectorAll<HTMLButtonElement>('button.facade[data-lightbox]')
-    .forEach((btn) =>
+    .querySelectorAll<HTMLButtonElement>('button.facade[data-lightbox]:not([data-bound])')
+    .forEach((btn) => {
+      btn.dataset.bound = '1';
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         const id = btn.dataset.youtube;
@@ -268,8 +269,8 @@ export function videoLightbox() {
             setTimeout(drop, 2000);
           },
         });
-      })
-    );
+      });
+    });
 }
 
 /**
