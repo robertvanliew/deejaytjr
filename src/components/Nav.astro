@@ -2,6 +2,7 @@
 import Brand from './Brand.astro';
 import { NAV } from '../data/site';
 import type { Locale } from '../lib/markets';
+import { CHROME } from '../i18n/ui';
 
 export interface Props {
   /** From Base: live hreflang siblings of this page. */
@@ -16,6 +17,10 @@ const langs = alternates.filter((a) => a.hreflang !== 'x-default');
 const showSwitch = langs.length > 1;
 
 const here = Astro.url.pathname.replace(/\/$/, '') || '/';
+const c = CHROME[locale];
+const label = (item: { label: string; href: string }) => c.nav[item.href] ?? item.label;
+/* Translated pages carry their own form, so the CTA stays on the page. */
+const ctaHref = locale === 'en' ? '/contact' : '#availability';
 ---
 
 <header class="nav">
@@ -26,7 +31,7 @@ const here = Astro.url.pathname.replace(/\/$/, '') || '/';
       {
         NAV.map((item) => (
           <a href={item.href} aria-current={here === item.href ? 'page' : undefined}>
-            {item.label}
+            {label(item)}
           </a>
         ))
       }
@@ -50,7 +55,7 @@ const here = Astro.url.pathname.replace(/\/$/, '') || '/';
     }
 
     <span class="magnet cta" data-magnetic="0.24">
-      <a class="btn small" href="/contact">Check availability</a>
+      <a class="btn small" href={ctaHref}>{c.cta}</a>
     </span>
 
     <button
@@ -58,7 +63,7 @@ const here = Astro.url.pathname.replace(/\/$/, '') || '/';
       type="button"
       aria-expanded="false"
       aria-controls="mobile-nav"
-      aria-label="Open menu"
+      aria-label={c.openMenu}
     >
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
@@ -70,11 +75,11 @@ const here = Astro.url.pathname.replace(/\/$/, '') || '/';
       {
         NAV.map((item) => (
           <a href={item.href} aria-current={here === item.href ? 'page' : undefined}>
-            {item.label}
+            {label(item)}
           </a>
         ))
       }
-      <a class="btn" href="/contact">Check availability</a>
+      <a class="btn" href={ctaHref}>{c.cta}</a>
     </div>
   </div>
 </header>

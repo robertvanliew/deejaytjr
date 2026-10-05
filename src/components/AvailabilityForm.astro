@@ -1,6 +1,6 @@
 ---
-import { EVENT_TYPES, BUDGET_RANGES, SITE } from '../data/site';
-import { t, EVENT_LABELS } from '../i18n/ui';
+import { EVENT_TYPES, BUDGET_BANDS, SITE } from '../data/site';
+import { t, EVENT_LABELS, budgetLabel } from '../i18n/ui';
 import type { Locale } from '../lib/markets';
 
 export interface Props {
@@ -107,7 +107,9 @@ const labels = EVENT_LABELS[locale];
             <label for="f-budget">{s.budget} ({currency})</label>
             <select id="f-budget" name="budget">
               <option value="">{s.preferNot}</option>
-              {BUDGET_RANGES[currency].map((b) => <option value={b}>{b}</option>)}
+              {BUDGET_BANDS[currency].map(([lo, hi]) => (
+                <option value={budgetLabel('en', currency, lo, hi)}>{budgetLabel(locale, currency, lo, hi)}</option>
+              ))}
             </select>
           </p>
 
@@ -227,13 +229,10 @@ const labels = EVENT_LABELS[locale];
     align-items: start;
   }
 
-  .hp {
-    position: absolute;
-    left: -9999px;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-  }
+  /* display:none rather than off-screen: copy-paste, reader mode and
+     translation tools then skip it too. Most bots fill fields without
+     applying CSS, so it still catches them; the timing check backs it up. */
+  .hp { display: none !important; }
 
   .fields {
     display: grid;

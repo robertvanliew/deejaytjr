@@ -14,11 +14,13 @@ import {
   alternates,
   liveHref,
   citiesOf,
+  inPlace,
   LANG_TAG,
   type Locale,
 } from '../lib/markets';
 import { serviceNode, faqNode, breadcrumbNode, videoNode } from '../lib/schema';
 import { SITE } from '../data/site';
+import marketsFile from '../data/markets.json';
 import { PHOTOS, type PhotoKey } from '../data/photos';
 
 /**
@@ -42,6 +44,7 @@ export interface Props {
   locale: Locale;
 }
 const { marketKey, locale } = Astro.props;
+const MARKET_UPDATED: string = marketsFile.updated;
 
 const m = getMarket(marketKey);
 const page = m.pages[locale];
@@ -104,9 +107,11 @@ const schema = [
   locale={locale}
   alternates={alts}
   draft={draft}
+  modified={MARKET_UPDATED}
 >
   <Hero
     compact
+    scrollLabel={{ en: 'Scroll', 'pt-br': 'Role', fr: 'Défiler' }[locale]}
     headline={page.h1}
     lede={page.lede ?? ''}
     photo={photo}
@@ -119,7 +124,7 @@ const schema = [
       <div class="proof">
         <span class="small muted kicker">{s.audience}</span>
         <p class="proofline">{page.proof}</p>
-        {page.proofSource && <span class="small muted">{s.source}: {page.proofSource}</span>}
+        {page.proofSource && <span class="small muted">{s.source} {page.proofSource}</span>}
       </div>
     </div>
   </section>
@@ -149,7 +154,7 @@ const schema = [
       <section class="section">
         <div class="wrap">
           <SectionHead title={s.video} />
-          <div class="vid"><VideoTile video={video} large /></div>
+          <div class="vid"><VideoTile video={video} large locale={locale} text={m.videoText?.[locale]} /></div>
         </div>
       </section>
     )
@@ -159,7 +164,7 @@ const schema = [
     isCity && (m.lanes?.length ?? 0) > 0 && (
       <section class="section tight">
         <div class="wrap">
-          <SectionHead title={s.lanes} />
+          <SectionHead title={s.lanes(inPlace(m, locale))} />
           <ul class="lanes" data-reveal-group>
             {m.lanes!.map((l) => LANE_TEXT[locale][l]).filter(Boolean).map((l) => (
               <li><h3>{l!.title}</h3><p class="small prose">{l!.body}</p></li>
@@ -172,7 +177,7 @@ const schema = [
 
   <section class="section panel">
     <div class="wrap">
-      <SectionHead title={s.howItWorks} lede={s.routing} />
+      <SectionHead title={s.howItWorks(inPlace(parent ?? m, locale))} lede={s.routing} />
       <TravelFacts locale={locale} airport={m.airport} direct={m.direct} />
       {
         nearby.length > 0 && (
@@ -203,7 +208,7 @@ const schema = [
 
   <AvailabilityForm
     tan
-    heading={s.bookHere(name)}
+    heading={s.bookHere(inPlace(m, locale))}
     lede={s.bookLede}
     locale={locale}
     market={m.key}

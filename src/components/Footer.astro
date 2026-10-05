@@ -1,15 +1,23 @@
 ---
 import Brand from './Brand.astro';
 import { SITE, SOCIALS, MUSIC_PLATFORMS, SUPPORT_PLATFORMS } from '../data/site';
-import { MARKETS, nameOf } from '../lib/markets';
+import { MARKETS, nameOf, type Locale } from '../lib/markets';
+import { CHROME } from '../i18n/ui';
+
+export interface Props {
+  locale?: Locale;
+}
+const { locale = 'en' } = Astro.props;
+const c = CHROME[locale];
+const L = (href: string, en: string) => c.links[href] ?? en;
 
 /* International column: built from data/markets.json, live English pages only,
    so a city appears here the moment its page goes live and never before.
    Countries first, each followed by its cities. */
 const intl = MARKETS.filter((m) => m.kind === 'country' && m.pages.en?.reviewed).flatMap((c) => [
-  { label: nameOf(c, 'en'), href: c.pages.en!.path, city: false },
+  { label: nameOf(c, locale), href: c.pages.en!.path, city: false },
   ...MARKETS.filter((m) => m.kind === 'city' && m.parent === c.key && m.pages.en?.reviewed).map((m) => ({
-    label: nameOf(m, 'en'),
+    label: nameOf(m, locale),
     href: m.pages.en!.path,
     city: true,
   })),
@@ -19,48 +27,48 @@ const year = new Date().getFullYear();
 
 const columns = [
   {
-    title: 'Book',
+    title: c.cols.book,
     links: [
-      { label: 'Corporate events', href: '/corporate-events' },
-      { label: 'Private events', href: '/private-events' },
-      { label: 'Clubs and festivals', href: '/clubs-and-festivals' },
-      { label: 'Brand partnerships', href: '/brand-partnerships' },
-      { label: 'Check availability', href: '/contact' },
+      { label: L('/corporate-events', 'Corporate events'), href: '/corporate-events' },
+      { label: L('/private-events', 'Private events'), href: '/private-events' },
+      { label: L('/clubs-and-festivals', 'Clubs and festivals'), href: '/clubs-and-festivals' },
+      { label: L('/brand-partnerships', 'Brand partnerships'), href: '/brand-partnerships' },
+      { label: L('/contact', 'Check availability'), href: locale === 'en' ? '/contact' : '#availability' },
     ],
   },
   {
-    title: 'About',
+    title: c.cols.about,
     links: [
-      { label: 'The story', href: '/about' },
-      { label: 'Press and EPK', href: '/press' },
-      { label: 'Media kit', href: '/media-kit' },
-      { label: 'Latest', href: '/latest' },
-      { label: 'Watch', href: '/watch' },
+      { label: L('/about', 'The story'), href: '/about' },
+      { label: L('/press', 'Press and EPK'), href: '/press' },
+      { label: L('/media-kit', 'Media kit'), href: '/media-kit' },
+      { label: L('/latest', 'Latest'), href: '/latest' },
+      { label: L('/watch', 'Watch'), href: '/watch' },
     ],
   },
   {
-    title: 'International',
+    title: c.cols.intl,
     links: [
-      { label: 'All markets', href: '/international' },
+      { label: c.allMarkets, href: '/international' },
       ...intl,
-      { label: 'Destination events', href: '/destination-events' },
+      { label: L('/destination-events', 'Destination events'), href: '/destination-events' },
     ],
   },
   {
     /* Music, merch and support live down here on purpose. Section 3. */
-    title: 'Listen and support',
+    title: c.cols.listen,
     links: [
-      { label: 'Listen', href: '/music' },
+      { label: L('/music', 'Listen'), href: '/music' },
       /* Bandcamp appears twice in this column — catalogue and merch. Bare
          "Bandcamp" next to "Merch on Bandcamp" reads as though the first one
          is the ambiguous leftover, so it is labelled by what it does. */
       ...MUSIC_PLATFORMS.map((m) => ({
-        label: m.label === 'Bandcamp' ? 'Listen on Bandcamp' : m.label,
+        label: m.label === 'Bandcamp' ? c.listenBandcamp : m.label,
         href: m.url,
         external: true,
       })),
       ...SUPPORT_PLATFORMS.map((m) => ({ label: m.label, href: m.url, external: true })),
-      { label: 'Merch on Bandcamp', href: 'https://deejaytjr.bandcamp.com/merch', external: true },
+      { label: c.merch, href: 'https://deejaytjr.bandcamp.com/merch', external: true },
     ],
   },
 ];
@@ -72,8 +80,7 @@ const columns = [
       <div class="col brandcol">
         <Brand size={34} />
         <p class="small muted">
-          Three-time DMC Canadian Champion. Based in {SITE.homeCity}, available worldwide for
-          corporate, private, club, festival and brand bookings.
+          {c.blurb(SITE.homeCity)}
         </p>
         <a class="tlink" data-contact href={`mailto:${SITE.email}`}>{SITE.email}</a>
       </div>
@@ -101,7 +108,7 @@ const columns = [
     </div>
 
     <div class="social">
-      <span class="small muted">Follow</span>
+      <span class="small muted">{c.follow}</span>
       <ul>
         {
           SOCIALS.map((s) => (
@@ -116,14 +123,14 @@ const columns = [
     </div>
 
     <div class="legal">
-      <p class="small muted copy">© {year} {SITE.name} All rights reserved.</p>
+      <p class="small muted copy">© {year} {SITE.name} {c.rights}</p>
       <div class="legal-right">
         <nav class="small" aria-label="Legal">
-          <a href="/privacy">Privacy</a>
-          <a href="/terms">Terms</a>
+          <a href="/privacy">{c.privacy}</a>
+          <a href="/terms">{c.terms}</a>
         </nav>
         <p class="small credit">
-          Design by
+          {c.designBy}
           <a
             class="designer"
             href="https://robertvanliew.com"

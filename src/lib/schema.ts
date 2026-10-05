@@ -35,6 +35,17 @@ export function personNode() {
     description:
       'Three-time DMC Canadian DJ Champion (2022, 2023, 2024) and the only woman in DMC history to win three consecutive national championships. Available for corporate, private, club, festival and international bookings.',
     url: `${SITE.url}/`,
+    /* Stable, unhashed URL (public/images) so the entity image never changes
+       address between builds; knowledge panels and AI answers cache it. */
+    image: {
+      '@type': 'ImageObject',
+      url: `${SITE.url}/images/deejay-t-jr.jpg`,
+      width: 1200,
+      height: 1500,
+      caption: 'DEEJAY T-JR. performing',
+      creditText: 'Joanna Foz-Dait',
+    },
+    knowsAbout: ['Turntablism', 'Scratch DJing', 'DJ battles', 'Open-format DJing', 'Event DJing', 'Hip-hop'],
     email: SITE.email,
     nationality: SITE.homeCountry,
     homeLocation: {
@@ -99,8 +110,47 @@ export function websiteNode() {
     '@id': WEBSITE_ID,
     url: `${SITE.url}/`,
     name: SITE.name,
-    inLanguage: 'en',
+    alternateName: ALTERNATE_NAMES,
+    /* English everywhere; Portuguese and French on the reviewed market pages. */
+    inLanguage: ['en', 'pt-BR', 'fr'],
     publisher: personRef(),
+    about: personRef(),
+  };
+}
+
+/**
+ * The page node every page gets. ProfilePage on /about (Google's profile
+ * rich result for a person), ContactPage on /contact, CollectionPage on the
+ * listing pages; WebPage elsewhere. All point at the one Person @id.
+ */
+const PAGE_TYPES: Record<string, string> = {
+  '/about': 'ProfilePage',
+  '/contact': 'ContactPage',
+  '/watch': 'CollectionPage',
+  '/press': 'CollectionPage',
+  '/latest': 'CollectionPage',
+};
+export function webPageNode(opts: {
+  path: string;
+  title: string;
+  description: string;
+  inLanguage: string;
+  image: string;
+  dateModified?: string;
+}) {
+  const url = `${SITE.url}${opts.path === '/' ? '/' : opts.path}`;
+  const type = PAGE_TYPES[opts.path] ?? 'WebPage';
+  return {
+    '@type': type,
+    '@id': `${url}#webpage`,
+    url,
+    name: opts.title,
+    description: opts.description,
+    inLanguage: opts.inLanguage,
+    isPartOf: { '@id': WEBSITE_ID },
+    primaryImageOfPage: { '@type': 'ImageObject', url: opts.image },
+    ...(type === 'ProfilePage' ? { mainEntity: personRef() } : { about: personRef() }),
+    ...(opts.dateModified ? { dateModified: opts.dateModified } : {}),
   };
 }
 

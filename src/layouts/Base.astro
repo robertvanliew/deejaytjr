@@ -4,7 +4,7 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import ContactDialog from '../components/ContactDialog.astro';
 import { SITE } from '../data/site';
-import { graph, personNode, websiteNode } from '../lib/schema';
+import { graph, personNode, websiteNode, webPageNode } from '../lib/schema';
 import { LANG_TAG, OG_LOCALE, type Locale } from '../lib/markets';
 import { t } from '../i18n/ui';
 import Analytics from '@vercel/analytics/astro';
@@ -29,6 +29,8 @@ export interface Props {
   alternates?: { hreflang: string; href: string; locale: Locale }[];
   /** Unreviewed translation: noindex plus a visible reviewer banner. */
   draft?: boolean;
+  /** YYYY-MM-DD the page content last changed, when known (market pages). */
+  modified?: string;
 }
 
 const {
@@ -42,13 +44,19 @@ const {
   locale = 'en',
   alternates = [],
   draft = false,
+  modified,
 } = Astro.props;
 const robotsNoindex = noindex || draft;
 const ogAlternates = alternates.filter((a) => a.hreflang !== 'x-default' && a.locale !== locale);
 
 const canonical = `${SITE.url}${path === '/' ? '/' : path}`;
 const ogUrl = new URL(ogImage, SITE.url).href;
-const ld = graph([personNode(), websiteNode(), ...schema]);
+const ld = graph([
+  personNode(),
+  websiteNode(),
+  webPageNode({ path, title, description, inLanguage: LANG_TAG[locale], image: ogUrl, dateModified: modified }),
+  ...schema,
+]);
 const ga4 = import.meta.env.PUBLIC_GA4_ID;
 ---
 
@@ -123,14 +131,16 @@ const ga4 = import.meta.env.PUBLIC_GA4_ID;
   </head>
 
   <body class={bodyClass}>
-    <a class="skip" href="#main">Skip to content</a>
+    <a class="skip" href="#main">{{ en: 'Skip to content', 'pt-br': 'Pular para o conteúdo', fr: 'Aller au contenu' }[locale]}</a>
     <Nav alternates={alternates} locale={locale} />
     {draft && <p class="draftbar" role="note">{t(locale).draftBanner}</p>}
     <main id="main">
       <slot />
     </main>
-    <Footer />
-    <ContactDialog />
+    <Footer locale={locale} />
+    {/* The "send a message" modal is English-only; translated pages keep the
+        in-page form and plain mailto links instead. */}
+    {locale === 'en' && <ContactDialog />}
     <script>
       import { initMotion } from '../lib/motion';
       import { protectImages } from '../lib/protectImages';

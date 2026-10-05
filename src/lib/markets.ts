@@ -38,6 +38,10 @@ export interface Market {
   kind: 'country' | 'city';
   parent: string | null;
   name: Partial<Record<Locale, string>>;
+  /** "no Brasil", "à Paris": the place with its preposition, which varies by name. */
+  nameIn?: Partial<Record<Locale, string>>;
+  /** Localised title/description for the city video, where the video entry is English. */
+  videoText?: Partial<Record<Locale, { title: string; description: string }>>;
   currency?: 'USD' | 'CAD';
   airport?: string;
   /** true = direct from YYZ; null = not claimed. Never guess. */
@@ -100,8 +104,9 @@ export const citiesOf = (countryKey: string) =>
 export function currencyRule(locale: Locale): string {
   return {
     en: 'Currency: US dates are quoted in US dollars. Brazil, France, the UK and South Africa are quoted in US dollars, or local currency on request. Canadian dates are quoted in Canadian dollars plus HST.',
-    'pt-br': 'Moeda: datas nos EUA são orçadas em dólares americanos. Brasil, França, Reino Unido e África do Sul, em dólares americanos ou na moeda local, se preferir. Datas no Canadá, em dólares canadenses mais HST.',
-    fr: 'Devise : les dates aux États-Unis sont chiffrées en dollars américains. Brésil, France, Royaume-Uni et Afrique du Sud : en dollars américains, ou en devise locale sur demande. Canada : en dollars canadiens plus HST.',
+    /* Translated pages exist only for Brazil and France, so they state their own market only. */
+    'pt-br': 'Moeda: orçamento em dólares americanos ou, se preferir, em reais.',
+    fr: 'Devise : devis en dollars américains ou, sur demande, en euros.',
   }[locale];
 }
 
@@ -110,3 +115,11 @@ export const fmtDate = (iso: string, locale: Locale) =>
   new Intl.DateTimeFormat(LANG_TAG[locale], { day: 'numeric', month: 'long', year: 'numeric' }).format(
     new Date(`${iso}T12:00:00`)
   );
+
+/** "in Houston", "no Brasil", "à Paris". Falls back to a generic preposition. */
+export function inPlace(m: Market, locale: Locale): string {
+  const given = m.nameIn?.[locale];
+  if (given) return given;
+  const name = nameOf(m, locale);
+  return { en: `in ${name}`, 'pt-br': `em ${name}`, fr: `à ${name}` }[locale];
+}

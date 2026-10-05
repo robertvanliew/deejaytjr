@@ -27,6 +27,8 @@ export interface Props {
   photoSpec?: string;
   /** Shorter hero for inner pages. */
   compact?: boolean;
+  /** Label of the scroll cue, for translated pages. */
+  scrollLabel?: string;
 }
 
 const {
@@ -42,6 +44,7 @@ const {
   photoName = 'Hero photo',
   photoSpec = 'Landscape, minimum 2400px wide, dark or clean background, subject weighted to the right third.',
   compact = false,
+  scrollLabel = 'Scroll',
 } = Astro.props;
 
 const frames = photos?.length ? photos : photo ? [photo] : [];
@@ -150,7 +153,7 @@ const laterFrames = await Promise.all(
     </div>
   </div>
 
-  <span class="scrollcue small muted" aria-hidden="true">Scroll</span>
+  <span class="scrollcue small muted" aria-hidden="true">{scrollLabel}</span>
 </section>
 
 <style>

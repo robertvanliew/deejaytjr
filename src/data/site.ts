@@ -270,9 +270,10 @@ export const EVENT_TYPES = [
  * enquiry below it self-selects out instead of costing a reply.
  * "Prefer not to say yet" is always first and is the default.
  */
-export const BUDGET_RANGES: Record<'CAD' | 'USD', string[]> = {
-  CAD: ['$3,000 to $5,000 CAD', '$5,000 to $10,000 CAD', '$10,000 CAD and up'],
-  USD: ['$5,000 to $7,500 USD', '$7,500 to $15,000 USD', '$15,000 USD and up'],
+/** Budget bands as numbers, [low, high]; high null = "and up". Labels are built per locale in i18n/ui. */
+export const BUDGET_BANDS: Record<'CAD' | 'USD', [number, number | null][]> = {
+  CAD: [[3000, 5000], [5000, 10000], [10000, null]],
+  USD: [[5000, 7500], [7500, 15000], [15000, null]],
 };
 
 /**

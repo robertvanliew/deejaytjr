@@ -7,6 +7,7 @@
       "kind": "country",
       "parent": null,
       "name": { "en": "United States", "pt-br": "Estados Unidos", "fr": "États-Unis" },
+      "nameIn": { "en": "in the United States", "pt-br": "nos Estados Unidos", "fr": "aux États-Unis" },
       "currency": "USD",
       "pages": { "en": { "path": "/international/usa", "reviewed": true } }
     },
@@ -90,7 +91,7 @@
           "proof": "Austin is one of her top audience cities on TikTok, part of the Texas following that makes the United States her largest market.",
           "proofSource": "Her TikTok audience data, September 2026",
           "faq": [
-            { "q": "Does she do brand activations?", "a": "<p>Yes: booth performances, product demos, launches and festival activations. AlphaTheta and Pioneer DJ published a full performance of hers on their own channel; the brand page has it.</p>" },
+            { "q": "Does she do brand activations?", "a": "<p>Yes: booth performances, product demos, launches and festival activations. AlphaTheta / Pioneer DJ USA published <a href=\"https://www.youtube.com/watch?v=nfMHkJ2eit0\">a full performance of hers</a> on their own channel.</p>" },
             { "q": "How does she get to Austin?", "a": "<p>From Toronto Pearson, usually with one connection. The quote itemises flights, accommodation and ground transport, in US dollars.</p>" },
             { "q": "Can we route Austin with other Texas dates?", "a": "<p>Yes. Houston, Dallas and San Antonio are all close, and dates routed together share the travel cost.</p>" }
           ]
@@ -135,6 +136,7 @@
       "kind": "country",
       "parent": null,
       "name": { "en": "Brazil", "pt-br": "Brasil", "fr": "Brésil" },
+      "nameIn": { "en": "in Brazil", "pt-br": "no Brasil", "fr": "au Brésil" },
       "currency": "USD",
       "airport": "GRU",
       "direct": true,
@@ -159,15 +161,15 @@
         },
         "pt-br": {
           "path": "/pt-br/internacional/brasil",
-          "reviewed": false,
+          "reviewed": true,
           "title": "Contrate DEEJAY T-JR. no Brasil | DJ internacional, tricampeã DMC do Canadá",
           "description": "Contrate DEEJAY T-JR. para clubes, festivais e marcas no Brasil. Tricampeã do campeonato DMC do Canadá, com público já presente no Brasil, liderado por São Paulo. Voo direto de Toronto para São Paulo.",
           "h1": "O público dela já está no <em>Brasil</em>.",
-          "lede": "O Brasil é um dos países onde o público dela se concentra, com São Paulo na frente. Para uma data em clube, festival ou ação de marca, você não está apresentando uma artista: está contratando alguém que o público já acompanha.",
+          "lede": "O Brasil está entre os países onde ela tem mais público, com São Paulo na liderança. Para uma data em clube, festival ou ação de marca, você não está apresentando uma artista nova: está contratando alguém que o público já acompanha.",
           "proof": "O Brasil está entre os principais países do público dela, e São Paulo entre as principais cidades.",
           "proofSource": "Dados de audiência dela, setembro de 2026",
           "faq": [
-            { "q": "Ela pode se apresentar no Brasil?", "a": "<p>Sim. Nós cuidamos da viagem e da documentação para o país. Conte com seis a oito semanas de antecedência; informe a data cedo e confirmamos o prazo real.</p>" },
+            { "q": "Ela pode se apresentar no Brasil?", "a": "<p>Sim. Nós cuidamos da viagem e da documentação para o Brasil. Conte com seis a oito semanas de antecedência; envie a data com antecedência e confirmamos o prazo exato.</p>" },
             { "q": "Como ela chega ao Brasil?", "a": "<p>Há voo direto de Toronto (YYZ) para São Paulo (GRU). O orçamento detalha cachê, passagens, hospedagem e transporte local.</p>" },
             { "q": "Em que moeda é o orçamento?", "a": "<p>Em dólares americanos por padrão, ou em reais, se preferir.</p>" },
             { "q": "Ela pode fazer mais de uma cidade na mesma viagem?", "a": "<p>Sim, e normalmente compensa: datas na mesma rota dividem o custo da viagem. Informe as outras cidades no seu pedido.</p>" }
@@ -180,26 +182,28 @@
       "kind": "city",
       "parent": "brazil",
       "name": { "en": "São Paulo", "pt-br": "São Paulo" },
+      "nameIn": { "en": "in São Paulo", "pt-br": "em São Paulo" },
       "airport": "GRU",
       "direct": true,
       "nearby": [],
       "video": "ottawa-party-set",
+      "videoText": { "pt-br": { "title": "Pista lotada em Ottawa", "description": "Hip-hop, dancehall e reggae para uma pista que não para. É a parte do trabalho que os troféus não mostram: ler o público e manter a energia lá em cima." } },
       "photo": "club-set",
       "lanes": ["club", "brand"],
       "pages": {
         "pt-br": {
           "path": "/pt-br/internacional/brasil/sao-paulo",
-          "reviewed": false,
+          "reviewed": true,
           "title": "DJ para eventos em São Paulo | DEEJAY T-JR., tricampeã DMC do Canadá",
           "description": "Contrate DEEJAY T-JR. em São Paulo para clubes, festivais e ações de marca. DJ turntablista, tricampeã DMC do Canadá e top 9 mundial. São Paulo está entre as principais cidades do público dela.",
           "h1": "DJ turntablista para eventos em <em>São Paulo</em>.",
-          "lede": "Tricampeã nacional, top 9 na final mundial do DMC, e com público que já vive em São Paulo. Para noites de clube, festivais e ações de marca.",
+          "lede": "Tricampeã nacional, top 9 na final mundial do DMC e com público fiel em São Paulo. Para noites de clube, festivais e ações de marca.",
           "proof": "São Paulo está entre as principais cidades do público dela.",
           "proofSource": "Dados de audiência dela, setembro de 2026",
           "faq": [
             { "q": "Como contratar para uma data em São Paulo?", "a": "<p>Envie a data, o local e o tipo de evento pelo formulário desta página. Você recebe disponibilidade e um orçamento detalhado em até um dia útil.</p>" },
             { "q": "Como ela chega a São Paulo?", "a": "<p>Há voo direto de Toronto para São Paulo (GRU). O orçamento detalha passagens, hospedagem e transporte local.</p>" },
-            { "q": "Ela faz ações de marca?", "a": "<p>Sim: ativações, lançamentos e demonstrações de produto. A AlphaTheta e a Pioneer DJ publicaram uma apresentação completa dela no próprio canal.</p>" }
+            { "q": "Ela faz ações de marca?", "a": "<p>Sim: ativações, lançamentos e demonstrações de produto. Ela já se apresentou <a href=\"https://namm.org/thenammshow/2024/session/deejay-t-jr-pioneer-dj-11220-dj-set-interview\">no estande da Pioneer DJ na NAMM 2024</a>, com set e entrevista, e a AlphaTheta / Pioneer DJ USA publicou <a href=\"https://www.youtube.com/watch?v=nfMHkJ2eit0\">uma apresentação completa dela</a> no próprio canal.</p>" }
           ]
         }
       }
@@ -210,6 +214,7 @@
       "kind": "country",
       "parent": null,
       "name": { "en": "France", "pt-br": "França", "fr": "France" },
+      "nameIn": { "en": "in France", "pt-br": "na França", "fr": "en France" },
       "currency": "USD",
       "airport": "CDG",
       "direct": true,
@@ -234,18 +239,18 @@
         },
         "fr": {
           "path": "/fr/international/france",
-          "reviewed": false,
+          "reviewed": true,
           "title": "Réserver DEEJAY T-JR. en France | DJ internationale, triple championne DMC du Canada",
           "description": "Réservez DEEJAY T-JR. en France pour des soirées club, des événements turntablism et des activations de marque. Finaliste mondiale DMC 2024 à Paris, triple championne DMC du Canada. Vol direct depuis Toronto.",
           "h1": "Elle a déjà joué sur la scène mondiale à <em>Paris</em>.",
-          "lede": "En 2024, elle a concouru à la finale mondiale Technics DMC à Paris. La France fait partie des pays où son public est le plus présent, et Paris est en tête.",
-          "proof": "Elle a concouru à la finale mondiale Technics DMC 2024 à Paris, et Paris figure parmi les principales villes de son public.",
-          "proofSource": "DMC World ; ses données d’audience, septembre 2026",
+          "lede": "En 2024, elle a disputé la finale mondiale Technics DMC à Paris. La France compte parmi les pays où son public est le plus nombreux, Paris en tête.",
+          "proof": "Paris figure parmi les principales villes de son public.",
+          "proofSource": "Ses données d’audience, septembre 2026",
           "faq": [
-            { "q": "Peut-elle se produire en France ?", "a": "<p>Oui. Nous gérons le voyage et les formalités pour le territoire. Prévoyez six à huit semaines ; indiquez la date tôt et nous confirmerons le délai réel.</p>" },
+            { "q": "Peut-elle se produire en France ?", "a": "<p>Oui. Nous gérons le voyage et les formalités pour la France. Prévoyez six à huit semaines ; transmettez la date au plus tôt et nous vous confirmerons le délai exact.</p>" },
             { "q": "Comment vient-elle à Paris ?", "a": "<p>Il existe un vol direct de Toronto (YYZ) vers Paris (CDG). Le devis détaille le cachet, les vols, l’hébergement et les transports sur place.</p>" },
-            { "q": "Dans quelle devise est le devis ?", "a": "<p>En dollars américains par défaut, ou en euros sur demande.</p>" },
-            { "q": "Joue-t-elle sur des événements turntablism ?", "a": "<p>Oui : showcases, animation de battles et soirées club. Elle a animé la 40e finale mondiale DMC à Tokyo en 2025.</p>" }
+            { "q": "Dans quelle devise le devis est-il établi ?", "a": "<p>En dollars américains par défaut, ou en euros sur demande.</p>" },
+            { "q": "Se produit-elle lors d’événements de turntablism ?", "a": "<p>Oui : showcases, animation de battles et soirées club. Elle a animé la 40e finale mondiale DMC à Tokyo en 2025.</p>" }
           ]
         }
       }
@@ -255,16 +260,18 @@
       "kind": "city",
       "parent": "france",
       "name": { "en": "Paris", "fr": "Paris" },
+      "nameIn": { "en": "in Paris", "fr": "à Paris" },
       "airport": "CDG",
       "direct": true,
       "nearby": [],
       "video": "dmc-world-2024",
+      "videoText": { "fr": { "title": "Finale mondiale DMC 2024, Paris", "description": "Sa deuxième finale mondiale consécutive, avec le titre canadien en jeu à Paris. Le lien s’ouvre directement sur son passage dans le live de DMC World." } },
       "photo": "dmc-world-2024-jacket",
       "lanes": ["club", "brand"],
       "pages": {
         "fr": {
           "path": "/fr/international/france/paris",
-          "reviewed": false,
+          "reviewed": true,
           "title": "DJ événementiel à Paris | DEEJAY T-JR., finaliste mondiale DMC",
           "description": "Réservez DEEJAY T-JR. à Paris pour des soirées club, des événements turntablism et des activations de marque. Elle a concouru à la finale mondiale DMC 2024 à Paris. Triple championne DMC du Canada.",
           "h1": "DJ turntablism et événementiel à <em>Paris</em>.",
@@ -274,7 +281,7 @@
           "faq": [
             { "q": "Comment réserver une date à Paris ?", "a": "<p>Envoyez la date, le lieu et le type d’événement via le formulaire de cette page. Vous recevrez sa disponibilité et un devis détaillé sous un jour ouvré.</p>" },
             { "q": "Comment vient-elle à Paris ?", "a": "<p>Vol direct de Toronto vers Paris (CDG). Le devis détaille les vols, l’hébergement et les transports sur place.</p>" },
-            { "q": "Fait-elle des activations de marque ?", "a": "<p>Oui : activations, lancements et démonstrations produit. AlphaTheta et Pioneer DJ ont publié une de ses performances complètes sur leur propre chaîne.</p>" }
+            { "q": "Fait-elle des activations de marque ?", "a": "<p>Oui : activations, lancements et démonstrations produit. Elle s’est produite <a href=\"https://namm.org/thenammshow/2024/session/deejay-t-jr-pioneer-dj-11220-dj-set-interview\">sur le stand Pioneer DJ au NAMM 2024</a>, avec un set et une interview, et AlphaTheta / Pioneer DJ USA a publié <a href=\"https://www.youtube.com/watch?v=nfMHkJ2eit0\">une de ses performances complètes</a> sur sa propre chaîne.</p>" }
           ]
         }
       }

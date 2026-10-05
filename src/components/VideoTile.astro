@@ -1,6 +1,8 @@
 ---
 import Slot from './Slot.astro';
 import type { CollectionEntry } from 'astro:content';
+import { CHROME } from '../i18n/ui';
+import type { Locale } from '../lib/markets';
 
 /**
  * Click-to-load YouTube facade (section 8). Nothing from YouTube loads — no
@@ -16,9 +18,13 @@ import type { CollectionEntry } from 'astro:content';
 export interface Props {
   video: CollectionEntry<'videos'>;
   large?: boolean;
+  locale?: Locale;
+  /** Translated title and description; the entry itself is English. */
+  text?: { title: string; description: string };
 }
-const { video, large = false } = Astro.props;
-const v = video.data;
+const { video, large = false, locale = 'en', text } = Astro.props;
+const v = { ...video.data, ...(text ?? {}) };
+const c = CHROME[locale];
 ---
 
 <div class={`tile${large ? ' large' : ''}`}>
@@ -32,7 +38,7 @@ const v = video.data;
         data-title={v.title}
         data-meta={[v.venue, v.date].filter(Boolean).join(' · ') || undefined}
         {...(large ? {} : { 'data-lightbox': '' })}
-        aria-label={large ? `Play video: ${v.title}` : `Play video: ${v.title} (opens expanded)`}
+        aria-label={large ? c.play(v.title) : c.playExpanded(v.title)}
       >
         <img
           src={`https://i.ytimg.com/vi/${v.youtubeId}/maxresdefault.jpg`}
@@ -61,11 +67,11 @@ const v = video.data;
   <div class="meta">
     <h3>{v.title}</h3>
     <p class="small muted">{v.description}</p>
-    {v.venue && <span class="small muted venue">{v.venue}{v.date ? ` · ${v.date}` : ''}</span>}
+    {v.venue && !text && <span class="small muted venue">{v.venue}{v.date ? ` · ${v.date}` : ''}</span>}
     {
       v.credit && (
         <span class="small muted credit">
-          Video by{' '}
+          {c.videoBy}{' '}
           {v.creditUrl ? (
             <a href={v.creditUrl} rel="noopener" target="_blank">
               {v.credit}
@@ -90,7 +96,7 @@ const v = video.data;
           rel="noopener"
           target="_blank"
         >
-          Watch on YouTube <span class="arw" aria-hidden="true">&#8599;</span>
+          {c.watchYt} <span class="arw" aria-hidden="true">&#8599;</span>
         </a>
       )
     }
