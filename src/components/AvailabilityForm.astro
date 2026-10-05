@@ -60,11 +60,6 @@ const labels = EVENT_LABELS[locale];
       >
         <!-- Anti-spam. Off-screen, aria-hidden and out of the tab order: people
              never meet it; form-filling bots do. -->
-        <div class="hp" aria-hidden="true">
-          <label for="company_website">Company website</label>
-          <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off" />
-        </div>
-
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="market" value={market} />
         <input type="hidden" name="marketName" value={marketName} />
@@ -142,6 +137,13 @@ const labels = EVENT_LABELS[locale];
             <label for="f-message">{s.message}</label>
             <textarea id="f-message" name="message" rows="5"></textarea>
           </p>
+        </div>
+
+        <!-- Honeypot: after the real fields so screen readers and page text never
+             reach it before "Your name". Hidden, aria-hidden and out of tab order. -->
+        <div class="hp" aria-hidden="true">
+          <label for="company_website">Company website</label>
+          <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off" />
         </div>
 
         <div class="actions">
@@ -382,6 +384,7 @@ const labels = EVENT_LABELS[locale];
   import { SITE_EMAIL, validate, type LeadPayload } from '../lib/form';
   import { mountTurnstile, turnstileToken } from '../lib/turnstile';
   import { firstTouch } from '../lib/firstTouch';
+  import { track } from '@vercel/analytics';
 
   const form = document.querySelector<HTMLFormElement>('#booking-form');
   const success = document.querySelector<HTMLElement>('.avail .success');
@@ -482,8 +485,10 @@ const labels = EVENT_LABELS[locale];
         (window as any).gtag?.('event', 'generate_lead', {
           event_type: payload.eventType,
           page_path: payload.pagePath,
-          currency: 'CAD',
+          currency: form.dataset.currency || 'CAD',
         });
+        /* Vercel Web Analytics: leads by market (spec, Oct 2026). */
+        track('lead', { market: payload.market || 'none', eventType: payload.eventType || '' });
 
         form.hidden = true;
         success.hidden = false;

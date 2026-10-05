@@ -17,7 +17,7 @@ import {
   LANG_TAG,
   type Locale,
 } from '../lib/markets';
-import { serviceNode, faqNode, breadcrumbNode } from '../lib/schema';
+import { serviceNode, faqNode, breadcrumbNode, videoNode } from '../lib/schema';
 import { SITE } from '../data/site';
 import { PHOTOS, type PhotoKey } from '../data/photos';
 
@@ -91,6 +91,7 @@ const schema = [
     availableLanguage: [LANG_TAG[locale]],
   }),
   ...(page.faq?.length ? [faqNode(page.faq)] : []),
+  ...(video && videoNode(video.data) ? [videoNode(video.data)!] : []),
   breadcrumbNode(crumbs),
 ];
 ---

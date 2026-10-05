@@ -33,6 +33,8 @@ const videos = defineCollection({
     date: optStr(),
     /** ISO 8601 duration, e.g. "PT4M12S". Required by VideoObject schema. */
     duration: optStr(),
+    /** YYYY-MM-DD the video went up on YouTube. VideoObject needs a real date. */
+    uploadDate: optStr(),
     /**
      * Seconds into the video where her segment begins. Several of these are
      * multi-hour livestreams and documentaries; without this the viewer lands

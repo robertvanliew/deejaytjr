@@ -7,6 +7,7 @@ import { SITE } from '../data/site';
 import { graph, personNode, websiteNode } from '../lib/schema';
 import { LANG_TAG, OG_LOCALE, type Locale } from '../lib/markets';
 import { t } from '../i18n/ui';
+import Analytics from '@vercel/analytics/astro';
 
 export interface Props {
   title: string;
@@ -117,6 +118,8 @@ const ga4 = import.meta.env.PUBLIC_GA4_ID;
         </>
       )
     }
+    {/* Cookieless page views and the lead event; no-ops outside Vercel. */}
+    <Analytics />
   </head>
 
   <body class={bodyClass}>

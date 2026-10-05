@@ -4,7 +4,7 @@ import SectionHead from '../components/SectionHead.astro';
 import VideoGrid from '../components/VideoGrid.astro';
 import AvailabilityForm from '../components/AvailabilityForm.astro';
 import { getCollection } from 'astro:content';
-import { breadcrumbNode, personRef } from '../lib/schema';
+import { breadcrumbNode, videoNode } from '../lib/schema';
 
 const videos = await getCollection('videos');
 
@@ -12,20 +12,7 @@ const videos = await getCollection('videos');
  * VideoObject nodes, but only for videos that actually exist. A schema node
  * pointing at a video we have not been given yet is worse than no node.
  */
-const videoNodes = videos
-  .filter((v) => v.data.youtubeId)
-  .map((v) => ({
-    '@type': 'VideoObject',
-    name: v.data.title,
-    description: v.data.description,
-    thumbnailUrl: `https://i.ytimg.com/vi/${v.data.youtubeId}/maxresdefault.jpg`,
-    embedUrl:
-      `https://www.youtube-nocookie.com/embed/${v.data.youtubeId}` +
-      (v.data.start ? `?start=${v.data.start}` : ''),
-    ...(v.data.duration ? { duration: v.data.duration } : {}),
-    ...(v.data.date ? { uploadDate: `${v.data.date}-01-01` } : {}),
-    author: personRef(),
-  }));
+const videoNodes = videos.map((v) => videoNode(v.data)).filter((n) => n !== null);
 ---
 
 <Base

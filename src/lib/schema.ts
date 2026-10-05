@@ -17,6 +17,7 @@ import {
   WIKIDATA_ID,
   WIKIDATA_URL,
   MUSICBRAINZ_URL,
+  PRESS_ARTICLES,
 } from '../data/site';
 
 export const PERSON_ID = `${SITE.url}/#person`;
@@ -60,6 +61,27 @@ export function personNode() {
         url: WIKIDATA_URL,
       },
     ],
+    /* Approved for public use (Oct 2026): the university only. Never her
+       legal name, never hasCredential, never an academic distinction. */
+    alumniOf: {
+      '@type': 'CollegeOrUniversity',
+      name: 'University of Toronto',
+      sameAs: 'https://www.wikidata.org/wiki/Q180865',
+    },
+    memberOf: {
+      '@type': 'OrganizationRole',
+      roleName: 'Branch Manager',
+      memberOf: { '@type': 'Organization', name: 'DMC Canada' },
+    },
+    knowsLanguage: 'en',
+    subjectOf: PRESS_ARTICLES.map((a) => ({
+      '@type': 'NewsArticle',
+      headline: a.headline,
+      url: a.url,
+      datePublished: a.date,
+      author: { '@type': 'Person', name: a.author },
+      publisher: { '@type': 'Organization', name: a.outlet },
+    })),
     hasOccupation: ROLES.map((r) => ({
       '@type': 'Role',
       roleName: r.title,
@@ -111,6 +133,31 @@ export function serviceNode(opts: {
     provider: personRef(),
     areaServed,
     ...(opts.availableLanguage ? { availableLanguage: opts.availableLanguage } : {}),
+  };
+}
+
+/** VideoObject for one entry of the videos collection. Null until it has a YouTube ID. */
+export function videoNode(v: {
+  title: string;
+  description: string;
+  youtubeId: string | null;
+  start?: number | null;
+  duration?: string | null;
+  uploadDate?: string | null;
+  date?: string | null;
+}) {
+  if (!v.youtubeId) return null;
+  const uploadDate = v.uploadDate ?? (v.date && /^\d{4}$/.test(v.date) ? `${v.date}-01-01` : undefined);
+  return {
+    '@type': 'VideoObject',
+    name: v.title,
+    description: v.description,
+    thumbnailUrl: `https://i.ytimg.com/vi/${v.youtubeId}/maxresdefault.jpg`,
+    contentUrl: `https://www.youtube.com/watch?v=${v.youtubeId}`,
+    embedUrl: `https://www.youtube-nocookie.com/embed/${v.youtubeId}` + (v.start ? `?start=${v.start}` : ''),
+    ...(v.duration ? { duration: v.duration } : {}),
+    ...(uploadDate ? { uploadDate } : {}),
+    author: personRef(),
   };
 }
 

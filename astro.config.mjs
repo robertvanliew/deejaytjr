@@ -20,6 +20,9 @@ for (const m of markets.markets) {
   for (const [, p] of live) alternatesFor.set(`${SITE}${p.path}`, links);
 }
 const strip = (u) => u.replace(/\/$/, '');
+/* Under /pt-br/ and /fr/ only reviewed market pages belong in the sitemap;
+   everything else there is a fallback redirect to English or a draft. */
+const localized = (u) => /^https:\/\/www\.deejaytjr\.com\/(pt-br|fr)(\/|$)/.test(u);
 
 // Static by default (zero JS). Server-rendered exceptions: /api/lead, and the
 // admin at /keystatic (+ its API), which Keystatic injects as on-demand routes.
@@ -36,6 +39,10 @@ export default defineConfig({
     defaultLocale: 'en',
     locales: ['en', 'pt-br', 'fr'],
     routing: { prefixDefaultLocale: false, redirectToDefaultLocale: false },
+    /* An untranslated page never 404s: /fr/<anything> without a French page
+       redirects to the English one. Those redirects stay out of the sitemap
+       (see the filter below). */
+    fallback: { 'pt-br': 'en', fr: 'en' },
   },
   integrations: [
     react(),
@@ -46,7 +53,8 @@ export default defineConfig({
         !page.includes('/terms') &&
         !page.includes('/keystatic') &&
         !page.endsWith('/go') &&
-        !drafts.has(strip(page)),
+        !drafts.has(strip(page)) &&
+        (!localized(page) || alternatesFor.has(strip(page))),
       serialize(item) {
         const key = strip(item.url);
         const links = alternatesFor.get(key);

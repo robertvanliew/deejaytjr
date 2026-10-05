@@ -163,6 +163,11 @@ export default config({
         order: fields.integer({ label: 'Order', description: '1 is the big tile.', defaultValue: 50 }),
         featured: fields.checkbox({ label: 'Featured' }),
         duration: fields.text({ label: 'Length (ISO, optional)', description: 'e.g. "PT4M12S". Helps search engines.' }),
+        uploadDate: fields.text({
+          label: 'Upload date',
+          description: 'The day it went up on YouTube, as YYYY-MM-DD. Helps search engines.',
+          validation: { pattern: { regex: /^(\d{4}-\d{2}-\d{2})?$/, message: 'Use YYYY-MM-DD, e.g. 2025-01-06' } },
+        }),
       },
     }),
 

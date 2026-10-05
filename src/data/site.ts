@@ -22,7 +22,26 @@ export const SITE = {
   defaultOgImage: '/og/default.png',
 } as const;
 
-export const ALTERNATE_NAMES = ['Deejay T-JR', 'T-JR', 'DJ T-JR'];
+export const ALTERNATE_NAMES = ['T-JR.', 'Deejay T-JR', 'Deejay TJR', 'T-JR', 'DJ T-JR'];
+
+/**
+ * Bylined coverage, for subjectOf on the Person node. Read straight from the
+ * press collection: any piece with a full publication date and a byline
+ * qualifies, so a new article added in the admin is picked up automatically.
+ */
+type PressFile = { title: string; outlet: string; url: string; byline?: string; published?: string };
+export const PRESS_ARTICLES = Object.values(
+  import.meta.glob<PressFile>('../content/press/*.json', { eager: true, import: 'default' })
+)
+  .filter((p) => p.byline && p.published && /^\d{4}-\d{2}-\d{2}$/.test(p.published))
+  .sort((a, b) => b.published!.localeCompare(a.published!))
+  .map((p) => ({
+    headline: p.title,
+    url: p.url,
+    date: p.published!,
+    author: p.byline!,
+    outlet: p.outlet,
+  }));
 
 /**
  * ISNI — the ISO standard identifier for a public identity.
