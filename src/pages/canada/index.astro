@@ -1,0 +1,179 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import BookingLanes from '../../components/BookingLanes.astro';
+import AvailabilityForm from '../../components/AvailabilityForm.astro';
+import Faq from '../../components/Faq.astro';
+import { serviceNode, faqNode, breadcrumbNode } from '../../lib/schema';
+import type { FaqItem } from '../../data/faqs';
+import { SITE } from '../../data/site';
+
+/**
+ * /canada (Canada spec, Phase 1): the hub for Canadian cities and venues,
+ * separate from the international tree so the two never compete.
+ *
+ * Every place listed carries a real fact. A city or venue gets its own page
+ * only when it has one (spec rule), so cards link only where a page is live.
+ */
+const PLACES = [
+  {
+    name: 'Toronto and the GTA',
+    fact: 'Home. MLSE, the Government of Ontario, the Fairmont Royal York and Bastid’s BBQ; she ran the 2026 DMC Canadian DJ Championships here.',
+  },
+  {
+    name: 'Mississauga',
+    fact: 'Guest DJ courtside for the Raptors 905 Women’s Celebration Game at Paramount Fine Foods Centre.',
+  },
+  {
+    name: 'Ottawa',
+    fact: 'A packed floor at Grown-Ass Pizza Party: hip-hop, dancehall and reggae, filmed in full.',
+    link: { label: 'Watch the set', href: '/watch' },
+  },
+  {
+    name: 'Anywhere else in Canada',
+    fact: 'Montréal, Vancouver, Calgary and beyond. Name the city in the form; travel is itemised in the quote.',
+  },
+];
+
+const VENUES = [
+  { name: 'Fairmont Royal York', note: 'Ballroom event, 2023', href: '/canada/venues/fairmont-royal-york' },
+  { name: 'Paramount Fine Foods Centre', note: 'Raptors 905, courtside' },
+];
+
+const EVENT_PAGES = [
+  { label: 'Holiday parties', href: '/corporate-events/holiday-parties', note: 'Booking now for November and December 2026.' },
+  { label: 'Toronto’s most decorated DJ', href: '/female-dj-toronto', note: 'The record, the rooms and the footage.' },
+  { label: 'Clubs and festivals', href: '/clubs-and-festivals', note: 'Headline sets and scratch showcases.' },
+];
+
+const FAQ: FaqItem[] = [
+  {
+    q: 'Does DEEJAY T-JR. play outside Toronto?',
+    a: '<p>Yes. She is based in Toronto and booked across Canada: the GTA, Hamilton and Ottawa, and on request Montréal, Vancouver, Calgary and anywhere else. She has played Mississauga courtside for the Raptors 905 and a packed floor in Ottawa.</p>',
+  },
+  {
+    q: 'How are dates outside Toronto quoted?',
+    a: '<p>In Canadian dollars plus HST, with travel and accommodation itemised next to the performance fee, so you see one total before you commit.</p>',
+  },
+  {
+    q: 'What can I book her for in Canada?',
+    a: '<p>Clubs and festivals, weddings and private parties, brand activations, and corporate events such as galas and holiday parties. Any of them can include a three to six minute championship showcase.</p>',
+  },
+  {
+    q: 'How far ahead should we book?',
+    a: '<p>As early as you have a date. Holiday-party season, October to December, fills months ahead, and so do summer Saturdays. Inside eight weeks, still ask: you get a straight answer within one business day.</p>',
+  },
+];
+
+const schema = [
+  serviceNode({
+    name: 'DJ for hire across Canada',
+    description:
+      'DEEJAY T-JR., three-time DMC champion turntablist, booked across Canada for clubs, festivals, private events, brand stages and corporate events. Based in Toronto.',
+    url: `${SITE.url}/canada`,
+    serviceType: ['DJ performance', 'Turntablism showcase', 'Event hosting'],
+    area: { type: 'Country', name: 'Canada' },
+    availableLanguage: ['en'],
+  }),
+  faqNode(FAQ),
+  breadcrumbNode([
+    { name: 'Home', path: '/' },
+    { name: 'Canada', path: '/canada' },
+  ]),
+];
+---
+
+<Base
+  title="DJ for Hire in Canada | DEEJAY T-JR., 3x DMC Champion"
+  description="Book DEEJAY T-JR., three-time DMC champion turntablist, across Canada: Toronto, the GTA, Ottawa, Montréal, Vancouver and Calgary. Quoted in CAD."
+  path="/canada"
+  schema={schema}
+  modified="2026-10-06"
+>
+  <Hero
+    compact
+    headline="Canada’s champion, <em>coast to coast</em>."
+    lede="Three consecutive DMC Canada titles, won at home. Based in Toronto and booked across the country for clubs and festivals, private events, brand stages and corporate rooms."
+    photo="dmc-2024-booth"
+    note="Quoted in Canadian dollars plus HST."
+    primary={{ label: 'Check your date', href: '#availability' }}
+  />
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead title="Where she plays in <em>Canada</em>." lede="Only places with a real date, client or film behind them." />
+      <ul class="places" data-reveal-group>
+        {
+          PLACES.map((p) => (
+            <li>
+              <h3>{p.name}</h3>
+              <p class="small prose">{p.fact}</p>
+              {p.link && <a class="tlink small" href={p.link.href}>{p.link.label} <span class="arw" aria-hidden="true">→</span></a>}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section panel">
+    <div class="wrap">
+      <SectionHead title="Venues." lede="Rooms she has played, with what a planner needs to know about each." />
+      <ul class="cards" data-reveal-group>
+        {
+          VENUES.map((v) =>
+            v.href ? (
+              <li><a class="card spot" href={v.href}><b>{v.name}</b><span class="small muted">{v.note}</span><span class="tlink">Venue notes <span class="arw" aria-hidden="true">→</span></span></a></li>
+            ) : (
+              <li><div class="card"><b>{v.name}</b><span class="small muted">{v.note}</span></div></li>
+            )
+          )
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead title="Four ways she gets <em>booked</em>." />
+      <BookingLanes />
+      <ul class="more" data-reveal-group>
+        {
+          EVENT_PAGES.map((e) => (
+            <li><a class="tlink" href={e.href}>{e.label} <span class="arw" aria-hidden="true">→</span></a><span class="small muted">{e.note}</span></li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="wrap">
+      <SectionHead title="What Canadian bookers ask." />
+      <Faq items={FAQ} />
+    </div>
+  </section>
+
+  <AvailabilityForm
+    tan
+    heading="Book a date in Canada."
+    lede="Send the date, the city and the room. You will have availability and a quote within one business day."
+    market="canada"
+    marketName="Canada"
+  />
+</Base>
+
+<style>
+  .places { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+  .places li { border-top: 1px solid var(--tan); padding-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .places h3 { font-size: 22px; }
+  .cards { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--hairline); border: 1px solid var(--hairline); }
+  .card { display: flex; flex-direction: column; gap: 8px; height: 100%; padding: clamp(20px, 2.4vw, 28px); background: var(--ink); }
+  .card b { font-family: var(--serif); font-size: 24px; font-weight: 600; color: var(--bone); }
+  a.card:hover b { color: var(--tan); }
+  .more { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 36px; }
+  .more li { display: flex; flex-direction: column; gap: 6px; }
+  @media (max-width: 960px) { .places { grid-template-columns: repeat(2, 1fr); } .more { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .places, .cards { grid-template-columns: 1fr; } }
+</style>

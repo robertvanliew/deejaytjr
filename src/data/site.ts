@@ -170,10 +170,13 @@ export const SUPPORT_PLATFORMS = [
 export const ALL_PROFILES = [...SOCIALS, ...MUSIC_PLATFORMS, ...SUPPORT_PLATFORMS];
 
 /** Desktop nav, section 4. The tan CTA is rendered separately, not from this list. */
+/* Brand guardrail (Canada spec, Oct 2026): clubs and festivals, international,
+   private and corporate carry equal weight, and corporate is never first. */
 export const NAV = [
-  { label: 'Corporate', href: '/corporate-events' },
-  { label: 'Private', href: '/private-events' },
+  { label: 'Clubs', href: '/clubs-and-festivals' },
   { label: 'International', href: '/international' },
+  { label: 'Private', href: '/private-events' },
+  { label: 'Corporate', href: '/corporate-events' },
   { label: 'Brands', href: '/brand-partnerships' },
   { label: 'Listen', href: '/music' },
   { label: 'The Story', href: '/about' },

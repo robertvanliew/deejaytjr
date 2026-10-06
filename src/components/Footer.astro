@@ -29,10 +29,12 @@ const columns = [
   {
     title: c.cols.book,
     links: [
-      { label: L('/corporate-events', 'Corporate events'), href: '/corporate-events' },
-      { label: L('/private-events', 'Private events'), href: '/private-events' },
       { label: L('/clubs-and-festivals', 'Clubs and festivals'), href: '/clubs-and-festivals' },
+      { label: L('/private-events', 'Private events'), href: '/private-events' },
+      { label: L('/corporate-events', 'Corporate events'), href: '/corporate-events' },
+      { label: L('/corporate-events/holiday-parties', 'Holiday parties'), href: '/corporate-events/holiday-parties', city: true },
       { label: L('/brand-partnerships', 'Brand partnerships'), href: '/brand-partnerships' },
+      { label: L('/canada', 'Across Canada'), href: '/canada' },
       { label: L('/contact', 'Check availability'), href: locale === 'en' ? '/contact' : '#availability' },
     ],
   },

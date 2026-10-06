@@ -25,8 +25,8 @@ const audience = [
 ---
 
 <Base
-  title="DEEJAY T-JR. | 3x DMC Canadian Champion DJ for Corporate, Private and International Events"
-  description="Book DEEJAY T-JR., three-time DMC Canadian DJ Champion and the only woman in DMC history to win three consecutive national titles. Available worldwide for corporate events, private events, clubs, festivals and brand partnerships."
+  title="DEEJAY T-JR. | Three-Time DMC Champion DJ, Toronto"
+  description="DEEJAY T-JR., three-time DMC champion turntablist and the only woman to win three DMC Canada titles in a row. Clubs, festivals, private and corporate events."
   path="/"
   schema={[faqNode(HOME_FAQ)]}
 >
@@ -35,8 +35,8 @@ const audience = [
       title: 'Three-time DMC Canadian Champion',
       detail: '2022, 2023 and 2024. The only woman in DMC history to three-peat.',
     }}
-    headline="Canada&rsquo;s most decorated DJ.<br>Available for <em>your</em>&nbsp;event."
-    lede="Three consecutive national titles, top nine at the World Finals, and the only woman to have competed at all four majors. She plays corporate rooms, private events, clubs and festivals across North America and internationally."
+    headline="Three-time DMC champion <em>turntablist</em>.<br>Available for your&nbsp;event."
+    lede="Canada&rsquo;s most decorated DJ: three consecutive national titles, top nine at the World Finals, and the only woman to have competed at all four majors. She plays clubs and festivals, private events, brand stages and corporate rooms, across North America and internationally."
     secondary={{ label: 'Watch her play', href: '/watch' }}
     note="Based in Toronto. Travels worldwide."
     photos={['hero-decks', 'dmc-2024-booth', 'stage-crowd', 'club-set']}
@@ -53,6 +53,11 @@ const audience = [
         lede="Four ways she gets booked. Each one is a different room, a different brief and a different set."
       />
       <BookingLanes />
+      <p class="small homelinks">
+        <a class="tlink" href="/corporate-events/holiday-parties">Holiday parties, booking now <span class="arw" aria-hidden="true">→</span></a>
+        <a class="tlink" href="/canada">Dates across Canada <span class="arw" aria-hidden="true">→</span></a>
+        <a class="tlink" href="/female-dj-toronto">Toronto&rsquo;s most decorated DJ <span class="arw" aria-hidden="true">→</span></a>
+      </p>
     </div>
   </section>
 
@@ -120,3 +125,7 @@ const audience = [
 
   <AvailabilityForm tan />
 </Base>
+
+<style>
+  .homelinks { display: flex; flex-wrap: wrap; gap: 14px 32px; margin-top: 32px; }
+</style>

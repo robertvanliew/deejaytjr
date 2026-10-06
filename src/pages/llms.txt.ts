@@ -10,9 +10,12 @@ import { MARKETS, LANG_TAG, type Locale } from '../lib/markets';
 export const prerender = true;
 
 const PAGES: [string, string, string][] = [
-  ['Corporate events', '/corporate-events', 'Galas, conferences, launches and award nights, worked to the run of show.'],
-  ['Private events', '/private-events', 'Weddings, milestone birthdays and private parties.'],
   ['Clubs and festivals', '/clubs-and-festivals', 'Headline sets and scratch showcases.'],
+  ['Private events', '/private-events', 'Weddings, milestone birthdays and private parties.'],
+  ['Corporate events', '/corporate-events', 'Galas, conferences, launches and award nights, worked to the run of show.'],
+  ['Holiday parties', '/corporate-events/holiday-parties', 'Company holiday parties in Toronto and across Canada.'],
+  ['Female DJ in Toronto', '/female-dj-toronto', 'Her record, the rooms she has played and footage, in one page.'],
+  ['Canada', '/canada', 'Where she plays in Canada, and venue notes (Fairmont Royal York).'],
   ['Brand partnerships', '/brand-partnerships', 'Activations, product showcases and brand content.'],
   ['Destination events', '/destination-events', 'Fly-in DJ for weddings and private events abroad, with one itemised landed cost.'],
   ['International', '/international', 'Markets where her audience is concentrated, and how international dates work.'],

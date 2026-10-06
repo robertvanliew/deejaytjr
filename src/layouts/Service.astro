@@ -45,6 +45,17 @@ export interface Props {
   faqTitle: string;
 
   related: { label: string; href: string; note: string }[];
+
+  /** Breadcrumb parents between Home and this page, e.g. Corporate events. */
+  parents?: { name: string; path: string }[];
+  /** Lead tag for the form (Canada spec: Canadian pages carry market "canada"). */
+  market?: string;
+  /** Form heading, when the page wants its own. */
+  formHeading?: string;
+  /** YYYY-MM-DD the page content last changed. */
+  modified?: string;
+  /** Extra JSON-LD nodes, e.g. VideoObject for a video on the page. */
+  extraSchema?: object[];
 }
 
 const {
@@ -67,6 +78,11 @@ const {
   faq,
   faqTitle,
   related,
+  parents = [],
+  market = '',
+  formHeading,
+  modified,
+  extraSchema = [],
 } = Astro.props;
 
 const events = (await getCollection('events')).filter((e) => e.data.type === type);
@@ -82,8 +98,10 @@ const schema = [
   faqNode(faq),
   breadcrumbNode([
     { name: 'Home', path: '/' },
+    ...parents,
     { name: serviceName, path },
   ]),
+  ...extraSchema,
 ];
 
 /* Decides whether the quotes section exists at all. Same permission rule the
@@ -91,7 +109,7 @@ const schema = [
 const hasTestimonials = (await getTestimonials(type)).length > 0;
 ---
 
-<Base title={title} description={description} path={path} schema={schema}>
+<Base title={title} description={description} path={path} schema={schema} modified={modified}>
   <Hero
     compact
     headline={headline}
@@ -174,7 +192,9 @@ const hasTestimonials = (await getTestimonials(type)).length > 0;
     </div>
   </section>
 
-  <AvailabilityForm defaultType={type} />
+  <slot name="before-faq-form" />
+
+  <AvailabilityForm defaultType={type} market={market} marketName={market === 'canada' ? 'Canada' : ''} {...(formHeading ? { heading: formHeading } : {})} />
 
   <section class="section tight ruled">
     <div class="wrap">

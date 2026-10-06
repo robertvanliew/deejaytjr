@@ -13,13 +13,15 @@ export interface Props {
   }[];
 }
 
+/* Clubs first, corporate third: corporate is a service lane, never the
+   headline (Canada spec guardrails). */
 const defaultLanes = [
   {
-    title: 'Corporate events',
-    body: 'Conferences, galas, holiday parties, product launches and awards nights. She works to a run of show, holds the room through speeches and dinner, then turns it into a party on cue.',
-    proof: 'MLSE, Government of Ontario, Fairmont Royal York',
-    cta: 'See corporate bookings',
-    href: '/corporate-events',
+    title: 'Clubs and festivals',
+    body: 'A name that sells tickets and a set that earns the room. Open format with live turntablism, plus clips your promoter can run before the date.',
+    proof: 'Audiences in the US, Brazil, France, the UK and South Africa',
+    cta: 'See club and festival bookings',
+    href: '/clubs-and-festivals',
   },
   {
     title: 'Private events',
@@ -29,11 +31,11 @@ const defaultLanes = [
     href: '/private-events',
   },
   {
-    title: 'Clubs and festivals',
-    body: 'A name that sells tickets and a set that earns the room. Open format with live turntablism, plus clips your promoter can run before the date.',
-    proof: 'Audiences in the US, Brazil, France, the UK and South Africa',
-    cta: 'See club and festival bookings',
-    href: '/clubs-and-festivals',
+    title: 'Corporate events',
+    body: 'Conferences, galas, holiday parties, product launches and awards nights. She works to a run of show, holds the room through speeches and dinner, then turns it into a party on cue.',
+    proof: 'MLSE, Government of Ontario, Fairmont Royal York',
+    cta: 'See corporate bookings',
+    href: '/corporate-events',
   },
   {
     title: 'Brand partnerships and showcases',

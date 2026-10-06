@@ -227,6 +227,7 @@ export const CHROME: Record<Locale, Chrome> = {
   },
   'pt-br': {
     nav: {
+      '/clubs-and-festivals': 'Clubes',
       '/corporate-events': 'Corporativo',
       '/private-events': 'Privado',
       '/international': 'Internacional',
@@ -242,6 +243,8 @@ export const CHROME: Record<Locale, Chrome> = {
     cols: { book: 'Contratar', about: 'Sobre', intl: 'Internacional', listen: 'Ouvir e apoiar' },
     links: {
       '/corporate-events': 'Eventos corporativos',
+      '/corporate-events/holiday-parties': 'Festas de fim de ano',
+      '/canada': 'Canadá',
       '/private-events': 'Eventos privados',
       '/clubs-and-festivals': 'Clubes e festivais',
       '/brand-partnerships': 'Parcerias com marcas',
@@ -269,6 +272,7 @@ export const CHROME: Record<Locale, Chrome> = {
   },
   fr: {
     nav: {
+      '/clubs-and-festivals': 'Clubs',
       '/corporate-events': 'Entreprises',
       '/private-events': 'Privé',
       '/international': 'International',
@@ -284,6 +288,8 @@ export const CHROME: Record<Locale, Chrome> = {
     cols: { book: 'Réserver', about: 'À propos', intl: 'International', listen: 'Écouter et soutenir' },
     links: {
       '/corporate-events': 'Événements d’entreprise',
+      '/corporate-events/holiday-parties': 'Fêtes de fin d’année',
+      '/canada': 'Partout au Canada',
       '/private-events': 'Événements privés',
       '/clubs-and-festivals': 'Clubs et festivals',
       '/brand-partnerships': 'Partenariats de marque',

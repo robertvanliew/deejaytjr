@@ -1,0 +1,149 @@
+---
+import Service from '../../layouts/Service.astro';
+import { getEntry } from 'astro:content';
+import SectionHead from '../../components/SectionHead.astro';
+import VideoTile from '../../components/VideoTile.astro';
+import { videoNode } from '../../lib/schema';
+import type { FaqItem } from '../../data/faqs';
+
+/**
+ * /corporate-events/holiday-parties (Canada spec, Phase 1, live before
+ * October 20, 2026). Corporate season fills months ahead, so this is the
+ * most time-sensitive page on the site.
+ *
+ * Guardrail: the search phrase lives in the title tag and description; the
+ * headline leads with the title she won. She is never called a corporate DJ.
+ *
+ * BOOKING_NOTE is dated on purpose. Update the date (or remove the line) when
+ * the season's availability changes; an undated "booking now" goes stale.
+ */
+const BOOKING_NOTE = {
+  date: '2026-10-06',
+  label: 'October 6, 2026',
+  text: 'November and December 2026 holiday-party dates are booking now.',
+};
+
+/* The peak moment, on film: the routine that won the 2024 national title. */
+const showcase = await getEntry('videos', 'dmc-2024-winning-routine');
+const showcaseNode = showcase ? videoNode(showcase.data) : null;
+
+const FAQ: FaqItem[] = [
+  {
+    q: 'How far ahead should we book a holiday party DJ?',
+    a: '<p>As soon as you have a date. December Fridays and Saturdays are the most requested nights of the corporate year. If your party is inside eight weeks, still ask: you will get a straight yes or no on availability within one business day.</p>',
+  },
+  {
+    q: 'Will the music stay down during dinner and speeches?',
+    a: '<p>Yes. Conversation level through arrival and dinner, nothing under the speeches, and the room lifted when your run of show says so. That is the part planners worry about, and the part she is most practised at.</p>',
+  },
+  {
+    q: 'Can she keep the music workplace-appropriate?',
+    a: '<p>Yes. Clean edits throughout, and you can send a must-play list, a do-not-play list, or neither. A holiday party for a mixed office is a different set from a club night, and she builds it that way.</p>',
+  },
+  {
+    q: 'Do you provide an insurance certificate?',
+    a: '<p>Yes, on request. Send the certificate holder details and any wording your venue needs with your enquiry, and it comes back with the agreement.</p>',
+  },
+  {
+    q: 'Can she also host or MC the night?',
+    a: '<p>Yes. DJ plus host covers the welcome, award call-ups and transitions, so you book one vendor instead of two. Say so in your enquiry and it will be in the quote.</p>',
+  },
+  {
+    q: 'Do you travel outside Toronto for holiday parties?',
+    a: '<p>Yes: the GTA, Hamilton, Ottawa and the rest of Canada. Dates outside the GTA are quoted with travel and accommodation itemised, in Canadian dollars plus HST.</p>',
+  },
+];
+---
+
+<Service
+  title="Holiday Party DJ Toronto | DEEJAY T-JR., 3x DMC Champion"
+  description="Company holiday party DJ in Toronto: DEEJAY T-JR., three-time DMC champion. Dinner at conversation level, speeches on cue, then a full floor. Booking now."
+  path="/corporate-events/holiday-parties"
+  type="corporate"
+  market="canada"
+  modified={BOOKING_NOTE.date}
+  extraSchema={showcaseNode ? [showcaseNode] : []}
+  serviceName="Holiday party DJ"
+  serviceType="Holiday party entertainment"
+  areaServed={['Toronto', 'Greater Toronto Area', 'Hamilton', 'Ottawa', 'Canada']}
+  parents={[{ name: 'Corporate event DJ', path: '/corporate-events' }]}
+  headline="Holiday party DJ, <em>three-time DMC champion</em>."
+  lede="Company holiday parties in Toronto and across Canada. Dinner at conversation level, speeches on cue, then a floor your team will talk about in January. She has played for MLSE, the Government of Ontario and the Fairmont Royal York."
+  heroPhoto="performance-wide"
+  proof={[
+    { stat: 'DMC Canada Champion', detail: '2022, 2023 and 2024: the only woman to win three in a row' },
+    { stat: 'MLSE', detail: 'Arena and hospitality events' },
+    { stat: 'Government of Ontario', detail: 'Official government functions' },
+    { stat: 'Fairmont Royal York', detail: 'Ballroom events for up to 800 guests' },
+  ]}
+  formatsTitle="How the night <em>runs</em>."
+  formatsLede="Mapped with your planner before the doors open, then held live."
+  formats={[
+    { title: 'Arrival and dinner', body: 'Music at conversation level while people find their table. Nobody shouts over the soundtrack, and nobody notices silence.' },
+    { title: 'Speeches and awards', body: 'Music out on cue for the CEO, back in under the applause. If she is hosting, she handles the call-ups and transitions herself.' },
+    { title: 'The floor', body: 'When your run of show says party, she turns the room. Open format, tuned to your crowd, with clean edits throughout.' },
+    { title: 'The peak moment', body: 'Optional: a three to six minute showcase of the championship routines, placed where you want the night to peak.' },
+  ]}
+  eventsTitle="Rooms she has played."
+  eventsLede="A sample. Client names publish only where we hold written permission."
+  faqTitle="What holiday-party planners ask."
+  faq={FAQ}
+  formHeading="Check your holiday-party date."
+  related={[
+    { label: 'Corporate events', href: '/corporate-events', note: 'Conferences, galas, launches and awards nights, year-round.' },
+    { label: 'Fairmont Royal York', href: '/canada/venues/fairmont-royal-york', note: 'Planning a party at the Royal York? What to know about the room.' },
+    { label: 'DJ across Canada', href: '/canada', note: 'Toronto, the GTA, Ottawa and dates across the country.' },
+  ]}
+>
+  <section class="section panel" slot="after-formats" id="checklist">
+    <div class="wrap">
+      <SectionHead
+        title="The planner&rsquo;s <em>checklist</em>."
+        lede="What a venue or a procurement office will ask you for, answered before they ask."
+      />
+      <ul class="check" data-reveal-group>
+        <li>
+          <h3>Insurance certificate</h3>
+          <p class="small prose">Provided on request, with your venue&rsquo;s wording and certificate holder details.</p>
+        </li>
+        <li>
+          <h3>Music licensing</h3>
+          <p class="small prose">Handled. Confirmed with your venue before the date, so it is not on your list.</p>
+        </li>
+        <li>
+          <h3>Run-of-show template</h3>
+          <p class="small prose">Sent after you book: doors, dinner, speeches, awards, the party and the hard out, on one page your venue can work from.</p>
+        </li>
+      </ul>
+      <p class="booking">
+        <span class="small muted">Updated <time datetime={BOOKING_NOTE.date}>{BOOKING_NOTE.label}</time>:</span>
+        {' '}{BOOKING_NOTE.text}
+        {' '}<a class="inline" href="#availability">Check your date</a>.
+      </p>
+    </div>
+  </section>
+
+  {
+    showcase && (
+      <section class="section" slot="before-faq-form" id="showcase">
+        <div class="wrap">
+          <SectionHead
+            title="The <em>peak moment</em>, on film."
+            lede="The optional showcase is this: the routine that won her third national title. Three to six minutes, placed where you want the night to peak."
+          />
+          <div class="vid"><VideoTile video={showcase} large /></div>
+        </div>
+      </section>
+    )
+  }
+</Service>
+
+<style>
+  .check { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .check li { border-top: 1px solid var(--tan); padding-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .check h3 { font-size: 20px; }
+  .booking { margin-top: 32px; font-family: var(--serif); font-size: clamp(20px, 2vw, 24px); color: var(--bone); max-width: 44em; }
+  .inline { color: var(--tan); text-decoration: underline; text-underline-offset: 3px; }
+  .vid { max-width: 980px; }
+  @media (max-width: 760px) { .check { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,158 @@
+---
+import { getEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import BookingLanes from '../components/BookingLanes.astro';
+import VideoTile from '../components/VideoTile.astro';
+import Photo from '../components/Photo.astro';
+import Faq from '../components/Faq.astro';
+import AvailabilityForm from '../components/AvailabilityForm.astro';
+import { serviceNode, faqNode, breadcrumbNode, videoNode } from '../lib/schema';
+import { SITE } from '../data/site';
+import type { FaqItem } from '../data/faqs';
+
+/**
+ * /female-dj-toronto (Canada spec, Phase 1). Written about her, not about
+ * gender as a gimmick: the record, the rooms, the footage. Links to every
+ * lane, clubs first, so it never reads as a corporate page.
+ */
+const routine = await getEntry('videos', 'dmc-2024-winning-routine');
+const party = await getEntry('videos', 'ottawa-party-set');
+
+const RECORD = [
+  { k: '2022 · 2023 · 2024', v: 'DMC Canada DJ Champion, three years running: the only woman in DMC history to win three consecutive national titles.' },
+  { k: '2023 · London', v: 'Top nine at the Technics DMC World Finals.' },
+  { k: 'All four majors', v: 'DMC World, IDA World, the Goldie Awards and Red Bull 3Style: the only woman to have competed at all four.' },
+  { k: '2025 · Tokyo', v: 'Host of the 40th Technics DMC World DJ Championships, the first world final held in Asia.' },
+];
+
+const FAQ: FaqItem[] = [
+  {
+    q: 'Who is DEEJAY T-JR.?',
+    a: '<p>DEEJAY T-JR. is a Toronto DJ and turntablist, and a three-time DMC Canadian DJ Champion (2022, 2023, 2024). She is the only woman in DMC history to win three consecutive national titles, finished top nine at the 2023 Technics DMC World Finals in London, and is the only woman to have competed at all four major DJ competitions. She is booked for clubs, festivals, private events, brand stages and corporate events.</p>',
+  },
+  {
+    q: 'What can I book her for in Toronto?',
+    a: '<p>Club nights and festivals, weddings and private parties, brand activations and product showcases, and corporate events such as galas and holiday parties. Every format can include a three to six minute championship showcase, and she can host the night as well as DJ.</p>',
+  },
+  {
+    q: 'How do I check her availability?',
+    a: '<p>Send the date, the venue and what the night needs through the form on this page. You will hear back within one business day with availability and a quote. Rates are quoted per event.</p>',
+  },
+];
+
+const schema = [
+  serviceNode({
+    name: 'DJ in Toronto: DEEJAY T-JR.',
+    description:
+      'Three-time DMC Canadian DJ Champion and Toronto turntablist, booked for clubs, festivals, private events, brand stages and corporate events.',
+    url: `${SITE.url}/female-dj-toronto`,
+    serviceType: ['DJ performance', 'Turntablism showcase', 'Event hosting'],
+    area: { type: 'City', name: 'Toronto', country: 'Canada' },
+    availableLanguage: ['en'],
+  }),
+  faqNode(FAQ),
+  ...[routine, party].filter(Boolean).map((v) => videoNode(v!.data)).filter((n) => n !== null),
+  breadcrumbNode([
+    { name: 'Home', path: '/' },
+    { name: 'Female DJ in Toronto', path: '/female-dj-toronto' },
+  ]),
+];
+---
+
+<Base
+  title="Female DJ Toronto | DEEJAY T-JR., 3x DMC Champion"
+  description="DEEJAY T-JR. is a Toronto DJ and the only woman in DMC history to win three national titles in a row. Book her for clubs, festivals, private or corporate."
+  path="/female-dj-toronto"
+  schema={schema}
+  modified="2026-10-06"
+>
+  <Hero
+    compact
+    headline="Three-time national champion. Toronto&rsquo;s most decorated <em>DJ</em>."
+    lede="DEEJAY T-JR. won the DMC Canadian DJ Championship in 2022, 2023 and 2024, the first woman ever to take three in a row. The record is the credential; the booking is the room."
+    photo="hero-decks"
+    primary={{ label: 'Check her availability', href: '#availability' }}
+    secondary={{ label: 'Watch her play', href: '#footage' }}
+  />
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead title="The <em>record</em>." lede="Three national titles, a world top nine, and every major entered." />
+      <dl class="record" data-reveal-group>
+        {RECORD.map((r) => (<div><dt class="small muted">{r.k}</dt><dd>{r.v}</dd></div>))}
+      </dl>
+      <p class="small more"><a class="inline" href="/about#awards">Full competition record</a></p>
+    </div>
+  </section>
+
+  <section class="section panel">
+    <div class="wrap">
+      <SectionHead title="The <em>rooms</em>." lede="Championship stages, courtside, ballrooms and packed floors." />
+      <div class="rooms">
+        <figure>
+          <Photo name="raptors905-jumbotron" sizes="(max-width: 860px) 100vw, 50vw" />
+          <figcaption class="small muted">Guest DJ for the Raptors 905 Women’s Celebration Game, Paramount Fine Foods Centre.</figcaption>
+        </figure>
+        <ul class="roomlist">
+          <li><b>Clubs and festivals</b><span class="small muted">Bastid’s BBQ in Toronto; Grown-Ass Pizza Party in Ottawa.</span></li>
+          <li><b>Championship stages</b><span class="small muted">DMC World Finals in London and Paris; host in Tokyo; ran the 2026 Canadian final in Toronto.</span></li>
+          <li><b>Corporate and civic</b><span class="small muted">MLSE, the Government of Ontario and the Fairmont Royal York.</span></li>
+          <li><b>Teaching</b><span class="small muted">The GIE DJ Academy, training the next set of Toronto DJs.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="footage">
+    <div class="wrap">
+      <SectionHead title="The <em>footage</em>." lede="One routine that won a national title, and one floor that did not sit down." />
+      <div class="vids">
+        {routine && <VideoTile video={routine} />}
+        {party && <VideoTile video={party} />}
+      </div>
+    </div>
+  </section>
+
+  <section class="section panel">
+    <div class="wrap">
+      <SectionHead title="Book her for <em>any</em> room." />
+      <BookingLanes />
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="wrap">
+      <SectionHead title="Quick answers." />
+      <Faq items={FAQ} />
+    </div>
+  </section>
+
+  <AvailabilityForm
+    tan
+    heading="Check her availability in Toronto."
+    market="canada"
+    marketName="Canada · Toronto"
+    prefillCity="Toronto, Canada"
+  />
+</Base>
+
+<style>
+  .record { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+  .record > div { border-top: 1px solid var(--tan); padding-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .record dd { font-family: var(--serif); font-size: 19px; line-height: 1.35; color: var(--bone); }
+  .more { margin-top: 24px; }
+  .inline { color: var(--tan); text-decoration: underline; text-underline-offset: 3px; }
+  .rooms { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 56px); align-items: start; }
+  .rooms figure { display: flex; flex-direction: column; gap: 10px; }
+  /* The scoreboard shot is very tall; crop it to a portrait frame. */
+  .rooms figure :global(img) { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: center 30%; }
+  .roomlist { list-style: none; display: flex; flex-direction: column; gap: 22px; }
+  .roomlist li { display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--hairline); padding-top: 16px; }
+  .roomlist b { font-family: var(--serif); font-size: 22px; font-weight: 600; color: var(--bone); }
+  .vids { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+  @media (max-width: 960px) { .record { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 860px) { .rooms, .vids { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .record { grid-template-columns: 1fr; } }
+</style>

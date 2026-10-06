@@ -1,0 +1,149 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Hero from '../../../components/Hero.astro';
+import SectionHead from '../../../components/SectionHead.astro';
+import Faq from '../../../components/Faq.astro';
+import AvailabilityForm from '../../../components/AvailabilityForm.astro';
+import { faqNode, breadcrumbNode, personRef } from '../../../lib/schema';
+import { SITE } from '../../../data/site';
+import type { FaqItem } from '../../../data/faqs';
+
+/**
+ * Venue page (Canada spec, Phase 1). Ships because there is a real local
+ * fact: she has played a ballroom event here (2023). The client is not named
+ * (no written permission on file); the venue is.
+ *
+ * Practical notes stay process-true: load-in, power and booth position are
+ * confirmed with the hotel's event team per event. Add room-specific detail
+ * (dock, freight elevator, booth position) only from her own notes.
+ * Photos from this room are still needed (ASSETS-NEEDED.md).
+ */
+const PATH = '/canada/venues/fairmont-royal-york';
+
+const FAQ: FaqItem[] = [
+  {
+    q: 'Has DEEJAY T-JR. played the Fairmont Royal York before?',
+    a: '<p>Yes. She played a ballroom event at the Fairmont Royal York in 2023. The client is not named here; references are available on request.</p>',
+  },
+  {
+    q: 'Do you work with the hotel’s event team?',
+    a: '<p>Yes. Load-in time, power, booth position and sound are confirmed with the Royal York’s event team before the date. Send us your banquet event order or floor plan and we take it from there.</p>',
+  },
+  {
+    q: 'Can she cover a full evening in the ballroom?',
+    a: '<p>Yes: arrival and dinner at conversation level, music out for speeches, then the dance floor, with an optional three to six minute championship showcase. She can also host the night.</p>',
+  },
+  {
+    q: 'Do you provide an insurance certificate for the hotel?',
+    a: '<p>Yes, on request, with the hotel’s certificate holder details and wording.</p>',
+  },
+];
+
+const venue = {
+  '@type': 'Place',
+  name: 'Fairmont Royal York',
+  sameAs: 'https://www.wikidata.org/wiki/Q1393350',
+  geo: { '@type': 'GeoCoordinates', latitude: 43.6457, longitude: -79.3816 },
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '100 Front Street West',
+    addressLocality: 'Toronto',
+    addressRegion: 'ON',
+    postalCode: 'M5J 1E3',
+    addressCountry: 'CA',
+  },
+};
+
+const schema = [
+  {
+    '@type': 'Service',
+    name: 'DJ at the Fairmont Royal York',
+    serviceType: ['DJ performance', 'Turntablism showcase', 'Event hosting'],
+    provider: personRef(),
+    areaServed: venue,
+    url: `${SITE.url}${PATH}`,
+  },
+  faqNode(FAQ),
+  breadcrumbNode([
+    { name: 'Home', path: '/' },
+    { name: 'Canada', path: '/canada' },
+    { name: 'Fairmont Royal York', path: PATH },
+  ]),
+];
+---
+
+<Base
+  title="Fairmont Royal York DJ | DEEJAY T-JR., 3x DMC Champion"
+  description="DJ for your event at the Fairmont Royal York, Toronto. DEEJAY T-JR., three-time DMC champion, has played a ballroom event there. Galas and holiday parties."
+  path={PATH}
+  schema={schema}
+  modified="2026-10-06"
+>
+  <Hero
+    compact
+    headline="DJ at the <em>Fairmont Royal York</em>."
+    lede="She has already played the Royal York: a ballroom event in 2023. For galas, holiday parties and awards nights in Toronto’s grand hotel, a three-time DMC champion who knows the room."
+    photo="stage-crowd"
+    note="100 Front Street West, Toronto, across from Union Station."
+    primary={{ label: 'Check your date', href: '#availability' }}
+  />
+
+  <section class="section tight">
+    <div class="wrap">
+      <div class="facts">
+        <div><span class="small muted k">Played here</span><p>Ballroom event, 2023</p></div>
+        <div><span class="small muted k">Room size</span><p>Ballroom events for up to 800 guests</p></div>
+        <div><span class="small muted k">Formats</span><p>Open-format set, championship showcase, DJ plus host</p></div>
+        <div><span class="small muted k">Quoted in</span><p>Canadian dollars plus HST</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section panel">
+    <div class="wrap">
+      <SectionHead title="Practical <em>notes</em>." lede="What your planner and the hotel’s event team will want settled first." />
+      <ul class="notes" data-reveal-group>
+        <li><h3>Load-in</h3><p class="small prose">Timed with the hotel’s event team around your setup and the room’s other bookings that day.</p></li>
+        <li><h3>Power and sound</h3><p class="small prose">Confirmed against the in-house audio before the date. The technical rider and stage plot are on the <a class="inline" href="/press">press page</a>.</p></li>
+        <li><h3>Booth position</h3><p class="small prose">Placed from your floor plan so the floor stays clear and speeches have a clean line to the stage.</p></li>
+        <li><h3>Paperwork</h3><p class="small prose">Insurance certificate with the hotel’s wording, and a run-of-show your banquet captain can work from.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="wrap">
+      <SectionHead title="Planning a party at the Royal York?" />
+      <Faq items={FAQ} />
+      <p class="more small muted">
+        Also: <a class="inline" href="/corporate-events/holiday-parties">holiday parties</a>,
+        <a class="inline" href="/corporate-events">corporate events</a> and
+        <a class="inline" href="/canada">dates across Canada</a>.
+      </p>
+    </div>
+  </section>
+
+  <AvailabilityForm
+    tan
+    heading="Book her for the Royal York."
+    lede="Send the date, the room and what the night needs. You will have availability and a quote within one business day."
+    defaultType="corporate"
+    market="canada"
+    marketName="Canada · Fairmont Royal York"
+    prefillCity="Fairmont Royal York, Toronto"
+  />
+</Base>
+
+<style>
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--hairline); border: 1px solid var(--hairline); }
+  .facts > div { background: var(--ink); padding: clamp(18px, 2vw, 26px); display: flex; flex-direction: column; gap: 8px; }
+  .facts p { font-family: var(--serif); font-size: 20px; color: var(--bone); line-height: 1.3; }
+  .k { letter-spacing: .04em; text-transform: uppercase; font-size: 12px; }
+  .notes { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+  .notes li { border-top: 1px solid var(--tan); padding-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .notes h3 { font-size: 20px; }
+  .inline { color: var(--tan); text-decoration: underline; text-underline-offset: 3px; }
+  .more { margin-top: 24px; }
+  @media (max-width: 960px) { .facts, .notes { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .facts, .notes { grid-template-columns: 1fr; } }
+</style>
