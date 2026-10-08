@@ -165,8 +165,13 @@ export default config({
         duration: fields.text({ label: 'Length (ISO, optional)', description: 'e.g. "PT4M12S". Helps search engines.' }),
         uploadDate: fields.text({
           label: 'Upload date',
-          description: 'The day it went up on YouTube, as YYYY-MM-DD. Helps search engines.',
-          validation: { pattern: { regex: /^(\d{4}-\d{2}-\d{2})?$/, message: 'Use YYYY-MM-DD, e.g. 2025-01-06' } },
+          description: 'When it went up on YouTube. Best: the full timestamp, e.g. 2025-01-06T16:16:27-08:00. A plain date (2025-01-06) also works.',
+          validation: {
+            pattern: {
+              regex: /^(\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2}|Z))?)?$/,
+              message: 'Use 2025-01-06 or 2025-01-06T16:16:27-08:00',
+            },
+          },
         }),
       },
     }),

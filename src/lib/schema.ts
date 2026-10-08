@@ -197,7 +197,14 @@ export function videoNode(v: {
   date?: string | null;
 }) {
   if (!v.youtubeId) return null;
-  const uploadDate = v.uploadDate ?? (v.date && /^\d{4}$/.test(v.date) ? `${v.date}-01-01` : undefined);
+  /* Google wants a full datetime with a timezone. Entries carry YouTube's own
+     timestamp; a date typed in the admin without a time becomes midnight UTC.
+     No upload date is ever guessed from the year. */
+  const uploadDate = v.uploadDate
+    ? /^\d{4}-\d{2}-\d{2}$/.test(v.uploadDate)
+      ? `${v.uploadDate}T00:00:00+00:00`
+      : v.uploadDate
+    : undefined;
   return {
     '@type': 'VideoObject',
     name: v.title,

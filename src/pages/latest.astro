@@ -5,6 +5,8 @@ import Photo from '../components/Photo.astro';
 import AvailabilityForm from '../components/AvailabilityForm.astro';
 import { SITE } from '../data/site';
 import { breadcrumbNode, personRef } from '../lib/schema';
+import { getImage } from 'astro:assets';
+import { PHOTOS, type PhotoKey } from '../data/photos';
 
 /**
  * Latest: what she has been doing since the third national title.
@@ -24,10 +26,20 @@ import { breadcrumbNode, personRef } from '../lib/schema';
  * carry their credit where one is known.
  */
 
+/* Event images: absolute URLs of the optimised photos, built at compile time. */
+const abs = async (k: PhotoKey) => new URL((await getImage({ src: PHOTOS[k].src, width: 1600 })).src, SITE.url).href;
+const DMC = { '@type': 'Organization', name: 'DMC World DJ Championships', url: 'https://www.dmcdjchamps.com' };
+
+/* Both events are past, so no ticket offers are listed: inventing a price or
+   availability would be worse than Google's "missing offers" suggestion,
+   which is non-critical. DMC organises both; she ran (2026) and hosted
+   (2025) them, so she is the performer, never the organizer. */
 const schema = [
   {
     '@type': 'Event',
     name: '2026 DMC Canadian DJ Championships',
+    description:
+      'The national final of the DMC DJ Championships in Canada, run by DMC Canada branch manager DEEJAY T-JR., who also hosted on the microphone.',
     startDate: '2026-09-06',
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
@@ -36,16 +48,28 @@ const schema = [
       name: 'The Rec Room Roundhouse',
       address: { '@type': 'PostalAddress', addressLocality: 'Toronto', addressRegion: 'ON', addressCountry: 'CA' },
     },
-    organizer: personRef(),
+    image: [await abs('dmc-canada-2026-host'), await abs('dmc-canada-2026-group')],
+    organizer: DMC,
+    performer: personRef(),
     url: 'https://www.dmcdjchamps.com/canada',
   },
   {
     '@type': 'Event',
     name: 'Technics DMC World DJ Championships 2025',
+    description:
+      'The 40th Technics DMC World DJ Championships, the first world final held in Asia, hosted by DEEJAY T-JR. alongside Craze, DJ Babu and Darthreider.',
     startDate: '2025-10-11',
     endDate: '2025-10-12',
-    location: { '@type': 'Place', name: 'Spotify O-EAST', address: { '@type': 'PostalAddress', addressLocality: 'Tokyo', addressCountry: 'JP' } },
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: [
+      { '@type': 'Place', name: 'Spotify O-EAST', address: { '@type': 'PostalAddress', addressLocality: 'Tokyo', addressCountry: 'JP' } },
+      { '@type': 'Place', name: 'Harlem', address: { '@type': 'PostalAddress', addressLocality: 'Tokyo', addressCountry: 'JP' } },
+    ],
+    image: [await abs('dmc-world-2025-host-flyer'), await abs('dmc-world-2025-lineup-flyer')],
+    organizer: DMC,
     performer: personRef(),
+    url: 'https://www.dmcdjchamps.com',
   },
   breadcrumbNode([
     { name: 'Home', path: '/' },
