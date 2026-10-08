@@ -1,0 +1,76 @@
+---
+import Admin from '../../layouts/Admin.astro';
+import { SECTIONS } from '../../lib/admin/sections';
+import { adminConfigured, checkPassword, startSession, endSession, isSignedIn, sameOrigin } from '../../lib/admin/auth';
+import { storeMode } from '../../lib/admin/store';
+
+/** /admin: sign in, then the list of things she can edit. */
+export const prerender = false;
+
+let error = '';
+if (Astro.request.method === 'POST') {
+  if (!sameOrigin(Astro.request, Astro.url)) return new Response('Forbidden', { status: 403 });
+  const form = await Astro.request.formData();
+  if (form.get('action') === 'logout') {
+    endSession(Astro.cookies);
+    return Astro.redirect('/admin', 303);
+  }
+  const password = String(form.get('password') ?? '');
+  if (adminConfigured() && password && checkPassword(password)) {
+    startSession(Astro.cookies);
+    return Astro.redirect('/admin', 303);
+  }
+  /* A wrong password costs time, which makes guessing slow. */
+  await new Promise((r) => setTimeout(r, 1500));
+  error = 'That password is not right.';
+}
+
+const signedIn = isSignedIn(Astro.cookies);
+const mode = storeMode();
+---
+
+<Admin title={signedIn ? 'Home' : 'Sign in'} signedIn={signedIn}>
+  {
+    !adminConfigured() ? (
+      <>
+        <h1>Not set up yet.</h1>
+        <p class="intro">The editor needs its password and key on Vercel before anyone can sign in.</p>
+      </>
+    ) : !signedIn ? (
+      <form method="post" class="login">
+        <h1>Sign in</h1>
+        <p class="intro">Edit the site’s awards, press, videos and more.</p>
+        {error && <p class="notice bad" role="alert">{error}</p>}
+        <div class="field">
+          <label class="l" for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required autofocus />
+        </div>
+        <button class="btn" type="submit">Sign in</button>
+      </form>
+    ) : (
+      <>
+        <h1>What would you like to edit?</h1>
+        <p class="intro">
+          Changes go live on the site about two minutes after you save. Every change is kept in the
+          history, so nothing is ever lost.
+        </p>
+        {mode === 'local' && <p class="notice">Test mode: saving writes to the files on this computer, not the live site.</p>}
+        {mode === 'none' && <p class="notice bad">Saving is not connected yet: the repository key is missing on Vercel.</p>}
+        <ul class="cards">
+          {SECTIONS.map((s) => (
+            <li>
+              <a href={`/admin/${s.key}`}>
+                <b>{s.label}</b>
+                <span class="small muted">{s.intro}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </>
+    )
+  }
+</Admin>
+
+<style>
+  .login { max-width: 420px; }
+</style>

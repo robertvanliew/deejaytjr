@@ -86,7 +86,7 @@ export const AUTHORITY_RECORDS = [
  * possible. Anything without one renders without a link.
  *
  * EDITED IN THE ADMIN. The list lives in src/data/editable/awards.json and is
- * maintained from /keystatic, so she can add or reword a result herself. The
+ * maintained from /admin, so she can add or reword a result herself. The
  * ordering is still done here, so whatever order she types things in, the
  * site shows newest first; same-year entries keep the order she gave them.
  */

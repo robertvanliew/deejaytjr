@@ -46,12 +46,16 @@ export default defineConfig({
   },
   integrations: [
     react(),
-    keystatic(),
+    /* Keystatic is the developer's local editor only. The live site's editor is
+       /admin (password sign-in, no GitHub account), so /keystatic is not built
+       on Vercel. */
+    ...(process.env.VERCEL ? [] : [keystatic()]),
     sitemap({
       filter: (page) =>
         !page.includes('/privacy') &&
         !page.includes('/terms') &&
         !page.includes('/keystatic') &&
+        !page.includes('/admin') &&
         !page.endsWith('/go') &&
         !drafts.has(strip(page)) &&
         (!localized(page) || alternatesFor.has(strip(page))),

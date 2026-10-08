@@ -13,7 +13,7 @@ const optNum = () => z.preprocess(blank, z.number().optional());
 
 /**
  * Content the client should be able to edit without a developer (section 8).
- * These are JSON files in the repo, edited from the admin at /keystatic
+ * These are JSON files in the repo, edited from the site editor at /admin
  * (keystatic.config.ts mirrors these schemas field for field).
  *
  * Schemas are strict on purpose: a malformed testimonial fails the build

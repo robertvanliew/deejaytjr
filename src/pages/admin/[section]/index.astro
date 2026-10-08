@@ -1,0 +1,71 @@
+---
+import Admin from '../../../layouts/Admin.astro';
+import { section } from '../../../lib/admin/sections';
+import { isSignedIn } from '../../../lib/admin/auth';
+import { getFile, listDir } from '../../../lib/admin/store';
+
+/** One section's entries, newest first, each a link to its form. */
+export const prerender = false;
+
+if (!isSignedIn(Astro.cookies)) return Astro.redirect('/admin', 303);
+const sec = section(Astro.params.section ?? '');
+if (!sec) return Astro.redirect('/admin', 303);
+
+type Row = { id: string; data: Record<string, unknown> };
+let rows: Row[] = [];
+let loadError = '';
+try {
+  if (sec.kind === 'list') {
+    const f = await getFile(sec.path);
+    const items = (f ? JSON.parse(f.text).items : []) as Record<string, unknown>[];
+    rows = items.map((data, i) => ({ id: String(i), data }));
+  } else {
+    const names = (await listDir(sec.path)).filter((n) => n.endsWith('.json') && !n.startsWith('_'));
+    rows = await Promise.all(
+      names.map(async (n) => {
+        const f = await getFile(`${sec.path}/${n}`);
+        return { id: n.replace(/\.json$/, ''), data: f ? JSON.parse(f.text) : {} };
+      })
+    );
+  }
+  if (sec.sort) rows.sort((a, b) => sec.sort!(a.data, b.data));
+} catch (e) {
+  loadError = 'Could not load this section. Try again in a minute.';
+  console.error(e);
+}
+
+const saved = Astro.url.searchParams.get('saved');
+const removed = Astro.url.searchParams.get('removed');
+---
+
+<Admin title={sec.label} signedIn>
+  <p class="crumbs small"><a href="/admin">← All sections</a></p>
+  <div class="top">
+    <div>
+      <h1>{sec.label}</h1>
+      <p class="intro">{sec.intro}</p>
+    </div>
+    <a class="btn" href={`/admin/${sec.key}/edit`}>Add a {sec.noun}</a>
+  </div>
+
+  {saved && <p class="notice" role="status">Saved “{saved}”. It will be live on the site in about 2 minutes.</p>}
+  {removed && <p class="notice" role="status">Removed “{removed}”. The site updates in about 2 minutes.</p>}
+  {loadError && <p class="notice bad" role="alert">{loadError}</p>}
+
+  <ul class="list">
+    {
+      rows.map((r) => (
+        <li>
+          <a href={`/admin/${sec.key}/edit?id=${encodeURIComponent(r.id)}`}>
+            <span>
+              <span class="t">{sec.title(r.data) || 'Untitled'}</span>
+              {sec.subtitle && <span class="s"><br />{sec.subtitle(r.data)}</span>}
+            </span>
+            <span class="go small">Edit →</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  {rows.length === 0 && !loadError && <p class="muted">Nothing here yet.</p>}
+</Admin>

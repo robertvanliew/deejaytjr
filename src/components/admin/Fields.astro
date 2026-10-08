@@ -1,0 +1,79 @@
+---
+import type { Field } from '../../lib/admin/sections';
+
+/** Renders a section's fields from lib/admin/sections.ts. Plain HTML, no script. */
+export interface Props {
+  fields: Field[];
+  values: Record<string, unknown>;
+  errors?: Record<string, string>;
+}
+const { fields, values, errors = {} } = Astro.props;
+const str = (v: unknown) => (v == null ? '' : String(v));
+---
+
+{
+  fields.map((f) => {
+    const id = `f-${f.key}`;
+    const err = errors[f.key];
+    const v = values[f.key];
+    const req = 'required' in f && f.required;
+    if (f.type === 'checkbox') {
+      return (
+        <div class="field">
+          <label class="check">
+            <input type="checkbox" name={f.key} checked={v === true} />
+            <span>{f.label}</span>
+          </label>
+          {f.help && <span class="help">{f.help}</span>}
+        </div>
+      );
+    }
+    if (f.type === 'multiselect') {
+      const sel = Array.isArray(v) ? v.map(String) : [];
+      return (
+        <fieldset class="field">
+          <legend class="l">{f.label}</legend>
+          <div class="multi">
+            {f.options.map((o) => (
+              <label class="check">
+                <input type="checkbox" name={f.key} value={o.value} checked={sel.includes(o.value)} />
+                <span>{o.label}</span>
+              </label>
+            ))}
+          </div>
+          {f.help && <span class="help">{f.help}</span>}
+        </fieldset>
+      );
+    }
+    return (
+      <div class="field">
+        <label class="l" for={id}>
+          {f.label}
+          {req && ' *'}
+        </label>
+        {f.type === 'textarea' ? (
+          <textarea id={id} name={f.key} required={req} aria-invalid={err ? 'true' : undefined}>{str(v)}</textarea>
+        ) : f.type === 'select' ? (
+          <select id={id} name={f.key} required={req}>
+            {!req && !f.options.some((o) => o.value === '') && <option value="">None</option>}
+            {f.options.map((o) => (
+              <option value={o.value} selected={str(v ?? ('default' in f ? f.default : '')) === o.value}>{o.label}</option>
+            ))}
+          </select>
+        ) : (
+          <input
+            id={id}
+            name={f.key}
+            type={f.type === 'url' ? 'url' : f.type === 'integer' ? 'number' : 'text'}
+            inputmode={f.type === 'integer' ? 'numeric' : undefined}
+            value={str(v ?? (f.type === 'integer' ? f.default : ''))}
+            required={req}
+            aria-invalid={err ? 'true' : undefined}
+          />
+        )}
+        {f.help && <span class="help">{f.help}</span>}
+        {err && <span class="err">{err}</span>}
+      </div>
+    );
+  })
+}

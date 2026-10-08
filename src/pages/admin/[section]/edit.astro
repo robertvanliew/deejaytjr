@@ -1,0 +1,134 @@
+---
+import Admin from '../../../layouts/Admin.astro';
+import Fields from '../../../components/admin/Fields.astro';
+import { section, readForm, slugify } from '../../../lib/admin/sections';
+import { isSignedIn, sameOrigin } from '../../../lib/admin/auth';
+import { getFile, putFile, deleteFile, toJson, ConflictError } from '../../../lib/admin/store';
+
+/**
+ * Add, edit or remove one entry. ?id= is the position in a list file, or the
+ * file name of a collection entry; no id means a new one.
+ *
+ * Every save re-reads the file first and saves against its current version,
+ * so two people editing at once cannot silently overwrite each other.
+ */
+export const prerender = false;
+
+if (!isSignedIn(Astro.cookies)) return Astro.redirect('/admin', 303);
+const sec = section(Astro.params.section ?? '');
+if (!sec) return Astro.redirect('/admin', 303);
+
+const id = Astro.url.searchParams.get('id');
+const isNew = id === null;
+const back = `/admin/${sec.key}`;
+if (id !== null && (sec.kind === 'list' ? !/^\d+$/.test(id) : !/^[a-z0-9-]+$/.test(id))) return Astro.redirect(back, 303);
+
+const listPath = sec.path;
+const filePath = (slug: string) => `${sec.path}/${slug}.json`;
+
+async function load() {
+  if (sec!.kind === 'list') {
+    const f = await getFile(listPath);
+    const doc = f ? JSON.parse(f.text) : { items: [] };
+    return { file: f, doc, item: isNew ? {} : (doc.items[Number(id)] as Record<string, unknown> | undefined) };
+  }
+  if (isNew) return { file: null, doc: null, item: {} };
+  const f = await getFile(filePath(id!));
+  return { file: f, doc: null, item: f ? (JSON.parse(f.text) as Record<string, unknown>) : undefined };
+}
+
+let values: Record<string, unknown> = {};
+let errors: Record<string, string> = {};
+let problem = '';
+
+try {
+  const { item } = await load();
+  if (!item) return Astro.redirect(back, 303);
+  values = item;
+} catch (e) {
+  console.error(e);
+  problem = 'Could not load this entry. Try again in a minute.';
+}
+
+if (Astro.request.method === 'POST' && !problem) {
+  if (!sameOrigin(Astro.request, Astro.url)) return new Response('Forbidden', { status: 403 });
+  const form = await Astro.request.formData();
+  try {
+    const { file, doc, item } = await load();
+
+    if (form.get('action') === 'delete' && !isNew) {
+      if (form.get('confirm') !== 'on') {
+        problem = 'Tick the box to confirm you want to remove it.';
+      } else {
+        const label = sec.title(item ?? {});
+        if (sec.kind === 'list') {
+          doc.items.splice(Number(id), 1);
+          await putFile(listPath, toJson(doc), file?.sha, `Site editor: remove from ${sec.label}: ${label}`);
+        } else {
+          await deleteFile(filePath(id!), file?.sha, `Site editor: remove ${sec.noun}: ${label}`);
+        }
+        return Astro.redirect(`${back}?removed=${encodeURIComponent(label)}`, 303);
+      }
+    } else {
+      const result = readForm(sec, form, (item ?? {}) as Record<string, unknown>);
+      values = result.data;
+      errors = result.errors;
+      if (Object.keys(errors).length) {
+        problem = 'Some fields need a fix before this can be saved.';
+      } else {
+        const label = sec.title(result.data);
+        if (sec.kind === 'list') {
+          if (isNew) doc.items.unshift(result.data);
+          else doc.items[Number(id)] = result.data;
+          await putFile(listPath, toJson(doc), file?.sha, `Site editor: ${isNew ? 'add to' : 'update'} ${sec.label}: ${label}`);
+        } else if (isNew) {
+          const base = slugify(String(result.data[sec.slugFrom ?? 'title'] ?? ''));
+          let slug = base;
+          for (let n = 2; await getFile(filePath(slug)); n++) slug = `${base}-${n}`;
+          await putFile(filePath(slug), toJson(result.data), undefined, `Site editor: add ${sec.noun}: ${label}`);
+        } else {
+          await putFile(filePath(id!), toJson(result.data), file?.sha, `Site editor: update ${sec.noun}: ${label}`);
+        }
+        return Astro.redirect(`${back}?saved=${encodeURIComponent(label)}`, 303);
+      }
+    }
+  } catch (e) {
+    console.error(e);
+    problem =
+      e instanceof ConflictError
+        ? 'Someone else saved a change here a moment ago. Open the list again and redo your edit.'
+        : 'Saving failed. Nothing was changed; try again in a minute.';
+  }
+}
+
+const heading = isNew ? `Add a ${sec.noun}` : `Edit ${sec.noun}`;
+---
+
+<Admin title={heading} signedIn>
+  <p class="crumbs small"><a href={back}>← {sec.label}</a></p>
+  <h1>{heading}</h1>
+  {!isNew && <p class="intro">{sec.title(values)}</p>}
+  {problem && <p class="notice bad" role="alert">{problem}</p>}
+
+  <form method="post" novalidate>
+    <input type="hidden" name="action" value="save" />
+    <Fields fields={sec.fields} values={values} errors={errors} />
+    <div class="actions">
+      <button class="btn" type="submit">Save</button>
+      <a class="small muted" href={back}>Cancel</a>
+    </div>
+  </form>
+
+  {
+    !isNew && (
+      <form method="post" class="danger">
+        <input type="hidden" name="action" value="delete" />
+        <label class="check small">
+          <input type="checkbox" name="confirm" />
+          <span>Yes, remove this {sec.noun} from the site.</span>
+        </label>
+        <p style="margin-top:14px"><button type="submit">Remove</button></p>
+      </form>
+    )
+  }
+</Admin>

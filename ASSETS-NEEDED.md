@@ -385,31 +385,32 @@ out of date.
   DJM-S11 / DJM-A9 / DJM-900NXS2 mixers are a standard spec, not her stated
   preference. Confirm or correct the models.
 
-### 16. Site editor (`/keystatic`) — one-time set-up to make it work on the live site
+### 16. Site editor (`/admin`) — one-time set-up (Oct 2026)
 
-The editor is built and tested locally: edit, Save, and the page updates. On the
-live site it saves by committing to the GitHub repo (Vercel then redeploys in
-about a minute), which needs a GitHub App connecting the two. Once:
+She edits the site at **deejaytjr.com/admin** with one password: no GitHub
+account, no third-party login. Saving commits the change to the repo, Vercel
+redeploys, and the change is live in about two minutes. Keystatic remains
+for the developer on a local machine only; `/keystatic` is not built on Vercel.
 
-1. In `deejaytjr-site/.env.local` add `PUBLIC_KEYSTATIC_STORAGE=github`, run
-   `npm run dev`, open http://localhost:4321/keystatic and click **Create GitHub
-   App**. Sign in to GitHub as the repo owner. Keystatic creates the app and
-   writes four values into `.env`: `KEYSTATIC_GITHUB_CLIENT_ID`,
-   `KEYSTATIC_GITHUB_CLIENT_SECRET`, `KEYSTATIC_SECRET`,
-   `PUBLIC_KEYSTATIC_GITHUB_APP_SLUG`. Then remove the `PUBLIC_KEYSTATIC_STORAGE`
-   line again.
-2. Add those four to Vercel → Settings → Environment Variables (Production).
-3. In the new GitHub App's settings, add the callback URL
-   `https://www.deejaytjr.com/api/keystatic/github/oauth/callback` and make sure
-   the app is installed on `robertvanliew/deejaytjr`.
-4. Give her a GitHub account and add it as a collaborator on the repo
-   (repo → Settings → Collaborators). Only collaborators can save.
-5. Push and redeploy. She signs in at https://www.deejaytjr.com/keystatic.
+Three environment variables on Vercel (Project → Settings → Environment
+Variables → Production), then redeploy:
 
-Editable today: awards and results, timeline, positions held, press, videos,
-past events, testimonials, audience numbers. Page body copy (headlines,
-paragraphs) is still in the page files — move sections into the editor on
-request.
+1. `ADMIN_PASSWORD_HASH` and `ADMIN_SESSION_SECRET`: run
+   `node scripts/admin-password.mjs` in this folder, type the password
+   (hidden), paste the two printed lines. The password itself is stored nowhere.
+2. `ADMIN_GITHUB_TOKEN`: GitHub → Settings → Developer settings → Personal
+   access tokens → Fine-grained tokens → Generate. Repository access: only
+   `robertvanliew/deejaytjr`. Permissions: Contents, read and write. Nothing
+   else. Expiry: one year; put the renewal date in a calendar, because saving
+   stops working the day it expires.
+
+Changing the password: rerun the script, replace both values, redeploy (this
+also signs everyone out). Optional: a Vercel Firewall rate-limit rule on
+`/admin` for extra protection against password guessing.
+
+What it edits: awards, timeline, positions, press, videos, past events,
+testimonials. Not yet: audience snapshots and photo uploads (still via the
+developer).
 
 ### 17. International visibility build — Phase 1 (Oct 2026)
 
