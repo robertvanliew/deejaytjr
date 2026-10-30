@@ -3,7 +3,8 @@
  * URL in the live sitemap, so new or changed pages are recrawled in minutes
  * instead of days. Google does not use IndexNow; Search Console covers it.
  *
- * Run after a deploy has finished:  node scripts/indexnow.mjs
+ * Runs automatically after every production deploy (.github/workflows/
+ * indexnow.yml). By hand, once a deploy has finished:  node scripts/indexnow.mjs
  * The key file is public/d9582d8da69fe58a8eb04bb178b0ea5f.txt.
  */
 const HOST = 'www.deejaytjr.com';
@@ -18,3 +19,4 @@ const res = await fetch('https://api.indexnow.org/indexnow', {
   body: JSON.stringify({ host: HOST, key: KEY, keyLocation: `https://${HOST}/${KEY}.txt`, urlList }),
 });
 console.log(`IndexNow: ${urlList.length} URLs submitted, HTTP ${res.status}`);
+if (!res.ok) process.exit(1);

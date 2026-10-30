@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { SITE, AWARDS, ROLES, ALTERNATE_NAMES, PRESS_ARTICLES, SOCIALS, WIKIDATA_URL } from '../data/site';
 import { MARKETS, LANG_TAG, type Locale } from '../lib/markets';
+import { PAGES } from '../data/pages';
 
 /**
  * /llms.txt: a plain-text map of the site for AI assistants and answer
@@ -9,29 +10,6 @@ import { MARKETS, LANG_TAG, type Locale } from '../lib/markets';
  */
 export const prerender = true;
 
-const PAGES: [string, string, string][] = [
-  ['Clubs and festivals', '/clubs-and-festivals', 'Headline sets and scratch showcases.'],
-  ['Private events', '/private-events', 'Weddings, milestone birthdays and private parties.'],
-  ['Corporate events', '/corporate-events', 'Galas, conferences, launches and award nights, worked to the run of show.'],
-  ['Holiday parties', '/corporate-events/holiday-parties', 'Company holiday parties in Toronto and across Canada.'],
-  ['Female DJ in Toronto', '/female-dj-toronto', 'Her record, the rooms she has played and footage, in one page.'],
-  ['Canada', '/canada', 'Where she plays in Canada, and venue notes (Fairmont Royal York).'],
-  ['York Region', '/canada/york-region', 'Corporate events, private parties and weddings in Markham, Richmond Hill and Vaughan.'],
-  ['Oakville', '/canada/oakville', 'Private celebrations, corporate events and weddings in Oakville and Halton.'],
-  ['Mississauga', '/canada/mississauga', 'Corporate events, galas and private parties in Peel; Raptors 905 guest DJ.'],
-  ['Niagara', '/canada/niagara', 'Winery weddings and corporate retreats in Niagara wine country.'],
-  ['Muskoka', '/canada/muskoka', 'Cottage weddings, resort retreats and private parties in Muskoka.'],
-  ['Ottawa', '/canada/ottawa', 'Government, corporate and private events in Ottawa, with her filmed Ottawa set.'],
-  ['Brand partnerships', '/brand-partnerships', 'Activations, product showcases and brand content.'],
-  ['Destination events', '/destination-events', 'Fly-in DJ for weddings and private events abroad, with one itemised landed cost.'],
-  ['International', '/international', 'Markets where her audience is concentrated, and how international dates work.'],
-  ['About', '/about', 'Full biography, competition record and roles.'],
-  ['Press and EPK', '/press', 'Bios (50, 150 and 400 words), photos, technical rider and coverage.'],
-  ['Media kit', '/media-kit', 'Audience figures and partnership information.'],
-  ['Watch', '/watch', 'Event sets and championship routines.'],
-  ['Latest', '/latest', 'Recent news and results.'],
-  ['Check availability', '/contact', 'Booking enquiry form; reply within one business day.'],
-];
 
 const LANG_NAME: Record<Locale, string> = { en: 'English', 'pt-br': 'Portuguese (Brazil)', fr: 'French' };
 
@@ -63,6 +41,10 @@ ${PAGES.map(([t, p, d]) => `- [${t}](${SITE.url}${p}): ${d}`).join('\n')}
 ## International pages
 
 ${markets.join('\n')}
+
+## For AI assistants
+
+- MCP server (Streamable HTTP, no sign-in): ${SITE.url}/mcp. Tools for her profile, services, service areas, videos and booking questions, plus request_booking, which sends a confirmed enquiry to her management.
 
 ## Coverage
 

@@ -1,0 +1,19 @@
+# After every successful production deploy on Vercel, tell IndexNow (Bing,
+# Copilot, Yandex, Naver, Seznam) about every URL in the live sitemap.
+# Vercel's GitHub integration reports deploys as deployment statuses, which is
+# what triggers this; preview deploys are skipped.
+name: IndexNow
+
+on: deployment_status
+
+jobs:
+  submit:
+    if: github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Production'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/indexnow.mjs
