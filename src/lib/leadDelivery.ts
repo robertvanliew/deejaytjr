@@ -1,4 +1,5 @@
 import { subjectFor, EVENT_TYPE_LABELS, type LeadPayload } from './form';
+import { internalEmail, autoReply, autoReplyText } from './leadEmails';
 
 /**
  * Lead delivery, shared by every channel that takes a booking request: the
@@ -10,74 +11,11 @@ import { subjectFor, EVENT_TYPE_LABELS, type LeadPayload } from './form';
 
 const env = (key: string) => import.meta.env[key] ?? process.env[key] ?? '';
 
-const esc = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
-
-/* ---------------------------------------------------------------------------
-   Rendering
-   --------------------------------------------------------------------------- */
-
-const ROWS: [keyof LeadPayload, string][] = [
-  ['name', 'Name'],
-  ['email', 'Email'],
-  ['eventType', 'Event type'],
-  ['eventDate', 'Event date'],
-  ['city', 'City and country'],
-  ['guests', 'Guest count'],
-  ['budget', 'Budget'],
-  ['heard', 'How they heard'],
-  ['message', 'About the event'],
-  ['otherCities', 'Other cities on the trip'],
-  ['basedIn', 'Event location / buyer based in'],
-  ['marketName', 'Market'],
-  ['locale', 'Page language'],
-  ['pagePath', 'Submitted from'],
-  ['utmSource', 'UTM source'],
-  ['utmMedium', 'UTM medium'],
-  ['utmCampaign', 'UTM campaign'],
-  ['referrer', 'Referrer'],
-  ['ftSource', 'First touch: source'],
-  ['ftMedium', 'First touch: medium'],
-  ['ftCampaign', 'First touch: campaign'],
-  ['ftLanding', 'First touch: landing page'],
-];
-
-function internalEmail(lead: LeadPayload): string {
-  const rows = ROWS.filter(([k]) => String(lead[k] ?? '').trim())
-    .map(([k, label]) => {
-      const raw = String(lead[k]);
-      const value = k === 'eventType' ? (EVENT_TYPE_LABELS[raw] ?? raw) : raw;
-      return `<tr>
-        <td style="padding:6px 16px 6px 0;color:#9a9ca6;font:14px system-ui;vertical-align:top;white-space:nowrap">${esc(label)}</td>
-        <td style="padding:6px 0;color:#111;font:14px system-ui">${esc(value).replace(/\n/g, '<br>')}</td>
-      </tr>`;
-    })
-    .join('');
-
-  return `<div style="font:14px system-ui;color:#111">
-    <p style="margin:0 0 18px"><strong>New booking request from deejaytjr.com</strong></p>
-    <table style="border-collapse:collapse">${rows}</table>
-    <p style="margin:22px 0 0;color:#9a9ca6;font-size:12px">Reply directly to this message to answer ${esc(lead.email)}.</p>
-  </div>`;
-}
-
-function autoReply(lead: LeadPayload, replyTo: string): string {
-  const first = esc(lead.name.trim().split(/\s+/)[0] ?? 'there');
-  return `<div style="font:15px/1.6 system-ui;color:#111;max-width:520px">
-    <p>Hi ${first},</p>
-    <p>Thanks for getting in touch about booking DEEJAY T-JR. Your request has landed with us and you will have a reply within one business day, including availability for your date and a quote.</p>
-    <p>In the meantime, her one-sheet, hi-res photos, bios, stage plot and technical rider are all here, with nothing to fill in:</p>
-    <p><a href="https://www.deejaytjr.com/press" style="color:#9a7d22">www.deejaytjr.com/press</a></p>
-    <p>If anything about the event changes before you hear back, just reply to this message.</p>
-    <p style="margin-top:26px;color:#666">The DEEJAY T-JR. team<br>${esc(replyTo)}</p>
-  </div>`;
-}
-
 /* ---------------------------------------------------------------------------
    Side effects. Each is independent: one failing must not lose the lead.
    --------------------------------------------------------------------------- */
 
-async function sendEmail(opts: { to: string; subject: string; html: string; replyTo?: string }) {
+async function sendEmail(opts: { to: string; subject: string; html: string; text?: string; replyTo?: string }) {
   const key = env('RESEND_API_KEY');
   const from = env('LEAD_FROM_EMAIL') || 'bookings@deejaytjr.com';
   if (!key) return { skipped: true as const };
@@ -90,6 +28,7 @@ async function sendEmail(opts: { to: string; subject: string; html: string; repl
       to: [opts.to],
       subject: opts.subject,
       html: opts.html,
+      ...(opts.text ? { text: opts.text } : {}),
       ...(opts.replyTo ? { reply_to: opts.replyTo } : {}),
     }),
   });
@@ -234,8 +173,9 @@ export async function deliverLead(lead: LeadPayload, opts: { subject?: string } 
      */
     sendEmail({
       to: lead.email,
-      subject: 'We have your booking request — DEEJAY T-JR.',
+      subject: 'We have your booking request · DEEJAY T-JR.',
       html: autoReply(lead, to),
+      text: autoReplyText(lead, to),
       replyTo: to,
     }),
   ]);
