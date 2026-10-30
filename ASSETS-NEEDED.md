@@ -442,9 +442,19 @@ Confirm these with Linda's rate card.
 - Albuquerque (TikTok) has no page; confirm before Phase 2.
 - Rio de Janeiro (June data) vs Brasília (spec's September export): send the
   September export so the Brazil city list matches it.
-- The spec's TikTok figure (24.4K, +827%) and 92% men 35–54 are the June
-  snapshot; the site uses the newer September count (36.8K). Send her
-  September analytics to refresh demographics.
+- TikTok: 36.8K confirmed (Oct 2026). The spec's 24.4K was the June
+  snapshot. The 92% men 35–54 figure is also June; send her September
+  analytics to refresh demographics.
+- AlphaTheta / Pioneer DJ: confirmed (Oct 2026) as an ongoing relationship
+  that can be mentioned in pitches.
+- Confirmed by her (Oct 2026), for pitches and partner conversations:
+  - MLSE, the Government of Ontario and the Fairmont Royal York can be named
+    in pitches. This is not yet permission to name them against dates on the
+    site; the `permissionOnFile` flags stay false until she says so.
+  - She controls DMC Canada sponsorship deals; they don't need DMC head office.
+  - Brands may see her audience demographics.
+  - No brand categories are off-limits.
+  - No exclusivity: no existing deal blocks other brands.
 
 **Still needed from her (spec):** past dates outside Canada; promoter or venue
 contacts per city; a native pt-BR and a native fr reviewer; two client quotes
