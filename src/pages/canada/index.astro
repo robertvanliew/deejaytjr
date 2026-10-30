@@ -24,16 +24,27 @@ const PLACES = [
   {
     name: 'Mississauga',
     fact: 'Guest DJ courtside for the Raptors 905 Women’s Celebration Game at Paramount Fine Foods Centre.',
+    link: { label: 'Mississauga and Peel', href: '/canada/mississauga' },
   },
   {
     name: 'Ottawa',
     fact: 'A packed floor at Grown-Ass Pizza Party: hip-hop, dancehall and reggae, filmed in full.',
-    link: { label: 'Watch the set', href: '/watch' },
+    link: { label: 'Ottawa events', href: '/canada/ottawa' },
   },
   {
     name: 'Anywhere else in Canada',
     fact: 'Montréal, Vancouver, Calgary and beyond. Name the city in the form; travel is itemised in the quote.',
   },
+];
+
+/* Region pages chosen from the opportunity map (Oct 2026). */
+const REGIONS = [
+  { name: 'York Region', note: 'Markham, Richmond Hill and Vaughan', href: '/canada/york-region' },
+  { name: 'Oakville', note: 'Oakville, Burlington and Halton', href: '/canada/oakville' },
+  { name: 'Mississauga', note: 'Mississauga, Brampton and Caledon', href: '/canada/mississauga' },
+  { name: 'Niagara', note: 'Winery weddings and retreats', href: '/canada/niagara' },
+  { name: 'Muskoka', note: 'Cottage weddings and resort retreats', href: '/canada/muskoka' },
+  { name: 'Ottawa', note: 'Government, corporate and private events', href: '/canada/ottawa' },
 ];
 
 const VENUES = [
@@ -89,7 +100,7 @@ const schema = [
   description="Book DEEJAY T-JR., three-time DMC champion turntablist, across Canada: Toronto, the GTA, Ottawa, Montréal, Vancouver and Calgary. Quoted in CAD."
   path="/canada"
   schema={schema}
-  modified="2026-10-06"
+  modified="2026-10-30"
 >
   <Hero
     compact
@@ -113,6 +124,15 @@ const schema = [
             </li>
           ))
         }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead title="Around <em>Ontario</em>." lede="How a booking works in each region, from the GTA to wine and cottage country." />
+      <ul class="cards" data-reveal-group>
+        {REGIONS.map((r) => <li><a class="card spot" href={r.href}><b>{r.name}</b><span class="small muted">{r.note}</span><span class="tlink">Book here <span class="arw" aria-hidden="true">→</span></span></a></li>)}
       </ul>
     </div>
   </section>

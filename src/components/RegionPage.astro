@@ -1,0 +1,158 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from './Hero.astro';
+import SectionHead from './SectionHead.astro';
+import Faq from './Faq.astro';
+import VideoTile from './VideoTile.astro';
+import AvailabilityForm from './AvailabilityForm.astro';
+import { getEntry } from 'astro:content';
+import { serviceNode, faqNode, breadcrumbNode, videoNode } from '../lib/schema';
+import { SITE } from '../data/site';
+import type { FaqItem } from '../data/faqs';
+import type { PhotoKey } from '../data/photos';
+
+/**
+ * A Canadian region page (/canada/<region>), chosen from the opportunity map
+ * (Oct 2026): areas with the most weddings, large employers and $200K+
+ * households per DJ listed locally.
+ *
+ * Each page must carry copy only this region has: how she gets there, what
+ * the buyers there book, and any real date she has played. Never name a
+ * venue she has not played; never reuse another region's paragraphs.
+ */
+export interface Props {
+  slug: string;
+  /** Region name as used in headings and schema. */
+  name: string;
+  title: string;
+  description: string;
+  headline: string;
+  lede: string;
+  photo: PhotoKey;
+  note: string;
+  facts: { k: string; v: string }[];
+  /** What each buyer type books here, in this region's terms. */
+  lanes: { title: string; body: string; href: string; link: string }[];
+  /** A real date in the region, when there is one. */
+  proof?: { title: string; body: string; video?: string };
+  travel: { title: string; body: string }[];
+  faq: FaqItem[];
+  formHeading: string;
+  formLede: string;
+  prefillCity: string;
+  modified: string;
+}
+
+const p = Astro.props;
+const path = `/canada/${p.slug}`;
+const video = p.proof?.video ? await getEntry('videos', p.proof.video) : undefined;
+
+const schema = [
+  serviceNode({
+    name: `DJ for events in ${p.name}`,
+    description: p.description,
+    url: `${SITE.url}${path}`,
+    serviceType: ['DJ performance', 'Turntablism showcase', 'Event hosting'],
+    area: { type: 'City', name: p.name, country: 'Canada' },
+    availableLanguage: ['en'],
+  }),
+  faqNode(p.faq),
+  breadcrumbNode([
+    { name: 'Home', path: '/' },
+    { name: 'Canada', path: '/canada' },
+    { name: p.name, path },
+  ]),
+  ...(video ? [videoNode(video)] : []),
+];
+---
+
+<Base title={p.title} description={p.description} path={path} schema={schema} modified={p.modified}>
+  <Hero compact headline={p.headline} lede={p.lede} photo={p.photo} note={p.note} primary={{ label: 'Check your date', href: '#availability' }} />
+
+  <section class="section tight">
+    <div class="wrap">
+      <div class="facts">
+        {p.facts.map((f) => <div><span class="small muted k">{f.k}</span><p>{f.v}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead title={`What gets booked in <em>${p.name}</em>.`} />
+      <ul class="lanes" data-reveal-group>
+        {
+          p.lanes.map((l) => (
+            <li>
+              <h3>{l.title}</h3>
+              <p class="small prose">{l.body}</p>
+              <a class="tlink small" href={l.href}>{l.link} <span class="arw" aria-hidden="true">→</span></a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  {
+    p.proof && (
+      <section class="section panel">
+        <div class={`wrap proof${video ? '' : ' solo'}`}>
+          <div>
+            <SectionHead title={p.proof.title} />
+            <p class="prose">{p.proof.body}</p>
+          </div>
+          {video && <div class="vid"><VideoTile video={video} large /></div>}
+        </div>
+      </section>
+    )
+  }
+
+  <section class={`section${p.proof ? '' : ' panel'}`}>
+    <div class="wrap">
+      <SectionHead title="Getting <em>there</em>." lede="What your planner will want settled first." />
+      <ul class="notes" data-reveal-group>
+        {p.travel.map((t) => <li><h3>{t.title}</h3><p class="small prose">{t.body}</p></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="wrap">
+      <SectionHead title={`Booking in ${p.name}.`} />
+      <Faq items={p.faq} />
+      <p class="more small muted">
+        Also: <a class="inline" href="/corporate-events/holiday-parties">holiday parties</a>,
+        <a class="inline" href="/private-events">private events</a> and
+        <a class="inline" href="/canada">dates across Canada</a>.
+      </p>
+    </div>
+  </section>
+
+  <AvailabilityForm
+    tan
+    heading={p.formHeading}
+    lede={p.formLede}
+    market="canada"
+    marketName={`Canada · ${p.name}`}
+    prefillCity={p.prefillCity}
+  />
+</Base>
+
+<style>
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--hairline); border: 1px solid var(--hairline); }
+  .facts > div { background: var(--ink); padding: clamp(18px, 2vw, 26px); display: flex; flex-direction: column; gap: 8px; }
+  .facts p { font-family: var(--serif); font-size: 20px; color: var(--bone); line-height: 1.3; }
+  .k { letter-spacing: .04em; text-transform: uppercase; font-size: 12px; }
+  .lanes { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .lanes li, .notes li { border-top: 1px solid var(--tan); padding-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .lanes h3, .notes h3 { font-size: 20px; }
+  .proof { display: grid; grid-template-columns: 1fr 1.3fr; gap: clamp(24px, 4vw, 56px); align-items: center; }
+  .proof.solo { grid-template-columns: 1fr; }
+  .proof.solo .prose { max-width: 60ch; }
+  .notes { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .inline { color: var(--tan); text-decoration: underline; text-underline-offset: 3px; }
+  .more { margin-top: 24px; }
+  @media (max-width: 960px) { .facts { grid-template-columns: repeat(2, 1fr); } .lanes, .notes { grid-template-columns: 1fr; } .proof { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .facts { grid-template-columns: 1fr; } }
+</style>
