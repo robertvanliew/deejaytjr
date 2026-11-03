@@ -18,10 +18,27 @@ import type { FaqItem } from '../../data/faqs';
  * the season's availability changes; an undated "booking now" goes stale.
  */
 const BOOKING_NOTE = {
-  date: '2026-10-06',
-  label: 'October 6, 2026',
-  text: 'November and December 2026 holiday-party dates are booking now.',
+  date: '2026-11-03',
+  label: 'November 3, 2026',
+  text: 'December 2026 and January 2027 holiday-party dates are booking now.',
 };
+
+/* Planners search "Christmas party DJ" and "office party DJ" as often as
+   "holiday party DJ"; this section says all three in plain language. */
+const PARTY_TYPES = [
+  { title: 'Office Christmas party', body: 'Forty to 150 guests in your office, a restaurant buyout or an event space. Dinner music, a toast, then a dance floor that does not need coaxing.' },
+  { title: 'Ballroom holiday gala', body: 'Three hundred to 800 guests in a hotel ballroom, with awards, speeches and a run of show the venue works from. She has played the Fairmont Royal York.' },
+  { title: 'Client appreciation night', body: 'A party for the people you do business with. Polished through cocktails, and a showcase moment they will mention on the next call.' },
+  { title: 'January party', body: 'Many teams now celebrate after the rush, when venues and calendars are easier. January Fridays are as good a night as any in December.' },
+];
+
+const AREAS = [
+  { label: 'Toronto', href: '/canada' },
+  { label: 'York Region', href: '/canada/york-region' },
+  { label: 'Mississauga', href: '/canada/mississauga' },
+  { label: 'Oakville', href: '/canada/oakville' },
+  { label: 'Ottawa', href: '/canada/ottawa' },
+];
 
 /* The peak moment, on film: the routine that won the 2024 national title. */
 const showcase = await getEntry('videos', 'dmc-2024-winning-routine');
@@ -31,6 +48,18 @@ const FAQ: FaqItem[] = [
   {
     q: 'How far ahead should we book a holiday party DJ?',
     a: '<p>As soon as you have a date. December Fridays and Saturdays are the most requested nights of the corporate year. If your party is inside eight weeks, still ask: you will get a straight yes or no on availability within one business day.</p>',
+  },
+  {
+    q: 'Do you DJ office Christmas parties?',
+    a: '<p>Yes. Holiday party, Christmas party, year-end party: same night, different name. Office parties in Toronto and the GTA are most of the season, from 40 guests in a restaurant to 800 in a ballroom.</p>',
+  },
+  {
+    q: 'What does a holiday party DJ cost in Toronto?',
+    a: '<p>Every party is quoted on its hours, guest count and whether the venue has a sound system. Send your date and the basics and you will have availability and a full quote within one business day, in Canadian dollars plus HST.</p>',
+  },
+  {
+    q: 'Can we book a holiday party in January?',
+    a: '<p>Yes, and it is worth considering. January parties dodge the December crunch for venues and calendars, and people are glad of a night out after the holidays.</p>',
   },
   {
     q: 'Will the music stay down during dinner and speeches?',
@@ -56,8 +85,8 @@ const FAQ: FaqItem[] = [
 ---
 
 <Service
-  title="Holiday Party DJ Toronto | DEEJAY T-JR., 3x DMC Champion"
-  description="Company holiday party DJ in Toronto: DEEJAY T-JR., three-time DMC champion. Dinner at conversation level, speeches on cue, then a full floor. Booking now."
+  title="Holiday & Christmas Party DJ Toronto | DEEJAY T-JR."
+  description="Office Christmas and holiday party DJ in Toronto and the GTA. Three-time DMC champion: dinner at conversation level, speeches on cue, then a full floor. Dec and Jan dates."
   path="/corporate-events/holiday-parties"
   type="corporate"
   market="canada"
@@ -68,7 +97,7 @@ const FAQ: FaqItem[] = [
   areaServed={['Toronto', 'Greater Toronto Area', 'Hamilton', 'Ottawa', 'Canada']}
   parents={[{ name: 'Corporate event DJ', path: '/corporate-events' }]}
   headline="Holiday party DJ, <em>three-time DMC champion</em>."
-  lede="Company holiday parties in Toronto and across Canada. Dinner at conversation level, speeches on cue, then a floor your team will talk about in January. She has played for MLSE, the Government of Ontario and the Fairmont Royal York."
+  lede="Company holiday and Christmas parties in Toronto, the GTA and across Canada. Dinner at conversation level, speeches on cue, then a floor your team will talk about in January. She has played for MLSE, the Government of Ontario and the Fairmont Royal York."
   heroPhoto="performance-wide"
   proof={[
     { stat: 'DMC Canada Champion', detail: '2022, 2023 and 2024: the only woman to win three in a row' },
@@ -95,6 +124,29 @@ const FAQ: FaqItem[] = [
     { label: 'DJ across Canada', href: '/canada', note: 'Toronto, the GTA, Ottawa and dates across the country.' },
   ]}
 >
+  <section class="section" slot="after-formats" id="party-types">
+    <div class="wrap">
+      <SectionHead
+        title="Every kind of <em>holiday party</em>."
+        lede="Whatever your company calls it, the night needs the same thing: a room that is easy to talk in, then hard to leave."
+      />
+      <ul class="check" data-reveal-group>
+        {PARTY_TYPES.map((t) => (
+          <li>
+            <h3>{t.title}</h3>
+            <p class="small prose">{t.body}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="areas small">
+        Holiday parties across the GTA and beyond:
+        {AREAS.map((a, i) => (
+          <>{i > 0 && ' · '}<a class="inline" href={a.href}>{a.label}</a></>
+        ))}.
+      </p>
+    </div>
+  </section>
+
   <section class="section panel" slot="after-formats" id="checklist">
     <div class="wrap">
       <SectionHead
@@ -145,5 +197,7 @@ const FAQ: FaqItem[] = [
   .booking { margin-top: 32px; font-family: var(--serif); font-size: clamp(20px, 2vw, 24px); color: var(--bone); max-width: 44em; }
   .inline { color: var(--tan); text-decoration: underline; text-underline-offset: 3px; }
   .vid { max-width: 980px; }
-  @media (max-width: 760px) { .check { grid-template-columns: 1fr; } }
+  #party-types .check { grid-template-columns: repeat(2, 1fr); }
+  .areas { margin-top: 32px; color: var(--body); }
+  @media (max-width: 760px) { .check, #party-types .check { grid-template-columns: 1fr; } }
 </style>
