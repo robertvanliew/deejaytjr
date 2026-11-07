@@ -25,6 +25,14 @@ export const WEBSITE_ID = `${SITE.url}/#website`;
 
 export const personRef = () => ({ '@id': PERSON_ID });
 
+/** Who designed and built the site; the same @id robertvanliew.com uses for its Person. */
+const SITE_DESIGNER = {
+  '@type': 'Person',
+  '@id': 'https://www.robertvanliew.com/#person',
+  name: 'Robert Van Liew',
+  url: 'https://www.robertvanliew.com/',
+};
+
 export function personNode() {
   return {
     '@type': 'Person',
@@ -115,6 +123,7 @@ export function websiteNode() {
     inLanguage: ['en', 'pt-BR', 'fr'],
     publisher: personRef(),
     about: personRef(),
+    creator: SITE_DESIGNER,
   };
 }
 
